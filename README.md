@@ -1,13 +1,23 @@
 ﻿# ChatGPT Transfer Pack
 
-This repository stores ChatGPT-oriented instructions distilled from the FEF/Fable-style transfer work.
+ChatGPT-oriented instructions distilled from the FEF/Fable-style transfer work.
 
-Start here:
+## Files
 
-- `docs/chatgpt-transfer-instructions.md`
+- `docs/chatgpt-5.5-project-instructions.md` — paste into ChatGPT Project Instructions.
+- `docs/chatgpt-transfer-instructions.md` — full combined guide.
+- `docs/fable5-pattern-bank-for-chatgpt.md` — distilled observable behavior patterns.
+- `docs/chatgpt-coding-rules.md` — coding/debug behavior.
+- `docs/chatgpt-proposal-review-rules.md` — proposal consistency review behavior.
+- `docs/chatgpt-blog-rules.md` — technical blog behavior.
+- `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.
 
-Recommended use:
+## Recommended Use
 
-1. Put section 9 into ChatGPT Project Instructions.
-2. Use section 10 prompts for task-specific copy/paste runs.
+1. Paste `docs/chatgpt-5.5-project-instructions.md` into the ChatGPT project instruction field.
+2. Use `prompts/chatgpt-task-prompts.md` for task-specific runs.
 3. Keep claims evidence-bound and mark unsupported facts as `[unverified]`.
+
+## Boundary
+
+This repository transfers observable working patterns. It does not claim to copy Fable5 internals or hidden reasoning.
