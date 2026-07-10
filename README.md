@@ -2,6 +2,10 @@
 
 ChatGPT-oriented instructions distilled from the FEF/Fable-style transfer work.
 
+## Memory Bootstrap
+
+Start every new ChatGPT project/session by reading `CHATGPT.md` first. Treat `CHATGPT.md` as the persistent working-memory bootstrap, then let it route the task to the smallest needed supporting files.
+
 ## Start Here
 
 - `CHATGPT.md` — single runtime entry point. Use this as the main Project Instruction / Project Knowledge entry.
@@ -26,3 +30,4 @@ ChatGPT-oriented instructions distilled from the FEF/Fable-style transfer work.
 ## Boundary
 
 This repository transfers observable working patterns. It does not claim to copy Fable5 internals or hidden reasoning.
+

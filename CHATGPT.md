@@ -6,6 +6,9 @@ If the referenced instruction files are not available in the ChatGPT Project kno
 
 This file is the single runtime entry point for the ChatGPT transfer pack. It tells ChatGPT which supporting files to read for each task. It does not duplicate all rules.
 
+## Session Memory Bootstrap
+
+At the start of a new ChatGPT project/session, read this `CHATGPT.md` first and treat its instructions as persistent working memory for the session. Then load the referenced project files according to the Autoload Protocol below. This is project-level memory bootstrap, not model fine-tuning or hidden memory mutation.
 ## Autoload Protocol
 
 For each task:
@@ -58,3 +61,5 @@ If a conflict appears, follow the higher-priority instruction and report the con
 - Mark unsupported factual claims as `[unverified]`.
 - For coding, prefer shared-root-cause fixes and verify the requested path/workspace.
 - For external-facing documents, run one final consistency pass.
+
+
