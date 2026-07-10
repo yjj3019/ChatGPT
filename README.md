@@ -1,26 +1,28 @@
-﻿# ChatGPT Transfer Pack
+# ChatGPT Transfer Pack
 
 ChatGPT-oriented instructions distilled from the FEF/Fable-style transfer work.
 
+## Start Here
+
+- `CHATGPT.md` — single runtime entry point. Use this as the main Project Instruction / Project Knowledge entry.
+
 ## Files
 
-- docs/chatgpt-5.5-all-in-one-instructions.md — single paste version for ChatGPT Project Instructions.
-
-- `docs/chatgpt-5.5-project-instructions.md` — paste into ChatGPT Project Instructions.
-- `docs/chatgpt-transfer-instructions.md` — full combined guide.
+- `docs/chatgpt-5.5-project-instructions.md` — core ChatGPT 5.5 project behavior.
 - `docs/fable5-pattern-bank-for-chatgpt.md` — distilled observable behavior patterns.
 - `docs/chatgpt-coding-rules.md` — coding/debug behavior.
 - `docs/chatgpt-proposal-review-rules.md` — proposal consistency review behavior.
 - `docs/chatgpt-blog-rules.md` — technical blog behavior.
+- `docs/chatgpt-transfer-instructions.md` — full combined guide.
+- `docs/chatgpt-5.5-all-in-one-instructions.md` — single-paste fallback version.
 - `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.
 
 ## Recommended Use
 
-1. Paste `docs/chatgpt-5.5-all-in-one-instructions.md` into the ChatGPT project instruction field.
-2. Use `prompts/chatgpt-task-prompts.md` for task-specific runs.
-3. Keep claims evidence-bound and mark unsupported facts as `[unverified]`.
+1. Add `CHATGPT.md` and the `docs/` files to ChatGPT Project knowledge/files.
+2. Put the content of `CHATGPT.md` into the Project Instructions field if only one instruction field is available.
+3. Let `CHATGPT.md` route each task to the smallest needed supporting files.
 
 ## Boundary
 
 This repository transfers observable working patterns. It does not claim to copy Fable5 internals or hidden reasoning.
-
