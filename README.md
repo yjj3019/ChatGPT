@@ -9,6 +9,7 @@ Start every new ChatGPT project/session by reading `CHATGPT.md` first. Treat `CH
 ## Start Here
 
 - `CHATGPT.md` — single runtime entry point. Use this as the main Project Instruction / Project Knowledge entry.
+- `AGENTS.md` — Codex runtime entry point. Use this repository as the working root when you want Codex to apply the included guidance automatically.
 
 ## Files
 
@@ -26,6 +27,15 @@ Start every new ChatGPT project/session by reading `CHATGPT.md` first. Treat `CH
 1. Add `CHATGPT.md` and the `docs/` files to ChatGPT Project knowledge/files.
 2. Put the content of `CHATGPT.md` into the Project Instructions field if only one instruction field is available.
 3. Let `CHATGPT.md` route each task to the smallest needed supporting files.
+
+## Codex Use
+
+```powershell
+git clone https://github.com/yjj3019/ChatGPT.git
+cd ChatGPT
+```
+
+Start Codex from this directory, or set this directory as the workspace root. Codex will read `AGENTS.md`, which points to the supporting `docs/codex-*.md` guidance files.
 
 ## Boundary
 
