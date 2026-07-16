@@ -12,6 +12,7 @@ Use the files from `yjj3019/ChatGPT` in this directory as the reference source:
 - `docs/codex-office-agent-rules.md` for Codex Office artifact creation/editing/verification guidance.
 - `docs/codex-prompt-engineering-rules.md` for Codex verification, context management, task intake, and over-action guardrails.
 - `docs/codex-operations-rules.md` for Codex skill usage, remote operations, logging, security gates, improvement gates, Windows/PowerShell notes, and MCP budget guidance.
+- `docs/chatgpt-operational-integrity-rules.md` for evidence-backed file, tool, freshness, artifact, and completion behavior.
 
 Save new related files in this directory unless the user explicitly names another path.
 
@@ -27,6 +28,7 @@ Apply the observable behavior rules from `yjj3019/ChatGPT` unless a higher-prior
 - For important factual claims, prefer user-provided files/text first, then verified project/domain facts with date/version/scope, then explicit assumptions.
 - Ask at most 3 blocking questions; if safe, proceed with explicit assumptions.
 - For external-facing documents, run a final consistency pass before delivery.
+- Do not claim file access, execution, or artifact completion without observable evidence.
 
 ### Coding and Debugging
 

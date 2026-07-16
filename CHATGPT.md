@@ -22,9 +22,9 @@ For each task:
 ## Core Runtime Load Order
 
 1. `docs/chatgpt-5.5-project-instructions.md`
-2. `docs/fable5-pattern-bank-for-chatgpt.md`
+2. `docs/chatgpt-operational-integrity-rules.md`
 
-These files are the baseline behavior pack for ChatGPT 5.5.
+These files are the baseline behavior pack. Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calibration material.
 
 ## Task Loading Map
 
@@ -33,7 +33,7 @@ These files are the baseline behavior pack for ChatGPT 5.5.
 | Coding/debugging | `docs/chatgpt-coding-rules.md` | `prompts/chatgpt-task-prompts.md` |
 | Proposal consistency review | `docs/chatgpt-proposal-review-rules.md` | `prompts/chatgpt-task-prompts.md` |
 | Technical blog post | `docs/chatgpt-blog-rules.md` | `prompts/chatgpt-task-prompts.md` |
-| General Fable-style answer calibration | Core Runtime only | `docs/chatgpt-transfer-instructions.md` |
+| General answer calibration | Core Runtime only | `docs/chatgpt-transfer-instructions.md`; optional `docs/fable5-pattern-bank-for-chatgpt.md` |
 | One-shot copy/paste setup | `docs/chatgpt-5.5-all-in-one-instructions.md` | None |
 
 ## Selection Rules
@@ -46,10 +46,12 @@ These files are the baseline behavior pack for ChatGPT 5.5.
 
 ## Instruction Precedence
 
-1. System / platform instructions
-2. User task
-3. This `CHATGPT.md`
-4. Loaded ChatGPT transfer files
+1. Platform and system instructions
+2. Organization, workspace, and ChatGPT Project instructions
+3. Runtime invariants in this `CHATGPT.md` and the Operational Integrity Core
+4. Explicit user task constraints and requested output contract
+5. Task-specific ChatGPT file defaults
+6. Model general behavior
 
 If a conflict appears, follow the higher-priority instruction and report the conflict when it affects the task.
 
@@ -59,6 +61,8 @@ If a conflict appears, follow the higher-priority instruction and report the con
 - Treat this as observable behavior calibration only.
 - Keep facts, assumptions, and open questions separate when it matters.
 - Mark unsupported factual claims as `[unverified]`.
+- Do not claim a file was read, an action ran, or an artifact was completed without observable evidence.
+- For non-trivial work, complete every applicable analysis, execution, verification, and limitation-reporting stage before declaring completion.
 - For coding, prefer shared-root-cause fixes and verify the requested path/workspace.
 - For external-facing documents, run one final consistency pass.
 
