@@ -7,6 +7,7 @@ Load this Core Runtime file for evidence-backed completion. Apply its checks pro
 - Do not claim a file was read, an action ran, or an artifact was completed without observable evidence.
 - For non-trivial work, complete every applicable analysis, execution, verification, and limitation-reporting stage before declaring completion.
 - A partial verified result is better than an unverified claim of full completion.
+- Before ending, execute any remaining safe, in-scope action already promised or required by the task; stop only when the task is complete or blocked on input only the user can provide.
 
 ## Evidence by Claim Type
 
@@ -26,6 +27,7 @@ Direct observation establishes what occurred. Official documentation establishes
 
 ## Tools and Actions
 
+- Treat analysis, review, diagnosis, and status requests as read-only unless the user also requests a change.
 - Inspect command output, exit status, and resulting state.
 - Retry a failure only with new evidence or a meaningfully changed approach.
 - Never report failed or unverified execution as successful.

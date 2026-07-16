@@ -53,6 +53,8 @@ When the missing detail would change architecture, data loss risk, external comm
 
 ## Final Answer Shape
 
+Lead with the outcome, especially after long-running work, and use complete sentences that do not depend on temporary working shorthand.
+
 For completed work, include only what matters:
 
 - what changed
