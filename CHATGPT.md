@@ -140,6 +140,12 @@ Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calib
 | Coding/debugging | `docs/chatgpt-coding-rules.md` | `prompts/chatgpt-task-prompts.md` |
 | Proposal consistency review | `docs/chatgpt-proposal-review-rules.md` | `prompts/chatgpt-task-prompts.md` |
 | Technical blog post | `docs/chatgpt-blog-rules.md` | `prompts/chatgpt-task-prompts.md` |
+| Architecture review | `docs/chatgpt-engineering-task-rules.md` | None |
+| Root cause analysis | `docs/chatgpt-engineering-task-rules.md` | None |
+| Technical research | `docs/chatgpt-engineering-task-rules.md` | None |
+| Operations manual or SOP | `docs/chatgpt-engineering-task-rules.md` | None |
+| Prompt review | `docs/chatgpt-engineering-task-rules.md` | None |
+| Security review | `docs/chatgpt-engineering-task-rules.md` | None |
 | General answer calibration | Core Runtime only | `docs/chatgpt-transfer-instructions.md`; optional `docs/fable5-pattern-bank-for-chatgpt.md` |
 | One-shot copy/paste setup | `docs/chatgpt-5.5-all-in-one-instructions.md` | None |
 

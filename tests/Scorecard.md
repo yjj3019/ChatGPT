@@ -9,5 +9,6 @@ Score observable behavior, not similarity to any model's wording.
 - User output contract
 - Proportionality
 - Long-context constraint retention
+- Task-specific contract completeness
 
 Compare the existing pack, revised pack, and any external-model reference separately. Human-defined rubrics are the gold criteria; an external model output is not a gold answer.

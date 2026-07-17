@@ -15,7 +15,21 @@ REQUIRED = [
     "docs/chatgpt-5.5-project-instructions.md",
     "docs/chatgpt-operational-integrity-rules.md",
     "docs/chatgpt-coding-rules.md",
+    "docs/chatgpt-engineering-task-rules.md",
 ]
+EXPECTED_TASKS = {
+    "Coding/debugging",
+    "Proposal consistency review",
+    "Technical blog post",
+    "Architecture review",
+    "Root cause analysis",
+    "Technical research",
+    "Operations manual or SOP",
+    "Prompt review",
+    "Security review",
+    "General answer calibration",
+    "One-shot copy/paste setup",
+}
 
 
 def validate_inlined_runtime(errors: list[str]) -> None:
@@ -31,6 +45,34 @@ def validate_inlined_runtime(errors: list[str]) -> None:
         errors.append("CHATGPT.md inlined Core Runtime is out of sync; run python scripts/sync_runtime.py")
 
 
+def validate_task_loading_map(errors: list[str]) -> None:
+    if not ENTRY.is_file():
+        return
+    text = ENTRY.read_text(encoding="utf-8-sig")
+    if "## Task Loading Map" not in text:
+        errors.append("CHATGPT.md: missing Task Loading Map section")
+        return
+    table = text.split("## Task Loading Map", 1)[1].split("\n## ", 1)[0]
+    tasks = []
+    for line in table.splitlines():
+        if not line.startswith("|") or "---" in line or "Task Type" in line:
+            continue
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) != 3:
+            errors.append(f"CHATGPT.md: invalid task-map row with {len(cells)} columns: {line}")
+            continue
+        tasks.append(cells[0])
+    duplicates = sorted({task for task in tasks if tasks.count(task) > 1})
+    if duplicates:
+        errors.append(f"CHATGPT.md: duplicate task-map rows: {', '.join(duplicates)}")
+    missing = sorted(EXPECTED_TASKS - set(tasks))
+    extra = sorted(set(tasks) - EXPECTED_TASKS)
+    if missing:
+        errors.append(f"CHATGPT.md: missing task-map rows: {', '.join(missing)}")
+    if extra:
+        errors.append(f"CHATGPT.md: unexpected task-map rows: {', '.join(extra)}")
+
+
 def main() -> int:
     errors = []
     for rel in REQUIRED:
@@ -38,6 +80,7 @@ def main() -> int:
             errors.append(f"missing required file: {rel}")
 
     validate_inlined_runtime(errors)
+    validate_task_loading_map(errors)
 
     for source in [*ROOT.glob("*.md"), *(ROOT / "docs").glob("*.md"), *(ROOT / "prompts").glob("*.md"), *(ROOT / "tests").glob("*.md")]:
         text = source.read_text(encoding="utf-8-sig")

@@ -19,10 +19,11 @@ Start every new ChatGPT project/session by reading `CHATGPT.md` first. Treat `CH
 - `docs/chatgpt-operational-integrity-rules.md` — file, tool, freshness, completion, and proportionality rules.
 - `docs/chatgpt-proposal-review-rules.md` — proposal consistency review behavior.
 - `docs/chatgpt-blog-rules.md` — technical blog behavior.
+- `docs/chatgpt-engineering-task-rules.md` — architecture, RCA, research, operations manual, prompt review, and security review contracts.
 - `docs/chatgpt-transfer-instructions.md` — full combined guide.
 - `docs/chatgpt-5.5-all-in-one-instructions.md` — single-paste fallback version.
 - `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.
-- `tests/GoldenTest-015.md` through `tests/GoldenTest-023.md` — Operational Integrity regression scenarios.
+- `tests/GoldenTest-015.md` through `tests/GoldenTest-024.md` — Operational Integrity and task-routing regression scenarios.
 
 ## Recommended Use
 
