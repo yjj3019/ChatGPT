@@ -4,6 +4,8 @@ import re
 import sys
 from pathlib import Path
 
+from sync_runtime import synchronized_text
+
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "CHATGPT.md"
 PATH_RE = re.compile(r"`((?:(?:docs|prompts|tests)/[^`]+|(?:CHATGPT|AGENTS|README))\.md)`")
@@ -16,11 +18,26 @@ REQUIRED = [
 ]
 
 
+def validate_inlined_runtime(errors: list[str]) -> None:
+    if not ENTRY.is_file():
+        return
+    text = ENTRY.read_text(encoding="utf-8-sig")
+    try:
+        expected = synchronized_text(text)
+    except ValueError as error:
+        errors.append(str(error))
+        return
+    if text != expected:
+        errors.append("CHATGPT.md inlined Core Runtime is out of sync; run python scripts/sync_runtime.py")
+
+
 def main() -> int:
     errors = []
     for rel in REQUIRED:
         if not (ROOT / rel).is_file():
             errors.append(f"missing required file: {rel}")
+
+    validate_inlined_runtime(errors)
 
     for source in [*ROOT.glob("*.md"), *(ROOT / "docs").glob("*.md"), *(ROOT / "prompts").glob("*.md"), *(ROOT / "tests").glob("*.md")]:
         text = source.read_text(encoding="utf-8-sig")

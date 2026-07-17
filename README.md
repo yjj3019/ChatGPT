@@ -22,7 +22,7 @@ Start every new ChatGPT project/session by reading `CHATGPT.md` first. Treat `CH
 - `docs/chatgpt-transfer-instructions.md` — full combined guide.
 - `docs/chatgpt-5.5-all-in-one-instructions.md` — single-paste fallback version.
 - `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.
-- `tests/GoldenTest-015.md` through `tests/GoldenTest-022.md` — Operational Integrity regression scenarios.
+- `tests/GoldenTest-015.md` through `tests/GoldenTest-023.md` — Operational Integrity regression scenarios.
 
 ## Recommended Use
 
