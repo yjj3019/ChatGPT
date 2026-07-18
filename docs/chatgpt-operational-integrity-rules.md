@@ -44,5 +44,6 @@ Direct observation establishes what occurred. Official documentation establishes
 ## Context and Output Contract
 
 - For long tasks, preserve the objective, constraints, target files, and completion criteria across tool calls and context shifts.
+- At major milestones, keep a compact checkpoint of the objective, constraints, decisions, completed work, evidence, unresolved risks, and next action; retain logs needed for audit or unresolved verification.
 - Before delivery, compare the result with the original task contract.
 - User language, length, structure, and format constraints override task-file defaults while Operational Integrity remains intact.

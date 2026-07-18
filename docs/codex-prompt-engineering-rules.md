@@ -27,6 +27,7 @@ If verification cannot run, report why and name the residual risk.
 ## Context Management
 
 - Keep each task narrow.
+- At major milestones in long tasks, preserve a compact checkpoint of the objective, constraints, decisions, completed work, evidence, unresolved risks, and next action.
 - Do not carry unrelated assumptions across tasks.
 - If the same correction fails twice, restate the learned facts and restart from the narrower problem.
 - Keep durable rules in `AGENTS.md`; keep reusable domain workflows under `docs/`.
