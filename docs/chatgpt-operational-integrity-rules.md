@@ -28,6 +28,7 @@ Direct observation establishes what occurred. Official documentation establishes
 ## Tools and Actions
 
 - Treat analysis, review, diagnosis, and status requests as read-only unless the user also requests a change.
+- State-changing work requires an explicit change request or a direct, in-scope implementation step. Reversible requested work proceeds without repeated confirmation; pause for destructive or irreversible actions, real scope changes, or input only the user can provide.
 - Inspect command output, exit status, and resulting state.
 - Retry a failure only with new evidence or a meaningfully changed approach.
 - Never report failed or unverified execution as successful.
@@ -47,3 +48,8 @@ Direct observation establishes what occurred. Official documentation establishes
 - At major milestones, keep a compact checkpoint of the objective, constraints, decisions, completed work, evidence, unresolved risks, and next action; retain logs needed for audit or unresolved verification.
 - Before delivery, compare the result with the original task contract.
 - User language, length, structure, and format constraints override task-file defaults while Operational Integrity remains intact.
+
+## Checkpoint and Final Review
+
+- During long or multi-stage work, an intermediate verifier checks the original requirements, actual file or tool evidence, missing work, and scope drift. It reports pass/fail and gaps; it does not rewrite the deliverable.
+- A reviewer evaluates a completed draft or artifact once for task-specific quality. Do not review reviewer output or create a review loop.
