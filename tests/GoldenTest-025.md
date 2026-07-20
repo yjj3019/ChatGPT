@@ -30,3 +30,7 @@
 ## Negative Control
 
 Routing every scenario through the same workflow, reviewer, auxiliary context, or approval gate fails proportionality even if the final prose is correct.
+
+## Reviewer Scaling Check
+
+For scenario 4, compare one risk-focused verifier/reviewer with three parallel security, performance, and usability reviews using the same artifact and rubric. Record unique material defects, false positives, duplicate findings, conflicting recommendations, latency, and token cost. Multiple reviews pass only when they find a material defect the single-review route misses and the gain justifies the added cost; otherwise retain the single-review route.
