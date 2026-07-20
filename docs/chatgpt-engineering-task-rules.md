@@ -2,6 +2,12 @@
 
 Load only the section matching the current task. Apply the Core Runtime for evidence, freshness, file, tool, and completion behavior.
 
+## Execution Shape
+
+Use one context for small, sequential, tightly coupled work. Split independent research, repository scans, or comparisons into separate auxiliary contexts only when that reduces real work, then aggregate once. Use peer collaboration only when participants must exchange evidence or challenge competing hypotheses; do not use it for ordinary sequential delegation. Classify stable, repeated, externally triggered, or unattended procedures as external automation rather than prompt workflows.
+
+Keep confirmed environment-specific workarounds as project lessons with evidence and a removal condition. Do not promote a lesson into permanent runtime rules until repeated failures justify it, and update existing guidance instead of duplicating it.
+
 ## Architecture Review
 
 Evaluate problem fit, availability, reliability, scalability, performance, security, compliance, maintainability, operability, disaster recovery, cost, vendor lock-in, migration complexity, and rollback feasibility.
