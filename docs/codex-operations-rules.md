@@ -58,6 +58,16 @@ Use a compact record:
 
 Do not log raw conversation, raw MCP payloads, long diffs, secrets, or full generated artifacts.
 
+For durable operational knowledge, label the record when status affects reuse:
+
+- `Canonical`: current verified default
+- `Operational`: verified only in the named environment
+- `Historical`: retained as evidence; do not execute
+- `Replaced`: follow the named successor
+- `Draft`: requires verification before operational use
+
+When a record is superseded, preserve its evidence and name the replacement instead of silently treating both as current.
+
 ## Pipeline Patterns
 
 - Separate design/review from execution for large or high-risk work.
