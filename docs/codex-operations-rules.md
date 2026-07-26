@@ -30,6 +30,7 @@ This file consolidates generally useful operational patterns:
 - Treat skills as workflow routers: load only the relevant references, scripts, and templates.
 - For custom/reusable workflows, document trigger, inputs, dependencies, output path, and verification.
 - Do not install or create a new skill for a one-off task.
+- Before adopting an external skill or plugin, review source ownership, maintenance activity, license, requested permissions, external communication, secret handling, and prompt-injection exposure. Smoke-test it in isolation and record its version and removal path.
 
 ## Remote Operations
 
@@ -62,11 +63,21 @@ For durable operational knowledge, label the record when status affects reuse:
 
 - `Canonical`: current verified default
 - `Operational`: verified only in the named environment
+- `Project-specific`: do not copy into general configuration
 - `Historical`: retained as evidence; do not execute
 - `Replaced`: follow the named successor
 - `Draft`: requires verification before operational use
+- `Snapshot`: dated inventory; re-check current state before use
 
 When a record is superseded, preserve its evidence and name the replacement instead of silently treating both as current.
+
+For reusable settings and procedures:
+
+- Assign each subject to one owning document. Keep executable values only there and replace duplicates with links.
+- Treat duplicated executable configuration as drift, not as a precedence problem.
+- Keep design intent separate from observed deployment state. Record observations with environment, scope, date, and verification evidence.
+- Do not promote a Draft to Operational until deployment and the smallest representative smoke test succeed.
+- Before declaring a behavior active or absent, inspect applicable global and project instructions, environment variables, agent or skill frontmatter, plugins and hooks, and external automation triggers.
 
 ## Pipeline Patterns
 
@@ -94,7 +105,7 @@ When a record is superseded, preserve its evidence and name the replacement inst
 
 ## Windows and PowerShell Notes
 
-- Save generated PowerShell scripts as UTF-8.
+- For Windows PowerShell 5.1, prefer ASCII scripts; when non-ASCII text is required, use UTF-8 with BOM and test the exact `-File` invocation.
 - Validate JSON after editing config-like files.
 - When parsing CLI JSON from PowerShell, join multiline output before `ConvertFrom-Json`.
 - Prefer non-blocking/cache-based status or telemetry helpers; do not let cosmetic telemetry slow task execution.
