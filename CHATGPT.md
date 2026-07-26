@@ -165,6 +165,7 @@ Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calib
 3. Do not load task files unrelated to the request.
 4. Use `docs/chatgpt-transfer-instructions.md` only when the user asks for the full combined guide.
 5. Use `docs/chatgpt-5.5-all-in-one-instructions.md` only when the user needs a single paste block, not for normal multi-file project use.
+6. Prefer the specific task object and intent over generic edit words such as `fix`, `error`, `오류`, or `수정`. For example, fixing an RCA report remains an RCA task, not a coding task.
 
 ## Instruction Precedence
 
