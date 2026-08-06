@@ -20,6 +20,8 @@ Start every new ChatGPT project/session by reading `CHATGPT.md` first. Treat `CH
 - `docs/chatgpt-proposal-review-rules.md` — proposal consistency review behavior.
 - `docs/chatgpt-blog-rules.md` — technical blog behavior.
 - `docs/chatgpt-engineering-task-rules.md` — architecture, RCA, research, operations manual, prompt review, and security review contracts.
+- `docs/chatgpt-domain-packs.md` — RHEL, OpenShift, Kubernetes, Linux, Ansible, Satellite, Enterprise Architecture, AI infrastructure, and Tesla/EV domain rules; load only the matching section alongside a task-type file.
+- `docs/chatgpt-knowledge-work-rules.md` — meeting notes, presentation, and executive summary structures.
 - `docs/chatgpt-transfer-instructions.md` — full combined guide.
 - `docs/chatgpt-5.5-all-in-one-instructions.md` — single-paste fallback version.
 - `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.

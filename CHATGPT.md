@@ -155,6 +155,8 @@ Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calib
 | Operations manual or SOP | `docs/chatgpt-engineering-task-rules.md` | None |
 | Prompt review | `docs/chatgpt-engineering-task-rules.md` | None |
 | Security review | `docs/chatgpt-engineering-task-rules.md` | None |
+| Meeting notes, presentation, or executive summary | `docs/chatgpt-knowledge-work-rules.md` | None |
+| RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic | `docs/chatgpt-domain-packs.md` (matching section only) | Combine with the task-type file above when both apply (e.g. an RHEL RCA loads `chatgpt-engineering-task-rules.md` plus the RHEL section of `chatgpt-domain-packs.md`) |
 | General answer calibration | Core Runtime only | `docs/chatgpt-transfer-instructions.md`; optional `docs/fable5-pattern-bank-for-chatgpt.md` |
 | One-shot copy/paste setup | `docs/chatgpt-5.5-all-in-one-instructions.md` | None |
 

@@ -27,6 +27,8 @@ EXPECTED_TASKS = {
     "Operations manual or SOP",
     "Prompt review",
     "Security review",
+    "Meeting notes, presentation, or executive summary",
+    "RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic",
     "General answer calibration",
     "One-shot copy/paste setup",
 }
