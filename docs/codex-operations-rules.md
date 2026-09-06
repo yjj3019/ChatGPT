@@ -23,6 +23,10 @@ This file consolidates generally useful operational patterns:
 - Prefer markdown/plain text summaries over dumping binary Office/PDF/HTML source into context.
 - If source material is noisy, flatten it to concise markdown before using it as long-lived context.
 
+
+## Model Selection
+
+- Pick Codex models per `docs/chatgpt-codex-model-routing.md` (user-approved roster: astra/sol/terra/luna/5.5/5.4-mini). Same Integrity and Context Budget on every model; escalate model when blocked — do not expand file load.
 ## Skill Use
 
 - Use an existing Codex skill when the task matches it.

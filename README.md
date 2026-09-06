@@ -21,6 +21,10 @@ Keep token load small and routing precise:
 
 See `CHATGPT.md` (Context Budget, Task Loading Map, Intent Classifier) and the lean Codex entry `AGENTS.md`.
 
+## Model Selection
+
+Recommended ChatGPT/Codex models (see `docs/chatgpt-codex-model-routing.md`): `gpt-6-astra` (complex), `gpt-5.6-sol` (everyday agentic), `gpt-5.6-terra` (everyday coding), `gpt-5.6-luna` (cheap/fast coding), `gpt-5.5` (legacy), `gpt-5.4-mini` (tiny). Routing + Context Budget keep a stable quality floor across all six — same Integrity and file loads on every model; escalate the model when blocked, do not dump extra docs.
+
 ## Start Here
 
 - `CHATGPT.md` — single runtime entry point. Use this as the main Project Instruction / Project Knowledge entry.
@@ -48,7 +52,7 @@ See `CHATGPT.md` (Context Budget, Task Loading Map, Intent Classifier) and the l
 - `docs/chatgpt-5.5-all-in-one-instructions.md` — single-paste fallback (one-shot only).
 - `docs/codex-*.md` — Codex team, subagent, office, prompt-engineering, and operations gates (load by task, not all at once).
 - `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.
-- `tests/GoldenTest-015.md` through `tests/GoldenTest-030.md` — Operational Integrity, task-routing, proportional-governance, knowledge-governance, context-budget, and section-scope regression scenarios.
+- `tests/GoldenTest-015.md` through `tests/GoldenTest-031.md` — Operational Integrity, task-routing, proportional-governance, knowledge-governance, context-budget, section-scope, and model-routing regression scenarios.
 
 ## Codex Use
 
@@ -74,7 +78,7 @@ python3 scripts/measure_load.py
 ```
 
 - `sync_runtime.py` — regenerates the inlined Core Runtime in `CHATGPT.md` from the two canonical docs.
-- `validate_framework.py` — structure, sync, Task Loading Map, path existence, Context Budget sections, entry size caps (`CHATGPT.md` ≤ 13800 bytes, `AGENTS.md` ≤ 4000 bytes), Autoload never-require heavy files, Golden Tests 015–030.
+- `validate_framework.py` — structure, sync, Task Loading Map, path existence, Context Budget sections, entry size caps (`CHATGPT.md` ≤ 14500 bytes, `AGENTS.md` ≤ 4200 bytes), Autoload never-require heavy files, Golden Tests 015–031.
 - `measure_load.py` — per task type, prints required file bytes and rough token estimate (bytes/4), plus section-aware estimates for engineering-task and domain-packs.
 
 ## Training Rounds (instruction-pack closed loop)

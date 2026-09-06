@@ -16,6 +16,7 @@ Lean Codex entry: apply Core Runtime invariants, load the smallest mapped task f
   - `docs/fable5-pattern-bank-for-chatgpt.md`
 - **Domain packs:** matching section of `docs/chatgpt-domain-packs.md` only — never all sections.
 - **Anti-pattern:** do not load all `docs/codex-*.md` at once.
+- **Model routing:** load `docs/chatgpt-codex-model-routing.md` only when selecting a Codex model or the user asks; defaults coding→terra, everyday agentic→sol, complex→astra, cheap→luna/mini. Same Integrity/Budget/Map on every model — escalate model, do not expand context.
 
 ## Instruction Precedence
 
@@ -55,6 +56,7 @@ Report conflicts that affect the task.
 | Skills, remote ops, logging, security/improvement gates, MCP budget | `docs/codex-operations-rules.md` |
 | Full combined guide (user asks) | `docs/chatgpt-transfer-instructions.md` |
 | One-shot paste setup only | `docs/chatgpt-5.5-all-in-one-instructions.md` |
+| Model selection / routing advice | `docs/chatgpt-codex-model-routing.md` |
 
 Optional one-shot calibration only when the map row allows: `docs/fable5-pattern-bank-for-chatgpt.md`.
 

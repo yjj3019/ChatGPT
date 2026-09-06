@@ -32,6 +32,10 @@ For each task:
 - **Domain packs:** load the matching section of `docs/chatgpt-domain-packs.md` only.
 - **Anti-pattern:** do not load all `docs/codex-*.md` at once.
 
+## Model Selection
+
+Load `docs/chatgpt-codex-model-routing.md` only when choosing/switching models or user asks for model advice — never every turn. Defaults: complex→`gpt-6-astra`; everyday agentic→`gpt-5.6-sol`; everyday coding→`gpt-5.6-terra`; cheap/fast→`gpt-5.6-luna`; legacy→`gpt-5.5`; tiny→`gpt-5.4-mini`. **Model-invariant floor:** same Core, Integrity, Budget, Map, output contract on every model; escalate model when blocked/risk rises — never expand context to compensate.
+
 ## Core Runtime
 
 The Core Runtime is inlined below so a single Project Instructions file enforces it. The files `docs/chatgpt-5.5-project-instructions.md` and `docs/chatgpt-operational-integrity-rules.md` remain canonical; edit them and run `python3 scripts/sync_runtime.py` rather than editing the generated block.
@@ -158,6 +162,7 @@ Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calib
 | RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic | matching section **only** of `docs/chatgpt-domain-packs.md` (never all sections) | Combine with the task-type file (matching section) when both apply — e.g. RHEL RCA → engineering RCA section + RHEL section |
 | General answer calibration | Core Runtime only | `docs/chatgpt-transfer-instructions.md`; optional `docs/fable5-pattern-bank-for-chatgpt.md` |
 | One-shot copy/paste setup | `docs/chatgpt-5.5-all-in-one-instructions.md` | None |
+| Model selection / routing advice | `docs/chatgpt-codex-model-routing.md` | None |
 
 ## Intent Classifier
 
@@ -173,6 +178,7 @@ Pick one primary task type from the object of the request (deliverable), then lo
 | Domain (RHEL/OCP/K8s/…) | named platform/product **plus** a task above | **Never** load all domain sections — only the one matching section of `docs/chatgpt-domain-packs.md`, combined with the task-type file when both apply |
 | Engineering multi-section file | architecture / RCA / research / SOP / prompt review / security review | load **matching section only** of `docs/chatgpt-engineering-task-rules.md`, not every section |
 | General / simple Q&A | short factual or definitional question | do not load transfer / all-in-one / fable5 |
+| Model selection | which/switch model, astra/sol/terra/luna, Codex picker, model advice | never every turn; same Map/Budget/Integrity on all models |
 
 ## Selection Rules
 
