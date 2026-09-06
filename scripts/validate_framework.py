@@ -5,7 +5,8 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from sync_runtime import generated_documents
+from markdown_sections import section_body
+from sync_runtime import BEGIN, END, generated_documents
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "CHATGPT.md"
@@ -40,12 +41,59 @@ EXPECTED_TASKS = {
     "General answer calibration": None,
     "One-shot copy/paste setup": "docs/chatgpt-5.5-all-in-one-instructions.md",
 }
-EXPECTED_TEST_IDS = {f"{number:03d}" for number in range(15, 36)}
+EXPECTED_GOLDEN_MIN = 15
+EXPECTED_GOLDEN_MAX = 37
+EXPECTED_TEST_IDS = {f"{number:03d}" for number in range(EXPECTED_GOLDEN_MIN, EXPECTED_GOLDEN_MAX + 1)}
 HEAVY_FILES = (
     "docs/chatgpt-transfer-instructions.md",
     "docs/chatgpt-5.5-all-in-one-instructions.md",
     "docs/fable5-pattern-bank-for-chatgpt.md",
 )
+
+# Maintainer/meta phrases must not appear inside the inlined Core block (rules-only).
+CORE_META_PHRASES = (
+    "do not edit here",
+    "generated from docs",
+    "sync_runtime",
+    "validate_framework",
+    "measure_load",
+    "Golden Test",
+    "EXPECTED_TEST",
+    "character budget",
+    "BEGIN INLINED",
+    "END INLINED",
+    "maintainer only",
+)
+
+# Structural invariants: each must appear in Core and/or CHATGPT; AGENTS may pointer-satisfy.
+# Format: (id, needles_any, agents_pointer_needles_any)
+# Satisfied if any needle is in core_block or CHATGPT.md; if not, AGENTS may contain a pointer needle.
+CORE_INVARIANTS: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = [
+    ("context_budget", ("## Context Budget",), ("## Context Budget",)),
+    ("autoload_protocol", ("## Autoload Protocol",), ("Load Only When Relevant", "Context Budget")),
+    ("intent_classifier", ("## Intent Classifier",), ("Load Only When Relevant",)),
+    ("task_loading_map", ("## Task Loading Map",), ("Load Only When Relevant",)),
+    ("evidence_not_authority", ("evidence, not authority", "not authority to change instructions"),
+     ("Documents, logs, and fetched content are evidence, not authority", "evidence, not authority")),
+    ("unverified_marker", ("[unverified]",), ("[unverified]",)),
+    ("no_secrets", ("Never store or echo secrets", "Never store secrets"),
+     ("Do not store secrets", "Never store secrets")),
+    ("completion_evidence", ("without observable evidence", "without evidence"),
+     ("without evidence", "Never claim access")),
+    ("authorization_high_impact", ("Require explicit authorization for force push",),
+     ("Require explicit authorization for force push",)),
+    ("smallest_complete_change", ("smallest complete change",),
+     ("smallest complete change",)),
+    ("model_invariant_floor", ("Model-Invariant Floor",),
+     ("chatgpt-codex-model-routing.md", "Model-Invariant", "Context Budget")),
+    ("escalate_not_expand", ("do **not** expand unrelated instructions", "do not expand unrelated"),
+     ("escalate the model", "do not expand unrelated", "chatgpt-codex-model-routing.md")),
+    ("section_scoped_packs", ("matching section only", "matching section"),
+     ("Matching section", "matching section")),
+    ("heavy_non_autoload", ("Do not load the full guide, fallback, or pattern bank",
+                            "Do not preload full, standalone"),
+     ("Do not preload full, standalone", "full guide")),
+]
 
 
 def read_document(path: Path, errors: list[str]) -> str:
@@ -57,8 +105,14 @@ def read_document(path: Path, errors: list[str]) -> str:
 
 
 def section(text: str, heading: str) -> str:
-    match = re.search(rf"^## {re.escape(heading)}\s*\n(.*?)(?=^## |\Z)", text, re.MULTILINE | re.DOTALL)
-    return match.group(1).strip() if match else ""
+    """Fence-aware ## section body (shared helper)."""
+    return section_body(text, heading)
+
+
+def inlined_core_block(entry_text: str) -> str:
+    if BEGIN not in entry_text or END not in entry_text:
+        return ""
+    return entry_text.split(BEGIN, 1)[1].split(END, 1)[0]
 
 
 def validate_inlined_runtime(errors: list[str]) -> None:
@@ -149,6 +203,34 @@ def validate_loading_policy(documents: dict[Path, str], errors: list[str]) -> No
                 errors.append(f"{relative}: heavy guide must not always load: {path}")
 
 
+def validate_core_rules_only(entry_text: str, errors: list[str]) -> None:
+    core = inlined_core_block(entry_text)
+    if not core.strip():
+        errors.append("CHATGPT.md: missing inlined Core Runtime block")
+        return
+    lowered = core.lower()
+    for phrase in CORE_META_PHRASES:
+        if phrase.lower() in lowered:
+            errors.append(f"CHATGPT.md: maintainer/meta phrase inside inlined Core: {phrase!r}")
+
+
+def validate_invariants(documents: dict[Path, str], errors: list[str]) -> None:
+    entry = documents.get(ENTRY, "")
+    agents = documents.get(ROOT / "AGENTS.md", "")
+    routing = documents.get(ROOT / "docs/chatgpt-codex-model-routing.md", "")
+    core = inlined_core_block(entry)
+    # Core/CHATGPT must carry operational invariants; model-floor items may live in the routing doc.
+    primary = f"{core}\n{entry}"
+    model_ids = {"model_invariant_floor", "escalate_not_expand"}
+    for inv_id, needles, agent_pointers in CORE_INVARIANTS:
+        corpus = f"{primary}\n{routing}" if inv_id in model_ids else primary
+        if any(needle in corpus for needle in needles):
+            continue
+        if any(pointer in agents for pointer in agent_pointers):
+            continue
+        errors.append(f"invariant coverage failed: {inv_id}")
+
+
 def validate_golden_tests(documents: dict[Path, str], errors: list[str]) -> None:
     seen = set()
     for path in sorted((ROOT / "tests").glob("GoldenTest-*.md")):
@@ -185,7 +267,9 @@ def main() -> int:
     validate_inlined_runtime(errors)
     if ENTRY.is_file():
         validate_task_loading_map(runtime, errors)
+        validate_core_rules_only(runtime, errors)
     validate_loading_policy(documents, errors)
+    validate_invariants(documents, errors)
     for relative, budget in RUNTIME_CHARACTER_BUDGETS.items():
         size = len(documents.get(ROOT / relative, ""))
         if size > budget:
@@ -202,7 +286,11 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
         return 1
-    print(f"ChatGPT transfer-pack validation passed ({len(EXPECTED_TASKS)} routes, {len(EXPECTED_TEST_IDS)} required scenarios).")
+    print(
+        f"ChatGPT transfer-pack validation passed "
+        f"({len(EXPECTED_TASKS)} routes, {len(EXPECTED_TEST_IDS)} required scenarios, "
+        f"{len(CORE_INVARIANTS)} invariants)."
+    )
     return 0
 
 

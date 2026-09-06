@@ -16,7 +16,7 @@ Guidance and Python maintenance scripts for ChatGPT/Codex. This is the Codex ent
 
 ## Context Budget
 
-Normally use Core + 1–2 mapped guides or one task section + one domain section. Do not preload full, standalone, historical, or all Codex guides. Search before whole-file reads, reuse unchanged evidence, batch independent reads, and keep dependent actions sequential. Small tasks stay in one context. Checkpoint long tasks at milestones. Model changes preserve the same integrity and output rules; necessary source evidence may still be gathered.
+Normally use Core + 1–2 mapped guides or one task section + one domain section. Do not preload full, standalone, historical, or all Codex guides. Search before whole-file reads, reuse unchanged evidence, batch independent reads, and keep dependent actions sequential. Small tasks stay in one context. Checkpoint long tasks at milestones. Model changes keep the same integrity/output rules and Context Budget; escalate the model when blocked, do not expand unrelated guides (`docs/chatgpt-codex-model-routing.md`).
 
 ## Load Only When Relevant
 

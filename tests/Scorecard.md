@@ -43,3 +43,14 @@ Any fabricated access/execution/publication, secret exposure, unauthorized destr
 | Decision | Keep/revise/revert and remaining risk |
 
 Do not write raw conversations or sensitive payloads to this public repository. Keep sanitized evidence or a private evidence reference. Five editing rounds are not five statistical trials or model fine-tuning.
+
+
+## Simulation Protocol
+
+Use structured repository simulations to catch routing, load, sync, and parser defects without fabricating host-model quality scores.
+
+1. Design at least 10 scenarios covering Core-only Q&A, coding, RCA, domain+task section scope, proposal/blog, model routing, weak-model escalation (escalate model, not context), heavy-guide non-autoload, sync `--check` drift on a temp copy, and fence-aware `##` section parsing.
+2. For each scenario record intent, expected loads (files/sections), expected model tier from `docs/chatgpt-codex-model-routing.md`, mechanical checks (`validate_framework.py`, `measure_load.py`, section parse, `sync_runtime.py --check`), and PASS/FAIL/PARTIAL with issue IDs.
+3. Score **structural/routing/load outcomes** only. If a rubric score is invented for prioritization, label it as a simulation rubric — not host model quality. Do not invent behavioral /100 scores without a stated method.
+4. Derive P0/P1 defects from failures/partials, implement fixes, re-run mechanical checks, and keep Context Budget + model-invariant floor intact.
+5. File the dated report under docs/ (name pattern simulation-N-report-YYYY-MM-DD.md) and keep a workspace copy when used. Reference: `docs/simulation-10-report-2026-09-06.md`.
