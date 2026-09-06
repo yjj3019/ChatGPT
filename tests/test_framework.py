@@ -209,6 +209,43 @@ class FrameworkCommandsTest(unittest.TestCase):
         (self.root / "CHATGPT.md").unlink()
         self.assert_failure(self.run_script("validate_framework.py"), "missing required file: CHATGPT.md")
 
+    def test_missing_context_budget_is_rejected(self):
+        self.rewrite("AGENTS.md", "## Context Budget", "## Unrecognized Heading")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing or empty Context Budget")
+
+    def test_missing_intent_classifier_is_rejected(self):
+        self.rewrite("CHATGPT.md", "## Intent Classifier", "## Unrecognized Heading")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing or empty Intent Classifier")
+
+    def test_forced_heavy_autoload_is_rejected(self):
+        self.rewrite("CHATGPT.md", "## Autoload Protocol", "## Autoload Protocol\n\nAlways load `docs/chatgpt-transfer-instructions.md` for every task.")
+        self.assert_failure(self.run_script("validate_framework.py"), "heavy guide must not always load")
+
+    def test_measurement_does_not_double_count_standalone_core(self):
+        result = self.run_script("measure_load.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        row = next(line for line in result.stdout.splitlines() if line.startswith("One-shot copy/paste setup"))
+        size = len((self.root / "docs/chatgpt-5.5-all-in-one-instructions.md").read_text(encoding="utf-8-sig").encode("utf-8"))
+        self.assertEqual(int(row.split()[3]), size)
+        self.assertIn("not actual usage", result.stdout)
+
+    def test_measurement_missing_input_fails(self):
+        (self.root / "docs/chatgpt-coding-rules.md").unlink()
+        self.assert_failure(self.run_script("measure_load.py"), "Load estimate failed")
+
+    def test_measurement_missing_section_fails(self):
+        self.rewrite("docs/chatgpt-engineering-task-rules.md", "## Root Cause Analysis", "## Unknown Section")
+        self.assert_failure(self.run_script("measure_load.py"), "missing section")
+
+    def test_measurement_uses_normalized_bytes(self):
+        before = self.run_script("measure_load.py")
+        path = self.root / "docs/chatgpt-5.5-project-instructions.md"
+        text = path.read_text(encoding="utf-8-sig")
+        path.write_bytes(bytes([0xEF, 0xBB, 0xBF]) + text.replace("\n", "\r\n").encode("utf-8"))
+        after = self.run_script("measure_load.py")
+        self.assertEqual(after.returncode, 0, after.stdout + after.stderr)
+        self.assertEqual(before.stdout, after.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,8 @@
 # ChatGPT Domain Packs
 
-Load only the section matching the current task's technology domain. Apply the Core Runtime for evidence, freshness, file, tool, and completion behavior on top of the domain rules below.
+**Load scope:** read only the single `##` section matching the current task's technology domain. Never autoload all sections. Combine with the matching task-type file section when both apply. Apply Core Runtime for evidence, freshness, file, tool, and completion on top of the domain rules below.
+
+Section anchors: `RHEL` · `OpenShift` · `Kubernetes` · `Linux` · `Ansible` · `Satellite` · `Enterprise Architecture` · `AI Infrastructure` · `Tesla / EV Operations`.
 
 ## RHEL
 

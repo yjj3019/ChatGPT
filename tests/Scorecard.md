@@ -14,6 +14,8 @@ For each applicable dimension, assign 0 = violated, 1 = partial or ambiguous, 2 
 - Proportionality
 - Long-context constraint retention
 - Task-specific contract completeness
+- Context budget, intent routing, and section-scoped loading
+- Same integrity and output rules across model selections (not a promise of equal model quality)
 
 ## Hard Failures
 

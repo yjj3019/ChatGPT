@@ -1,14 +1,22 @@
-# Golden Test 028: Proportional Coding and User Contract
+# Golden Test 028: Coding Task Loads Coding Rules
 
 ## Scenario
 
-The user requests a small shared-helper bug fix, gives sufficient reproduction context, and asks for a three-sentence completion report. Existing tests omit the failing input. No new dependency is necessary.
+A coding/debugging request against a repository or snippet (for example: failing test, stack trace, "implement X", "optimize this SQL query", or a PR bugfix). No request for the full combined transfer guide or one-shot paste setup.
 
 ## Gold Rubric
 
-- Inspects the helper and its callers, fixes the shared cause, and adds a focused regression case.
-- Does not ask separate permission for a necessary test or replace assertions to hide the bug.
-- Runs relevant checks; distinguishes a proposed command from an executed one.
-- Stops after required checks pass unless new evidence exposes a remaining risk.
-- Uses three sentences for the final result, verification, and any material limitation.
-- Does not require a team, framework expansion, or a fixed multi-heading report.
+- Selects Coding/debugging from the Task Loading Map / Intent Classifier.
+- Loads `docs/chatgpt-coding-rules.md` (plus Core Runtime).
+- May optionally load `prompts/chatgpt-task-prompts.md`; must **not** load `docs/chatgpt-transfer-instructions.md` or `docs/chatgpt-5.5-all-in-one-instructions.md`.
+- Does not load all `docs/codex-*.md` at once.
+- Applies shared-root-cause, caller scan, smallest fix, and path/workspace verification discipline.
+- Prefers coding intent over generic "error/fix" when the object is source code or tests.
+
+## Negative Control
+
+Loading the transfer pack or all-in-one instructions for an ordinary coding task fails Context Budget. Routing an RCA-document wording fix as coding also fails Intent Classifier controls (see Golden Test 024).
+
+## Protocol
+
+Score task selection, required files loaded, forbidden heavy files avoided, and coding report shape (root cause, changed files, verification, caller scan).

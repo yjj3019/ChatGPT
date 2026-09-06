@@ -36,10 +36,16 @@ EXPECTED_TASKS = {
     "Security review": "docs/chatgpt-engineering-task-rules.md",
     "Meeting notes, presentation, or executive summary": "docs/chatgpt-knowledge-work-rules.md",
     "RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic": "docs/chatgpt-domain-packs.md",
+    "Model selection / routing advice": "docs/chatgpt-codex-model-routing.md",
     "General answer calibration": None,
     "One-shot copy/paste setup": "docs/chatgpt-5.5-all-in-one-instructions.md",
 }
-EXPECTED_TEST_IDS = {f"{number:03d}" for number in range(15, 31)}
+EXPECTED_TEST_IDS = {f"{number:03d}" for number in range(15, 36)}
+HEAVY_FILES = (
+    "docs/chatgpt-transfer-instructions.md",
+    "docs/chatgpt-5.5-all-in-one-instructions.md",
+    "docs/fable5-pattern-bank-for-chatgpt.md",
+)
 
 
 def read_document(path: Path, errors: list[str]) -> str:
@@ -128,6 +134,21 @@ def validate_references(source: Path, text: str, errors: list[str]) -> None:
                 errors.append(f"{source.relative_to(ROOT)}:{line_number} references missing file: {relative}")
 
 
+def validate_loading_policy(documents: dict[Path, str], errors: list[str]) -> None:
+    for relative, headings in {
+        "CHATGPT.md": ("Autoload Protocol", "Context Budget", "Intent Classifier"),
+        "AGENTS.md": ("Context Budget",),
+    }.items():
+        text = documents.get(ROOT / relative, "")
+        for heading in headings:
+            if not section(text, heading):
+                errors.append(f"{relative}: missing or empty {heading}")
+        policy = section(text, "Autoload Protocol") + "\n" + section(text, "Context Budget")
+        for path in HEAVY_FILES:
+            if re.search(rf"(?is)always\s+(?:read|load|apply).{{0,80}}{re.escape(path)}", policy):
+                errors.append(f"{relative}: heavy guide must not always load: {path}")
+
+
 def validate_golden_tests(documents: dict[Path, str], errors: list[str]) -> None:
     seen = set()
     for path in sorted((ROOT / "tests").glob("GoldenTest-*.md")):
@@ -164,6 +185,7 @@ def main() -> int:
     validate_inlined_runtime(errors)
     if ENTRY.is_file():
         validate_task_loading_map(runtime, errors)
+    validate_loading_policy(documents, errors)
     for relative, budget in RUNTIME_CHARACTER_BUDGETS.items():
         size = len(documents.get(ROOT / relative, ""))
         if size > budget:

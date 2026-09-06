@@ -190,7 +190,9 @@ Use for technical blog drafts, outlines, and reviews.
 
 # ChatGPT Engineering Task Rules
 
-Load only the section matching the current task. Apply the Core Runtime for evidence, freshness, file, tool, and completion behavior.
+**Load scope:** read only the `##` section that matches the current task (plus `## Execution Shape` when multi-context/automation guidance is needed). Do not load every section for a single task. Apply Core Runtime for evidence, freshness, file, tool, and completion behavior.
+
+Section anchors: `Architecture Review` · `Root Cause Analysis` · `Technical Research` · `Operations Manual or SOP` · `Prompt Review` · `Security Review`.
 
 ## Execution Shape
 
@@ -276,7 +278,9 @@ Default flow: Situation, Problem, Impact, Proposed Direction, Architecture, Bene
 
 # ChatGPT Domain Packs
 
-Load only the section matching the current task's technology domain. Apply the Core Runtime for evidence, freshness, file, tool, and completion behavior on top of the domain rules below.
+**Load scope:** read only the single `##` section matching the current task's technology domain. Never autoload all sections. Combine with the matching task-type file section when both apply. Apply Core Runtime for evidence, freshness, file, tool, and completion on top of the domain rules below.
+
+Section anchors: `RHEL` · `OpenShift` · `Kubernetes` · `Linux` · `Ansible` · `Satellite` · `Enterprise Architecture` · `AI Infrastructure` · `Tesla / EV Operations`.
 
 ## RHEL
 

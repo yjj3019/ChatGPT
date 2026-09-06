@@ -2,12 +2,16 @@
 
 Use this as the ChatGPT Project entry point. Read it when available at session start; files do not automatically persist memory or change model weights.
 
-## Loading Protocol
+## Autoload Protocol
 
 1. Apply the inlined Core Runtime. Simple low-risk tasks need no supporting file.
 2. For substantial tasks, select the smallest matching task section below; add a domain section only when relevant.
 3. Reuse instructions already in context. Do not load the full guide, fallback, or pattern bank during normal use.
 4. If a workflow guide is unavailable, disclose that limit and proceed using the Core when safe. If essential source evidence, an explicitly required template, or authorization is missing, pause only the dependent work and request what is needed. Never pretend a file was loaded.
+
+## Context Budget
+
+Normally use Core + 1–2 mapped guides or one task section + one domain section. Do not preload full, standalone, historical, or all Codex guides. Model changes do not relax evidence or output rules.
 
 ## Core Runtime
 
@@ -76,9 +80,9 @@ Apply these checks in proportion to the task.
 
 | Task Type | Required Files | Optional Files |
 |---|---|---|
-| Coding/debugging | `docs/chatgpt-coding-rules.md` | `prompts/chatgpt-task-prompts.md` |
-| Proposal consistency review | `docs/chatgpt-proposal-review-rules.md` | `prompts/chatgpt-task-prompts.md` |
-| Technical blog post | `docs/chatgpt-blog-rules.md` | `prompts/chatgpt-task-prompts.md` |
+| Coding/debugging | `docs/chatgpt-coding-rules.md` | None |
+| Proposal consistency review | `docs/chatgpt-proposal-review-rules.md` | None |
+| Technical blog post | `docs/chatgpt-blog-rules.md` | None |
 | Architecture review | `docs/chatgpt-engineering-task-rules.md` | None |
 | Root cause analysis | `docs/chatgpt-engineering-task-rules.md` | None |
 | Technical research | `docs/chatgpt-engineering-task-rules.md` | None |
@@ -86,12 +90,14 @@ Apply these checks in proportion to the task.
 | Prompt review | `docs/chatgpt-engineering-task-rules.md` | None |
 | Security review | `docs/chatgpt-engineering-task-rules.md` | None |
 | Meeting notes, presentation, or executive summary | `docs/chatgpt-knowledge-work-rules.md` | None |
-| RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic | `docs/chatgpt-domain-packs.md` (matching section only) | Combine with the task-type file above when both apply (e.g. an RHEL RCA loads `chatgpt-engineering-task-rules.md` plus the RHEL section of `chatgpt-domain-packs.md`) |
-| General answer calibration | Core Runtime only | `docs/chatgpt-transfer-instructions.md`; optional `docs/fable5-pattern-bank-for-chatgpt.md` |
+| RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic | `docs/chatgpt-domain-packs.md` (matching section only) | Combine with the primary task row |
+| Model selection / routing advice | `docs/chatgpt-codex-model-routing.md` | None |
+| General answer calibration | Core Runtime only | None |
 | One-shot copy/paste setup | `docs/chatgpt-5.5-all-in-one-instructions.md` | None |
 
-## Selection Rules
+## Intent Classifier
 
+- Choose the primary deliverable; use its task row and only matching engineering/domain sections.
 - Route by task object and intent, not generic words such as fix, error, 오류, or 수정. Fixing an RCA report remains RCA.
 - User output constraints override task templates under the host's instruction hierarchy.
 - The full guide and single-paste fallback are alternative setups, not extra runtime layers.

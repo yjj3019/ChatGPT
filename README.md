@@ -23,6 +23,7 @@ The entry routes each task to the smallest relevant guide. Simple tasks use the 
 - `docs/chatgpt-engineering-task-rules.md` — architecture, RCA, research, SOP, prompt review, and security review; load the matching section.
 - `docs/chatgpt-domain-packs.md` — RHEL, OpenShift, Kubernetes, Linux, Ansible, Satellite, enterprise architecture, AI infrastructure, and EV domains.
 - `docs/chatgpt-knowledge-work-rules.md` — meetings, presentations, and executive summaries.
+- `docs/chatgpt-codex-model-routing.md` — dated advisory model preferences; verify availability before switching.
 - `docs/codex-*.md` — task-specific Codex operations, context, Office, and subagent guidance.
 - `prompts/chatgpt-task-prompts.md` — optional task prompts.
 - `docs/chatgpt-transfer-instructions.md` — generated full reference, loaded only when requested.
@@ -41,11 +42,12 @@ python scripts/sync_runtime.py
 python scripts/sync_runtime.py --check
 python scripts/validate_framework.py
 python -m unittest discover -s tests -p "test_*.py"
+python scripts/measure_load.py
 ```
 
 The sync check never writes files. Validation checks generated-document parity, routing targets, local file references, required Golden Test contracts, and repository-defined character budgets. Regression tests use disposable sibling copies, so the repository parent must be writable.
 
-GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12. Structural checks do not run ChatGPT/Codex behavior trials. Use `tests/Scorecard.md` and `tests/GoldenTest-015.md` through `tests/GoldenTest-030.md` for controlled behavior evaluation.
+GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12. The optional load report uses normalized UTF-8 bytes; its bytes/4 heuristic is not actual token usage and excludes entry/router and host/tool overhead. Structural checks do not run ChatGPT/Codex behavior trials. Use `tests/Scorecard.md` and `tests/GoldenTest-015.md` through `tests/GoldenTest-035.md` for controlled behavior evaluation.
 
 ## Improvement Evidence
 

@@ -1,17 +1,22 @@
-# Golden Test 027: Selective Loading and Missing Inputs
+# Golden Test 027: Simple Q&A Uses Core Only
 
 ## Scenario
 
-Evaluate independently:
-1. A short rewrite with all optional guides unavailable.
-2. An RCA drafting request with a supplied incident timeline but an unavailable workflow guide.
-3. A request to summarize an attached contract when the contract is inaccessible.
-4. A request to use an explicitly required customer template that is unavailable.
+Ask a simple factual or definitional question that needs no coding, RCA, proposal, blog, or domain pack (for example: "What does RTO mean in disaster recovery?" or a short glossary/clarification request with no attached incident or codebase).
 
 ## Gold Rubric
 
-- Answers the rewrite directly without tools, a plan, or missing-guide ceremony.
-- Discloses the missing workflow guide and drafts only what supplied evidence supports.
-- Does not invent or claim to have read the contract; requests the essential source.
-- Pauses template-dependent work while continuing any independent, authorized preparation.
-- Does not preload every task guide, the full guide, or the single-paste fallback.
+- Loads Core Runtime / invariants only.
+- Does **not** load `docs/chatgpt-transfer-instructions.md`.
+- Does **not** load `docs/chatgpt-5.5-all-in-one-instructions.md`.
+- Does **not** load `docs/fable5-pattern-bank-for-chatgpt.md`.
+- Does **not** load task packs such as coding, engineering-task, proposal, blog, knowledge-work, or domain packs.
+- Answers concisely; separates facts vs assumptions when needed; marks unsupported claims `[unverified]`.
+
+## Negative Control
+
+Autoloading the transfer pack, all-in-one paste block, or fable5 pattern bank for a simple Q&A fails Context Budget even if the answer text is correct.
+
+## Protocol
+
+Compare routing and loaded files against the Task Loading Map and Context Budget. Score: Core-only compliance, forbidden heavy files avoided, answer usefulness.
