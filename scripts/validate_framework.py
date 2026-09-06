@@ -37,10 +37,10 @@ EXPECTED_TASKS = {
 def validate_inlined_runtime(errors: list[str]) -> None:
     if not ENTRY.is_file():
         return
-    text = ENTRY.read_text(encoding="utf-8-sig")
     try:
+        text = ENTRY.read_text(encoding="utf-8-sig")
         expected = synchronized_text(text)
-    except ValueError as error:
+    except (OSError, UnicodeError, ValueError) as error:
         errors.append(str(error))
         return
     if text != expected:

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Synchronize the generated Core Runtime block in CHATGPT.md."""
+import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,7 +30,24 @@ def synchronized_text(text: str) -> str:
 
 
 def main() -> int:
-    ENTRY.write_text(synchronized_text(ENTRY.read_text(encoding="utf-8-sig")), encoding="utf-8")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="report drift without writing files")
+    args = parser.parse_args()
+    try:
+        current = ENTRY.read_text(encoding="utf-8-sig")
+        expected = synchronized_text(current)
+        if args.check:
+            if current != expected:
+                print("CHATGPT.md is out of sync; run python scripts/sync_runtime.py")
+                return 1
+            print("Generated runtime is in sync.")
+            return 0
+        encoded = expected.encode("utf-8")
+        if ENTRY.read_bytes() != encoded:
+            ENTRY.write_bytes(encoded)
+    except (OSError, UnicodeError, ValueError) as error:
+        print(f"Runtime synchronization failed: {error}")
+        return 1
     print("Synchronized CHATGPT.md inlined Core Runtime.")
     return 0
 
