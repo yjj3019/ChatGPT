@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "CHATGPT.md"
 PATH_RE = re.compile(r"`((?:(?:docs|prompts|tests)/[^`]+|(?:CHATGPT|AGENTS|README))\.md)`")
 TEST_RE = re.compile(r"^# Golden Test (\d{3}):", re.MULTILINE)
+# Repository maintenance budgets, not claims about model token or product limits.
+RUNTIME_CHARACTER_BUDGETS = {"CHATGPT.md": 8000}
 REQUIRED = [
     "CHATGPT.md",
     "docs/chatgpt-5.5-project-instructions.md",
@@ -83,6 +85,13 @@ def main() -> int:
 
     validate_inlined_runtime(errors)
     validate_task_loading_map(errors)
+
+    for relative, budget in RUNTIME_CHARACTER_BUDGETS.items():
+        path = ROOT / relative
+        if path.is_file():
+            size = len(path.read_text(encoding="utf-8-sig"))
+            if size > budget:
+                errors.append(f"{relative}: character budget exceeded ({size} > {budget})")
 
     for source in [*ROOT.glob("*.md"), *(ROOT / "docs").glob("*.md"), *(ROOT / "prompts").glob("*.md"), *(ROOT / "tests").glob("*.md")]:
         text = source.read_text(encoding="utf-8-sig")
