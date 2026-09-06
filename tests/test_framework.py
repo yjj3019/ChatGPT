@@ -110,6 +110,105 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.assert_failure(self.run_script("sync_runtime.py"), "marker pair")
         self.assertEqual(entry.read_bytes(), before)
 
+    def test_required_route_cannot_be_empty_or_wrong(self):
+        for required in ("None", "`docs/chatgpt-blog-rules.md`"):
+            with self.subTest(required=required):
+                entry = self.root / "CHATGPT.md"
+                original = entry.read_text(encoding="utf-8")
+                self.rewrite("CHATGPT.md", "| Coding/debugging | `docs/chatgpt-coding-rules.md` |",
+                             f"| Coding/debugging | {required} |")
+                self.assert_failure(self.run_script("validate_framework.py"), "incorrect required route")
+                entry.write_text(original, encoding="utf-8")
+
+    def test_duplicate_route_is_rejected(self):
+        entry = self.root / "CHATGPT.md"
+        text = entry.read_text(encoding="utf-8")
+        row = next(line for line in text.splitlines() if line.startswith("| Coding/debugging |"))
+        self.rewrite("CHATGPT.md", row, row + "\n" + row)
+        self.assert_failure(self.run_script("validate_framework.py"), "duplicate task-map rows")
+
+    def test_missing_route_is_rejected(self):
+        entry = self.root / "CHATGPT.md"
+        row = next(line for line in entry.read_text(encoding="utf-8").splitlines() if line.startswith("| Coding/debugging |"))
+        self.rewrite("CHATGPT.md", row, "")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing task-map rows")
+
+    def test_missing_golden_test_is_rejected(self):
+        (self.root / "tests/GoldenTest-016.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 016")
+
+    def test_empty_golden_rubric_is_rejected(self):
+        path = self.root / "tests/GoldenTest-015.md"
+        prefix = path.read_text(encoding="utf-8-sig").split("## Gold Rubric", 1)[0]
+        path.write_text(prefix + "## Gold Rubric\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing or empty Gold Rubric")
+
+    def test_empty_golden_scenario_is_rejected(self):
+        path = self.root / "tests/GoldenTest-015.md"
+        path.write_text("# Golden Test 015: Example\n\n## Scenario\n\n## Gold Rubric\n- Evidence\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing or empty Scenario")
+
+    def test_multiple_golden_headers_are_rejected(self):
+        path = self.root / "tests/GoldenTest-015.md"
+        path.write_text(path.read_text(encoding="utf-8-sig") + "\n# Golden Test 099: Duplicate\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "expected one Golden Test ID header")
+
+    def test_golden_filename_must_match_header(self):
+        self.rewrite("tests/GoldenTest-015.md", "# Golden Test 015:", "# Golden Test 099:")
+        self.assert_failure(self.run_script("validate_framework.py"), "filename/header mismatch")
+
+    def test_missing_inline_reference_is_rejected(self):
+        path = self.root / "README.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\n`scripts/missing.py`\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "references missing file: scripts/missing.py")
+
+    def test_missing_markdown_link_is_rejected(self):
+        path = self.root / "README.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\n[Missing](docs/missing.md)\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "references missing file: docs/missing.md")
+
+    def test_relative_markdown_link_is_supported(self):
+        (self.root / "docs/link-check.md").write_text("[Entry](../CHATGPT.md#core-runtime)\n", encoding="utf-8")
+        result = self.run_script("validate_framework.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_malformed_url_is_reported_without_traceback(self):
+        (self.root / "docs/link-check.md").write_text("[Bad](https://[broken)\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "invalid link")
+
+    def test_invalid_local_path_is_reported_without_traceback(self):
+        (self.root / "docs/link-check.md").write_text("[Bad](missing\x00file.md)\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "invalid file reference")
+
+    def test_reference_cannot_leave_repository(self):
+        (self.root / "docs/link-check.md").write_text("[Outside](../../outside.md)\n", encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "reference leaves repository")
+
+    def test_invalid_utf8_is_reported_without_traceback(self):
+        (self.root / "README.md").write_bytes(bytes([0xFF]))
+        self.assert_failure(self.run_script("validate_framework.py"), "cannot read document")
+
+    def test_bom_and_crlf_sources_do_not_create_drift(self):
+        path = self.root / "docs/chatgpt-5.5-project-instructions.md"
+        text = path.read_text(encoding="utf-8-sig")
+        path.write_bytes(bytes([0xEF, 0xBB, 0xBF]) + text.replace("\n", "\r\n").encode("utf-8"))
+        result = self.run_script("sync_runtime.py", "--check")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_duplicate_and_reversed_markers_are_rejected(self):
+        entry = self.root / "CHATGPT.md"
+        original = entry.read_text(encoding="utf-8")
+        begin = next(line for line in original.splitlines() if line.startswith("<!-- BEGIN INLINED"))
+        end = "<!-- END INLINED CORE RUNTIME -->"
+        for text in (original + "\n" + begin, original.replace(begin, "TEMP").replace(end, begin).replace("TEMP", end)):
+            with self.subTest(text=text[:30]):
+                entry.write_text(text, encoding="utf-8")
+                self.assert_failure(self.run_script("sync_runtime.py", "--check"), "marker pair")
+
+    def test_missing_entry_is_reported_without_traceback(self):
+        (self.root / "CHATGPT.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required file: CHATGPT.md")
+
 
 if __name__ == "__main__":
     unittest.main()

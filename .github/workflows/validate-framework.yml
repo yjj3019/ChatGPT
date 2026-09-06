@@ -7,12 +7,24 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - run: python scripts/validate_framework.py
+          python-version: ${{ matrix.python-version }}
+      - run: python -X utf8 -m unittest discover -s tests -p "test_*.py"
+      - run: python -X utf8 scripts/sync_runtime.py --check
+      - run: python -X utf8 scripts/validate_framework.py
