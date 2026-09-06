@@ -43,6 +43,11 @@ class FrameworkCommandsTest(unittest.TestCase):
         entry.write_text("x" * 8000 + "\n" + entry.read_text(encoding="utf-8"), encoding="utf-8")
         self.assert_failure(self.run_script("validate_framework.py"), "character budget exceeded")
 
+    def test_codex_growth_exceeding_budget_fails(self):
+        entry = self.root / "AGENTS.md"
+        entry.write_text("x" * 4001, encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "AGENTS.md: character budget exceeded")
+
     def test_missing_core_file_is_reported_without_traceback(self):
         (self.root / "docs/chatgpt-5.5-project-instructions.md").unlink()
         self.assert_failure(self.run_script("validate_framework.py"), "missing required file")
