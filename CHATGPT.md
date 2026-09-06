@@ -9,19 +9,32 @@ This file is the single runtime entry point for the ChatGPT transfer pack. It co
 ## Session Memory Bootstrap
 
 At the start of a new ChatGPT project/session, read this `CHATGPT.md` first and treat its instructions as persistent working memory for the session. Then load the referenced project files according to the Autoload Protocol below. This is project-level memory bootstrap, not model fine-tuning or hidden memory mutation.
+
 ## Autoload Protocol
 
 For each task:
 
 1. Always apply the inlined Core Runtime below.
 2. For simple low-risk questions, answer with Core Runtime only.
-3. For substantial tasks, use the Task Loading Map below.
-4. Read only the files named for the task type.
+3. For substantial tasks, use the Task Loading Map below and respect the Context Budget.
+4. Read only the files named for the task type (smallest set that answers accurately).
 5. If a selected file is missing from the project/context, stop and report the missing file. Do not silently substitute another file.
+6. Never autoload `docs/chatgpt-transfer-instructions.md`, `docs/chatgpt-5.5-all-in-one-instructions.md`, or `docs/fable5-pattern-bank-for-chatgpt.md` unless the Task Loading Map row for that exact task allows it.
+
+## Context Budget
+
+- **Simple Q&A:** Core Runtime / invariants only.
+- **Substantial tasks:** Core + at most 1–2 mapped task files (or 1 task file + one domain section).
+- **Never autoload** unless the Task Loading Map row for that exact task allows it:
+  - `docs/chatgpt-transfer-instructions.md`
+  - `docs/chatgpt-5.5-all-in-one-instructions.md`
+  - `docs/fable5-pattern-bank-for-chatgpt.md`
+- **Domain packs:** load the matching section of `docs/chatgpt-domain-packs.md` only.
+- **Anti-pattern:** do not load all `docs/codex-*.md` at once.
 
 ## Core Runtime
 
-The Core Runtime is inlined below so a single Project Instructions file enforces it. The files `docs/chatgpt-5.5-project-instructions.md` and `docs/chatgpt-operational-integrity-rules.md` remain canonical; edit them and run `python scripts/sync_runtime.py` rather than editing the generated block.
+The Core Runtime is inlined below so a single Project Instructions file enforces it. The files `docs/chatgpt-5.5-project-instructions.md` and `docs/chatgpt-operational-integrity-rules.md` remain canonical; edit them and run `python3 scripts/sync_runtime.py` rather than editing the generated block.
 
 <!-- BEGIN INLINED CORE RUNTIME (generated from docs/ — do not edit here) -->
 # ChatGPT 5.5 Project Instructions
@@ -140,7 +153,7 @@ Direct observation establishes what occurred. Official documentation establishes
 - A reviewer evaluates a completed draft or artifact once for task-specific quality. Do not review reviewer output or create a review loop.
 <!-- END INLINED CORE RUNTIME -->
 
-Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calibration material.
+Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calibration material when a Task Loading Map row explicitly allows it.
 
 ## Task Loading Map
 
@@ -160,10 +173,24 @@ Load `docs/fable5-pattern-bank-for-chatgpt.md` only as optional historical calib
 | General answer calibration | Core Runtime only | `docs/chatgpt-transfer-instructions.md`; optional `docs/fable5-pattern-bank-for-chatgpt.md` |
 | One-shot copy/paste setup | `docs/chatgpt-5.5-all-in-one-instructions.md` | None |
 
+## Intent Classifier
+
+Use keywords and object intent to pick one primary task type, then load the smallest mapped set. Prefer the specific deliverable over generic verbs (`fix`, `error`, `오류`, `수정`, `optimize`).
+
+| Intent | Positive cues | Negative / do-not-route-here |
+|---|---|---|
+| Coding/debugging | code, patch, PR, stack trace, failing test, SQL query, implement, refactor source | fixing an RCA/proposal/blog document; “error” in a report |
+| Root cause analysis | RCA, incident, outage, 장애 원인, why did X fail, timeline + contributing factors | “fix the bug in this repo”; proposal wording fixes |
+| Proposal review | proposal, RFP, sales deck, consistency review, requirement coverage | blog draft; code review |
+| Technical blog | blog post, article outline, practitioner write-up | proposal/RFP; internal RCA |
+| Knowledge work | meeting notes, presentation, executive summary, briefing | deep engineering RCA; coding |
+| Domain (RHEL/OCP/K8s/…) | named platform/product domain + task above | load domain section only with the matching task-type file |
+| General / simple Q&A | short factual or definitional question | do not load transfer/all-in-one/fable5 |
+
 ## Selection Rules
 
 1. Start with the user task, not the available files.
-2. Load the smallest set that can answer accurately.
+2. Load the smallest set that can answer accurately (Context Budget).
 3. Do not load task files unrelated to the request.
 4. Use `docs/chatgpt-transfer-instructions.md` only when the user asks for the full combined guide.
 5. Use `docs/chatgpt-5.5-all-in-one-instructions.md` only when the user needs a single paste block, not for normal multi-file project use.
@@ -182,13 +209,7 @@ If a conflict appears, follow the higher-priority instruction and report the con
 
 ## Runtime Rules
 
-- Do not claim hidden Fable5 reasoning transfer.
-- Treat this as observable behavior calibration only.
-- Keep facts, assumptions, and open questions separate when it matters.
-- Mark unsupported factual claims as `[unverified]`.
-- Do not claim a file was read, an action ran, or an artifact was completed without observable evidence.
-- For non-trivial work, complete every applicable analysis, execution, verification, and limitation-reporting stage before declaring completion.
-- For coding, prefer shared-root-cause fixes and verify the requested path/workspace.
-- For external-facing documents, run one final consistency pass.
+Core Runtime (inlined above) is authoritative for evidence, completion, coding, review, and freshness. Keep only these pack-level reminders:
 
-
+- Do not claim hidden Fable5 reasoning transfer; treat this as observable behavior calibration only.
+- Follow Context Budget and the Task Loading Map; do not autoload transfer/all-in-one/fable5 outside an explicit map row.
