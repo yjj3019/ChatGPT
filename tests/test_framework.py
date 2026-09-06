@@ -68,6 +68,31 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual((entry.read_bytes(), entry.stat().st_mtime_ns), before)
 
+    def test_fallback_drift_is_detected(self):
+        self.rewrite("docs/chatgpt-5.5-all-in-one-instructions.md", "# ChatGPT", "# Modified ChatGPT")
+        self.assert_failure(self.run_script("validate_framework.py"), "out of sync")
+
+    def test_full_guide_drift_is_detected(self):
+        self.rewrite("docs/chatgpt-transfer-instructions.md", "# ChatGPT", "# Modified ChatGPT")
+        self.assert_failure(self.run_script("sync_runtime.py", "--check"), "out of sync")
+
+    def test_changed_rule_reaches_all_generated_documents(self):
+        rule = "Unique regression rule for canonical ownership."
+        source = self.root / "docs/chatgpt-5.5-project-instructions.md"
+        source.write_text(source.read_text(encoding="utf-8") + "\n" + rule + "\n", encoding="utf-8")
+        self.assertEqual(self.run_script("sync_runtime.py").returncode, 0)
+        for relative in ("CHATGPT.md", "docs/chatgpt-5.5-all-in-one-instructions.md", "docs/chatgpt-transfer-instructions.md"):
+            self.assertEqual((self.root / relative).read_text(encoding="utf-8").count(rule), 1)
+
+    def test_missing_source_does_not_partially_write_generated_documents(self):
+        (self.root / "docs/chatgpt-blog-rules.md").unlink()
+        paths = [self.root / relative for relative in (
+            "CHATGPT.md", "docs/chatgpt-5.5-all-in-one-instructions.md", "docs/chatgpt-transfer-instructions.md",
+        )]
+        before = [path.read_bytes() for path in paths]
+        self.assert_failure(self.run_script("sync_runtime.py"), "synchronization failed")
+        self.assertEqual([path.read_bytes() for path in paths], before)
+
     def test_sync_is_idempotent_and_preserves_surrounding_text(self):
         entry = self.root / "CHATGPT.md"
         entry.write_text("before\n" + entry.read_text(encoding="utf-8") + "\nafter\n", encoding="utf-8")

@@ -4,14 +4,17 @@ import re
 import sys
 from pathlib import Path
 
-from sync_runtime import synchronized_text
+from sync_runtime import generated_documents
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "CHATGPT.md"
 PATH_RE = re.compile(r"`((?:(?:docs|prompts|tests)/[^`]+|(?:CHATGPT|AGENTS|README))\.md)`")
 TEST_RE = re.compile(r"^# Golden Test (\d{3}):", re.MULTILINE)
 # Repository maintenance budgets, not claims about model token or product limits.
-RUNTIME_CHARACTER_BUDGETS = {"CHATGPT.md": 8000, "AGENTS.md": 4000}
+RUNTIME_CHARACTER_BUDGETS = {
+    "CHATGPT.md": 8000, "AGENTS.md": 4000,
+    "docs/chatgpt-5.5-all-in-one-instructions.md": 8000,
+}
 REQUIRED = [
     "CHATGPT.md",
     "AGENTS.md",
@@ -41,13 +44,12 @@ def validate_inlined_runtime(errors: list[str]) -> None:
     if not ENTRY.is_file():
         return
     try:
-        text = ENTRY.read_text(encoding="utf-8-sig")
-        expected = synchronized_text(text)
+        for path, expected in generated_documents().items():
+            if not path.is_file() or path.read_text(encoding="utf-8-sig") != expected:
+                errors.append(f"{path.relative_to(ROOT)} is out of sync; run python scripts/sync_runtime.py")
     except (OSError, UnicodeError, ValueError) as error:
         errors.append(str(error))
         return
-    if text != expected:
-        errors.append("CHATGPT.md inlined Core Runtime is out of sync; run python scripts/sync_runtime.py")
 
 
 def validate_task_loading_map(errors: list[str]) -> None:
