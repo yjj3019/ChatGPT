@@ -1,94 +1,56 @@
-# ChatGPT Transfer Pack
+# ChatGPT and Codex Transfer Pack
 
-ChatGPT-oriented instructions distilled from the FEF/Fable-style transfer work.
+Model-independent instructions for engineering, writing, and evidence-backed completion. This repository changes working guidance; it does not train model weights or copy hidden reasoning.
 
-## Memory Bootstrap
+## Choose One Entry Point
 
-Start every new ChatGPT project/session by reading `CHATGPT.md` first. Treat `CHATGPT.md` as the persistent working-memory bootstrap, then let it route the task to the smallest needed supporting files.
+| Use | Entry |
+|---|---|
+| ChatGPT Project | Put `CHATGPT.md` in Project Instructions and make the relevant `docs/` files available as project knowledge. |
+| Codex | Start Codex in this repository so it can load `AGENTS.md`. |
+| Standalone copy/paste | Use `docs/chatgpt-5.5-all-in-one-instructions.md` for Core, coding, proposal review, and blog tasks. |
 
-## Context Budget
+Read the chosen entry when available at session start. Files do not create automatic cross-session memory. Keep existing higher-priority workspace rules when adopting this pack.
 
-Keep token load small and routing precise:
+The entry routes each task to the smallest relevant guide. Simple tasks use the Core alone. Full and standalone guides are alternatives, not extra layers to load on every task.
 
-- **Simple Q&A:** Core Runtime / invariants only.
-- **Substantial tasks:** Core + at most 1–2 mapped task files (or 1 task file + one domain section).
-- **Never autoload** unless the Task Loading Map row for that exact task allows it:
-  - `docs/chatgpt-transfer-instructions.md`
-  - `docs/chatgpt-5.5-all-in-one-instructions.md`
-  - `docs/fable5-pattern-bank-for-chatgpt.md`
-- **Domain packs:** load the matching section only.
-- **Anti-pattern:** do not load all `docs/codex-*.md` at once.
+## Focused Guides
 
-See `CHATGPT.md` (Context Budget, Task Loading Map, Intent Classifier) and the lean Codex entry `AGENTS.md`.
+- `docs/chatgpt-5.5-project-instructions.md` — canonical task/output and effort rules.
+- `docs/chatgpt-operational-integrity-rules.md` — canonical authority, evidence, actions, and completion rules.
+- `docs/chatgpt-coding-rules.md` — implementation, debugging, and review.
+- `docs/chatgpt-proposal-review-rules.md` and `docs/chatgpt-blog-rules.md` — document-specific contracts.
+- `docs/chatgpt-engineering-task-rules.md` — architecture, RCA, research, SOP, prompt review, and security review; load the matching section.
+- `docs/chatgpt-domain-packs.md` — RHEL, OpenShift, Kubernetes, Linux, Ansible, Satellite, enterprise architecture, AI infrastructure, and EV domains.
+- `docs/chatgpt-knowledge-work-rules.md` — meetings, presentations, and executive summaries.
+- `docs/chatgpt-codex-model-routing.md` — dated advisory model preferences; verify availability before switching.
+- `docs/codex-*.md` — task-specific Codex operations, context, Office, and subagent guidance.
+- `prompts/chatgpt-task-prompts.md` — optional task prompts.
+- `docs/chatgpt-transfer-instructions.md` — generated full reference, loaded only when requested.
+- `docs/fable5-pattern-bank-for-chatgpt.md` — optional historical calibration.
 
-## Model Selection
+Historical filenames containing 5.5 are retained for compatibility; they do not require that model.
 
-Recommended ChatGPT/Codex models (see `docs/chatgpt-codex-model-routing.md`): `gpt-6-astra` (complex), `gpt-5.6-sol` (everyday agentic), `gpt-5.6-terra` (everyday coding), `gpt-5.6-luna` (cheap/fast coding), `gpt-5.5` (legacy), `gpt-5.4-mini` (tiny). Routing + Context Budget keep a stable quality floor across all six — same Integrity and file loads on every model; escalate the model when blocked, do not dump extra docs.
+## Maintain and Verify
 
-## Start Here
+Python 3.11+ and the standard library; no package installation, API key, or model call is needed for repository checks.
 
-- `CHATGPT.md` — single runtime entry point. Use this as the main Project Instruction / Project Knowledge entry.
-- `AGENTS.md` — Codex runtime entry point. Use this repository as the working root when you want Codex to apply the included guidance automatically.
+Edit canonical source documents, then regenerate the three distribution documents:
 
-## Recommended Project Setup
-
-1. Add `CHATGPT.md` and the needed `docs/` / `prompts/` files to ChatGPT Project knowledge (prefer the mapped task files you actually use; you do not need the heavy transfer/all-in-one/fable5 files for normal multi-file use).
-2. Paste `CHATGPT.md` into Project Instructions when only one instruction field is available.
-3. Let Autoload Protocol + Task Loading Map + Intent Classifier select the smallest file set per task.
-4. After editing canonical Core sources (`docs/chatgpt-5.5-project-instructions.md`, `docs/chatgpt-operational-integrity-rules.md`), run `python3 scripts/sync_runtime.py` — never hand-edit the generated Core block in `CHATGPT.md`.
-
-## Files
-
-- `docs/chatgpt-5.5-project-instructions.md` — core ChatGPT 5.5 project behavior (canonical).
-- `docs/chatgpt-operational-integrity-rules.md` — file, tool, freshness, completion, and proportionality rules (canonical).
-- `docs/fable5-pattern-bank-for-chatgpt.md` — optional historical calibration only (map-gated).
-- `docs/chatgpt-coding-rules.md` — coding/debug behavior.
-- `docs/chatgpt-proposal-review-rules.md` — proposal consistency review behavior.
-- `docs/chatgpt-blog-rules.md` — technical blog behavior.
-- `docs/chatgpt-engineering-task-rules.md` — architecture, RCA, research, operations manual, prompt review, and security review contracts.
-- `docs/chatgpt-domain-packs.md` — RHEL, OpenShift, Kubernetes, Linux, Ansible, Satellite, Enterprise Architecture, AI infrastructure, and Tesla/EV domain rules; load only the matching section alongside a task-type file.
-- `docs/chatgpt-knowledge-work-rules.md` — meeting notes, presentation, and executive summary structures.
-- `docs/chatgpt-transfer-instructions.md` — full combined guide (user asks / map-gated).
-- `docs/chatgpt-5.5-all-in-one-instructions.md` — single-paste fallback (one-shot only).
-- `docs/codex-*.md` — Codex team, subagent, office, prompt-engineering, and operations gates (load by task, not all at once).
-- `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.
-- `tests/GoldenTest-015.md` through `tests/GoldenTest-031.md` — Operational Integrity, task-routing, proportional-governance, knowledge-governance, context-budget, section-scope, and model-routing regression scenarios.
-
-## Codex Use
-
-```powershell
-git clone https://github.com/yjj3019/ChatGPT.git
-cd ChatGPT
+```text
+python scripts/sync_runtime.py
+python scripts/sync_runtime.py --check
+python scripts/validate_framework.py
+python -m unittest discover -s tests -p "test_*.py"
+python scripts/measure_load.py
 ```
 
-Start Codex from this directory, or set this directory as the workspace root. Codex will read `AGENTS.md`, which points to the supporting `docs/codex-*.md` guidance files under Context Budget.
+The sync check never writes files. Validation checks generated-document parity, routing targets, local file references, required Golden Test contracts, and repository-defined character budgets. Regression tests use disposable sibling copies, so the repository parent must be writable.
 
-## Boundary
+GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12. The optional load report uses normalized UTF-8 bytes; its bytes/4 heuristic is not actual token usage and excludes entry/router and host/tool overhead. Structural checks do not run ChatGPT/Codex behavior trials. Use `tests/Scorecard.md` and `tests/GoldenTest-015.md` through `tests/GoldenTest-035.md` for controlled behavior evaluation.
 
-This repository transfers observable working patterns. It does not claim to copy Fable5 internals or hidden reasoning.
+## Improvement Evidence
 
-## Validate and Measure
+See the [five-round improvement report](docs/optimization-report-2026-09-06.md) for the baseline, measured instruction reductions, validation results, and limitations.
 
-GitHub Actions runs the structure check on pushes and pull requests. Locally:
-
-```bash
-python3 scripts/sync_runtime.py
-python3 scripts/validate_framework.py
-python3 scripts/measure_load.py
-```
-
-- `sync_runtime.py` — regenerates the inlined Core Runtime in `CHATGPT.md` from the two canonical docs.
-- `validate_framework.py` — structure, sync, Task Loading Map, path existence, Context Budget sections, entry size caps (`CHATGPT.md` ≤ 14500 bytes, `AGENTS.md` ≤ 4200 bytes), Autoload never-require heavy files, Golden Tests 015–031.
-- `measure_load.py` — per task type, prints required file bytes and rough token estimate (bytes/4), plus section-aware estimates for engineering-task and domain-packs.
-
-## Training Rounds (instruction-pack closed loop)
-
-Five measure → change → validate rounds on branch `perf/context-budget-routing` (not ML training):
-
-1. **Core token diet** — slim canonical Core sources; `sync_runtime.py` regenerates inlined Core.
-2. **AGENTS lean** — cut duplicated pointers; keep Budget + map + hard gates.
-3. **Routing precision** — clearer Intent Classifier / Selection Rules; Golden Test 030 (domain section-only).
-4. **Load path efficiency** — section-scope banners on domain + engineering packs; section-aware `measure_load.py`.
-5. **Final polish** — recalibrated entry size caps; Scorecard + README updated.
-
-After edits to Core sources, always run `python3 scripts/sync_runtime.py` then validate + measure.
+The routing and effort choices align with official guidance on [AGENTS.md discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [selective skill loading](https://learn.chatgpt.com/docs/build-skills), and [proportional verification and instruction clarity](https://developers.openai.com/api/docs/guides/latest-model). Checked 2026-09-06; these are principles, not proof of a speed or accuracy gain.

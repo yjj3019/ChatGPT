@@ -1,14 +1,14 @@
 # ChatGPT / Codex Model Routing
 
-Authoritative roster and defaults (user-provided 2026-09-06). Load this file only when choosing or switching models, or when the user asks for model advice — never every turn.
+Repository model preferences (recorded 2026-09-06), advisory rather than a verified availability or performance guarantee. Load this file only when choosing or switching models, or when the user asks for model advice — never every turn.
 
-**Headline:** routing + Context Budget = a stable quality floor across all six models. Do not treat model choice as “pick the strongest”; deliver consistent performance and efficiency on every pick.
+**Use:** preserve the same working rules across model choices. Equal rules do not prove equal quality, speed, or cost; compare actual trials. Respect explicit user model choices and verify host availability and authorization before switching.
 
 ## Model Roster
 
 | Model ID | Role |
 |---|---|
-| `gpt-6-astra` | Most capable — complex, demanding work (current flagship) |
+| `gpt-6-astra` | Most capable — complex, demanding work (verify current availability) |
 | `gpt-5.6-sol` | Reliable agentic workhorse for everyday tasks |
 | `gpt-5.6-terra` | Balanced agentic coding for everyday work |
 | `gpt-5.6-luna` | Fast, affordable agentic coding |
@@ -23,7 +23,7 @@ Regardless of which model is selected (`gpt-6-astra` … `gpt-5.4-mini`):
 2. **Same Context Budget** — Core + ≤1–2 mapped files (or 1 task file + one domain section). Do not dump more docs onto weaker models to “compensate,” and do not dump more onto astra either.
 3. **Same Task Loading Map / Intent Classifier** — model choice does not change which files load.
 4. **Same output contract** — facts vs assumptions, `[unverified]`, smallest useful change, no fake completion claims.
-5. **Weaker models:** stay inside budget harder; escalate model (`mini` → `luna` → `terra` → `sol` → `astra`) when blocked twice or risk rises — do **not** expand context as a substitute.
+5. **Weaker models:** stay inside budget harder; escalate model (`mini` → `luna` → `terra` → `sol` → `astra`) when blocked twice or risk rises — do **not** expand unrelated instructions as a substitute; gather necessary task evidence.
 6. **Stronger models:** still obey budget; extra capacity goes to deeper reasoning within the same loaded set, not extra file loads.
 
 Core Runtime remains model-independent. Model choice does not relax Operational Integrity or Autoload Protocol.
@@ -58,7 +58,7 @@ When blocked twice on the same obstacle, or when task risk / ambiguity rises:
 
 `gpt-5.4-mini` → `gpt-5.6-luna` → `gpt-5.6-terra` → `gpt-5.6-sol` → `gpt-6-astra`
 
-Escalate one step at a time; do not jump to astra for a trivial miss. De-escalate when remaining work is clearly in a lower band. Escalation replaces context expansion — never both.
+Escalate one step at a time; do not jump to astra for a trivial miss. De-escalate when remaining work is clearly in a lower band. Avoid expanding unrelated instructions to compensate for model choice. Additional logs, source code, or other necessary evidence may still be gathered.
 
 ## Budget Pairing
 

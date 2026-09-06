@@ -1,274 +1,208 @@
 #!/usr/bin/env python3
-"""Validate the ChatGPT transfer-pack structure and context-budget gates."""
+"""Validate runtime synchronization, routing, references, budgets, and scenario contracts."""
 import re
 import sys
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
-from sync_runtime import synchronized_text
+from sync_runtime import generated_documents
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "CHATGPT.md"
-AGENTS = ROOT / "AGENTS.md"
-PATH_RE = re.compile(r"`((?:(?:docs|prompts|tests)/[^`]+|(?:CHATGPT|AGENTS|README))\.md)`")
+PATH_RE = re.compile(r"`((?:(?:docs|prompts|tests|scripts|\.github)/[^`\n]+|(?:CHATGPT|AGENTS|README)\.md))`")
+LINK_RE = re.compile(r"(?<!!)\[[^\]\n]+\]\(([^\s)]+)\)")
 TEST_RE = re.compile(r"^# Golden Test (\d{3}):", re.MULTILINE)
-
-# Context-budget entry size caps (bytes). Adjust slightly after intentional slim/expand;
-# keep CHATGPT lean enough for Project Instructions and AGENTS lean for Codex cold start.
-# Raised for model-routing pointer (docs/chatgpt-codex-model-routing.md) in entries.
-CHATGPT_MAX_BYTES = 14500
-AGENTS_MAX_BYTES = 4200
-
-# Never required by Autoload Protocol itself; only via explicit Task Loading Map rows
-# (optional / one-shot). Autoload must not mandate these for every task.
-HEAVY_NEVER_AUTOLOAD = (
-    "docs/chatgpt-transfer-instructions.md",
-    "docs/chatgpt-5.5-all-in-one-instructions.md",
-    "docs/fable5-pattern-bank-for-chatgpt.md",
-)
-
+# Repository maintenance budgets, not model token or product limits.
+RUNTIME_CHARACTER_BUDGETS = {
+    "CHATGPT.md": 8000, "AGENTS.md": 4000,
+    "docs/chatgpt-5.5-all-in-one-instructions.md": 8000,
+}
 REQUIRED = [
-    "CHATGPT.md",
-    "AGENTS.md",
+    "CHATGPT.md", "AGENTS.md", "README.md", "tests/Scorecard.md",
     "docs/chatgpt-5.5-project-instructions.md",
     "docs/chatgpt-operational-integrity-rules.md",
     "docs/chatgpt-coding-rules.md",
     "docs/chatgpt-engineering-task-rules.md",
 ]
 EXPECTED_TASKS = {
-    "Coding/debugging",
-    "Proposal consistency review",
-    "Technical blog post",
-    "Architecture review",
-    "Root cause analysis",
-    "Technical research",
-    "Operations manual or SOP",
-    "Prompt review",
-    "Security review",
-    "Meeting notes, presentation, or executive summary",
-    "RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic",
-    "General answer calibration",
-    "One-shot copy/paste setup",
-    "Model selection / routing advice",
+    "Coding/debugging": "docs/chatgpt-coding-rules.md",
+    "Proposal consistency review": "docs/chatgpt-proposal-review-rules.md",
+    "Technical blog post": "docs/chatgpt-blog-rules.md",
+    "Architecture review": "docs/chatgpt-engineering-task-rules.md",
+    "Root cause analysis": "docs/chatgpt-engineering-task-rules.md",
+    "Technical research": "docs/chatgpt-engineering-task-rules.md",
+    "Operations manual or SOP": "docs/chatgpt-engineering-task-rules.md",
+    "Prompt review": "docs/chatgpt-engineering-task-rules.md",
+    "Security review": "docs/chatgpt-engineering-task-rules.md",
+    "Meeting notes, presentation, or executive summary": "docs/chatgpt-knowledge-work-rules.md",
+    "RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic": "docs/chatgpt-domain-packs.md",
+    "Model selection / routing advice": "docs/chatgpt-codex-model-routing.md",
+    "General answer calibration": None,
+    "One-shot copy/paste setup": "docs/chatgpt-5.5-all-in-one-instructions.md",
 }
+EXPECTED_TEST_IDS = {f"{number:03d}" for number in range(15, 36)}
+HEAVY_FILES = (
+    "docs/chatgpt-transfer-instructions.md",
+    "docs/chatgpt-5.5-all-in-one-instructions.md",
+    "docs/fable5-pattern-bank-for-chatgpt.md",
+)
 
-# Golden tests 015–030 (inclusive) expected present after context-budget / routing suite.
-EXPECTED_GOLDEN_MIN = 15
-EXPECTED_GOLDEN_MAX = 31
+
+def read_document(path: Path, errors: list[str]) -> str:
+    try:
+        return path.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeError) as error:
+        errors.append(f"{path.relative_to(ROOT)}: cannot read document: {error}")
+        return ""
+
+
+def section(text: str, heading: str) -> str:
+    match = re.search(rf"^## {re.escape(heading)}\s*\n(.*?)(?=^## |\Z)", text, re.MULTILINE | re.DOTALL)
+    return match.group(1).strip() if match else ""
 
 
 def validate_inlined_runtime(errors: list[str]) -> None:
     if not ENTRY.is_file():
         return
-    text = ENTRY.read_text(encoding="utf-8-sig")
     try:
-        expected = synchronized_text(text)
-    except ValueError as error:
-        errors.append(str(error))
-        return
-    if text != expected:
-        errors.append("CHATGPT.md inlined Core Runtime is out of sync; run python3 scripts/sync_runtime.py")
+        for path, expected in generated_documents().items():
+            if not path.is_file() or read_document(path, errors) != expected:
+                errors.append(f"{path.relative_to(ROOT)} is out of sync; run python scripts/sync_runtime.py")
+    except (OSError, UnicodeError, ValueError) as error:
+        errors.append(f"generated runtime: {error}")
 
 
-def validate_task_loading_map(errors: list[str]) -> list[tuple[str, str, str]]:
-    rows: list[tuple[str, str, str]] = []
-    if not ENTRY.is_file():
-        return rows
-    text = ENTRY.read_text(encoding="utf-8-sig")
-    if "## Task Loading Map" not in text:
+def validate_task_loading_map(text: str, errors: list[str]) -> None:
+    table = section(text, "Task Loading Map")
+    if not table:
         errors.append("CHATGPT.md: missing Task Loading Map section")
-        return rows
-    table = text.split("## Task Loading Map", 1)[1].split("\n## ", 1)[0]
+        return
     tasks = []
     for line in table.splitlines():
-        if not line.startswith("|") or "---" in line or "Task Type" in line:
+        if not line.startswith("|"):
             continue
-        cells = [cell.strip() for cell in line.strip("|").split("|")]
-        if len(cells) != 3:
-            errors.append(f"CHATGPT.md: invalid task-map row with {len(cells)} columns: {line}")
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if cells[0] == "Task Type" or all(re.fullmatch(r":?-+:?", cell) for cell in cells):
             continue
-        tasks.append(cells[0])
-        rows.append((cells[0], cells[1], cells[2]))
+        if len(cells) != 3 or not all(cells):
+            errors.append(f"CHATGPT.md: invalid task-map row: {line}")
+            continue
+        task = cells[0]
+        tasks.append(task)
+        if task in EXPECTED_TASKS:
+            required = EXPECTED_TASKS[task]
+            actual = set(PATH_RE.findall(cells[1]))
+            if (required is None and cells[1] != "Core Runtime only") or (required is not None and actual != {required}):
+                errors.append(f"CHATGPT.md: incorrect required route for {task}")
     duplicates = sorted({task for task in tasks if tasks.count(task) > 1})
     if duplicates:
         errors.append(f"CHATGPT.md: duplicate task-map rows: {', '.join(duplicates)}")
-    missing = sorted(EXPECTED_TASKS - set(tasks))
-    extra = sorted(set(tasks) - EXPECTED_TASKS)
+    missing = sorted(set(EXPECTED_TASKS) - set(tasks))
+    extra = sorted(set(tasks) - set(EXPECTED_TASKS))
     if missing:
         errors.append(f"CHATGPT.md: missing task-map rows: {', '.join(missing)}")
     if extra:
         errors.append(f"CHATGPT.md: unexpected task-map rows: {', '.join(extra)}")
-    return rows
 
 
-def validate_budget_caps(errors: list[str]) -> None:
-    if ENTRY.is_file():
-        size = ENTRY.stat().st_size
-        if size > CHATGPT_MAX_BYTES:
-            errors.append(
-                f"CHATGPT.md exceeds context budget: {size} bytes > {CHATGPT_MAX_BYTES} "
-                f"(trim Autoload/Map/Classifier prose or Core canonical sources)"
-            )
-    if AGENTS.is_file():
-        size = AGENTS.stat().st_size
-        if size > AGENTS_MAX_BYTES:
-            errors.append(
-                f"AGENTS.md exceeds context budget: {size} bytes > {AGENTS_MAX_BYTES} "
-                f"(keep pointers; move long prose into docs/)"
-            )
+def validate_references(source: Path, text: str, errors: list[str]) -> None:
+    for line_number, line in enumerate(text.splitlines(), 1):
+        references = [(ROOT, rel) for rel in PATH_RE.findall(line) if Path(rel).suffix in {".md", ".py", ".yml", ".yaml"}]
+        for target in LINK_RE.findall(line):
+            try:
+                url = urlsplit(target)
+            except ValueError as error:
+                errors.append(f"{source.relative_to(ROOT)}:{line_number}: invalid link: {error}")
+                continue
+            if url.scheme or url.netloc or not url.path:
+                continue
+            relative = unquote(url.path)
+            references.append((ROOT if relative.startswith("/") else source.parent, relative.lstrip("/")))
+        for base, relative in references:
+            try:
+                if "\x00" in relative:
+                    raise ValueError("NUL byte in file reference")
+                candidate = base / relative
+                if not candidate.resolve().is_relative_to(ROOT):
+                    errors.append(f"{source.relative_to(ROOT)}:{line_number}: reference leaves repository: {relative}")
+                    continue
+                exists = any(path.is_file() for path in base.glob(relative)) if any(char in relative for char in "*?[") else candidate.is_file()
+            except (OSError, ValueError, RuntimeError) as error:
+                errors.append(f"{source.relative_to(ROOT)}:{line_number}: invalid file reference: {error}")
+                continue
+            if not exists:
+                errors.append(f"{source.relative_to(ROOT)}:{line_number} references missing file: {relative}")
 
 
-def validate_autoload_heavy_files(errors: list[str]) -> None:
-    """Autoload Protocol must not require transfer/all-in-one/fable5 for every task."""
-    if not ENTRY.is_file():
-        return
-    text = ENTRY.read_text(encoding="utf-8-sig")
-    if "## Autoload Protocol" not in text:
-        errors.append("CHATGPT.md: missing Autoload Protocol section")
-        return
-    # Slice until Context Budget or Core Runtime (whichever comes first after Autoload).
-    after = text.split("## Autoload Protocol", 1)[1]
-    for stop in ("## Context Budget", "## Core Runtime", "## Task Loading Map"):
-        if stop in after:
-            after = after.split(stop, 1)[0]
-            break
-    autoload = after
-    for rel in HEAVY_NEVER_AUTOLOAD:
-        # Allow mentioning them as "never autoload" / forbid lists; forbid "required"/"always load".
-        if rel not in autoload:
-            continue
-        # If the path appears, require nearby never/do not/unless language in the same section.
-        if not re.search(
-            r"(?is)(never\s+autoload|do\s+not\s+autoload|unless\s+the\s+Task\s+Loading\s+Map)",
-            autoload,
-        ):
-            errors.append(
-                f"CHATGPT.md Autoload Protocol references {rel} without an explicit never-autoload guard"
-            )
-        # Must not say these are always/required for each task.
-        if re.search(
-            rf"(?is)(always\s+(read|load|apply)|required\s+files?).{{0,80}}{re.escape(rel)}",
-            autoload,
-        ) or re.search(
-            rf"(?is){re.escape(rel)}.{{0,80}}(always\s+(read|load|apply)|for\s+each\s+task)",
-            autoload,
-        ):
-            errors.append(
-                f"CHATGPT.md Autoload Protocol must not require {rel} for every task"
-            )
+def validate_loading_policy(documents: dict[Path, str], errors: list[str]) -> None:
+    for relative, headings in {
+        "CHATGPT.md": ("Autoload Protocol", "Context Budget", "Intent Classifier"),
+        "AGENTS.md": ("Context Budget",),
+    }.items():
+        text = documents.get(ROOT / relative, "")
+        for heading in headings:
+            if not section(text, heading):
+                errors.append(f"{relative}: missing or empty {heading}")
+        policy = section(text, "Autoload Protocol") + "\n" + section(text, "Context Budget")
+        for path in HEAVY_FILES:
+            if re.search(rf"(?is)always\s+(?:read|load|apply).{{0,80}}{re.escape(path)}", policy):
+                errors.append(f"{relative}: heavy guide must not always load: {path}")
 
 
-def validate_map_and_agents_paths(errors: list[str], map_rows: list[tuple[str, str, str]]) -> None:
-    """All Task Loading Map and AGENTS.md referenced docs/prompts paths must exist."""
-    referenced: list[tuple[str, str]] = []
-    for task, required, optional in map_rows:
-        for cell in (required, optional):
-            for rel in PATH_RE.findall(cell):
-                referenced.append((f"Task Loading Map:{task}", rel))
-    if AGENTS.is_file():
-        for line_number, line in enumerate(AGENTS.read_text(encoding="utf-8-sig").splitlines(), 1):
-            for rel in PATH_RE.findall(line):
-                referenced.append((f"AGENTS.md:{line_number}", rel))
-    for where, rel in referenced:
-        if any(char in rel for char in "*?["):
-            exists = any(ROOT.glob(rel))
-        else:
-            exists = (ROOT / rel).is_file()
-        if not exists:
-            errors.append(f"{where} references missing file: {rel}")
-
-
-def validate_context_budget_section(errors: list[str]) -> None:
-    for path, label in ((ENTRY, "CHATGPT.md"), (AGENTS, "AGENTS.md")):
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8-sig")
-        if "## Context Budget" not in text:
-            errors.append(f"{label}: missing Context Budget section")
-            continue
-        budget = text.split("## Context Budget", 1)[1].split("\n## ", 1)[0]
-        for rel in HEAVY_NEVER_AUTOLOAD:
-            if rel.split("/")[-1] not in budget and rel not in budget:
-                errors.append(f"{label} Context Budget must mention never-autoload file: {rel}")
-
-
-def validate_golden_range(errors: list[str], seen: dict[str, Path]) -> None:
-    ids = sorted(int(i) for i in seen)
-    if not ids:
-        errors.append("no GoldenTest-*.md files found under tests/")
-        return
-    expected = set(range(EXPECTED_GOLDEN_MIN, EXPECTED_GOLDEN_MAX + 1))
-    present = set(ids)
-    missing = sorted(expected - present)
-    if missing:
-        errors.append(
-            f"missing Golden Test IDs in {EXPECTED_GOLDEN_MIN:03d}–{EXPECTED_GOLDEN_MAX:03d}: "
-            + ", ".join(f"{i:03d}" for i in missing)
-        )
-    outside = sorted(i for i in present if i < EXPECTED_GOLDEN_MIN or i > EXPECTED_GOLDEN_MAX)
-    if outside:
-        # Allow only the documented contiguous suite for now.
-        errors.append(
-            "unexpected Golden Test IDs outside "
-            f"{EXPECTED_GOLDEN_MIN:03d}–{EXPECTED_GOLDEN_MAX:03d}: "
-            + ", ".join(f"{i:03d}" for i in outside)
-        )
-
-
-def main() -> int:
-    errors: list[str] = []
-    for rel in REQUIRED:
-        if not (ROOT / rel).is_file():
-            errors.append(f"missing required file: {rel}")
-
-    validate_inlined_runtime(errors)
-    map_rows = validate_task_loading_map(errors)
-    validate_budget_caps(errors)
-    validate_autoload_heavy_files(errors)
-    validate_map_and_agents_paths(errors, map_rows)
-    validate_context_budget_section(errors)
-
-    for source in [
-        *ROOT.glob("*.md"),
-        *(ROOT / "docs").glob("*.md"),
-        *(ROOT / "prompts").glob("*.md"),
-        *(ROOT / "tests").glob("*.md"),
-    ]:
-        text = source.read_text(encoding="utf-8-sig")
-        for line_number, line in enumerate(text.splitlines(), 1):
-            for rel in PATH_RE.findall(line):
-                exists = any(ROOT.glob(rel)) if any(char in rel for char in "*?[") else (ROOT / rel).is_file()
-                if not exists:
-                    errors.append(f"{source.relative_to(ROOT)}:{line_number} references missing file: {rel}")
-
-    seen: dict[str, Path] = {}
+def validate_golden_tests(documents: dict[Path, str], errors: list[str]) -> None:
+    seen = set()
     for path in sorted((ROOT / "tests").glob("GoldenTest-*.md")):
-        match = TEST_RE.search(path.read_text(encoding="utf-8-sig"))
-        if not match:
-            errors.append(f"missing Golden Test ID header: {path.relative_to(ROOT)}")
+        text = documents.get(path, "")
+        matches = TEST_RE.findall(text)
+        if len(matches) != 1:
+            errors.append(f"expected one Golden Test ID header: {path.relative_to(ROOT)}")
             continue
-        test_id = match.group(1)
+        test_id = matches[0]
         if path.stem != f"GoldenTest-{test_id}":
             errors.append(f"Golden Test filename/header mismatch: {path.relative_to(ROOT)}")
         if test_id in seen:
-            errors.append(f"duplicate Golden Test ID {test_id}: {seen[test_id]}, {path.relative_to(ROOT)}")
-        seen[test_id] = path.relative_to(ROOT)
+            errors.append(f"duplicate Golden Test ID {test_id}: {path.relative_to(ROOT)}")
+        seen.add(test_id)
+        # Test 025 predates the standard Scenario / Gold Rubric layout.
+        headings = ("Triggers and Expected Routes", "Forbidden Behavior") if test_id == "025" else ("Scenario", "Gold Rubric")
+        for heading in headings:
+            if not section(text, heading):
+                errors.append(f"{path.relative_to(ROOT)}: missing or empty {heading}")
+    for test_id in sorted(EXPECTED_TEST_IDS - seen):
+        errors.append(f"missing required Golden Test {test_id}")
 
-    validate_golden_range(errors, seen)
 
-    runtime = ENTRY.read_text(encoding="utf-8") if ENTRY.is_file() else ""
+def main() -> int:
+    errors = []
+    for relative in REQUIRED:
+        if not (ROOT / relative).is_file():
+            errors.append(f"missing required file: {relative}")
+
+    sources = sorted([*ROOT.glob("*.md"), *(ROOT / "docs").glob("*.md"),
+                      *(ROOT / "prompts").glob("*.md"), *(ROOT / "tests").glob("*.md")])
+    documents = {path: read_document(path, errors) for path in sources}
+    runtime = documents.get(ENTRY, "")
+    validate_inlined_runtime(errors)
+    if ENTRY.is_file():
+        validate_task_loading_map(runtime, errors)
+    validate_loading_policy(documents, errors)
+    for relative, budget in RUNTIME_CHARACTER_BUDGETS.items():
+        size = len(documents.get(ROOT / relative, ""))
+        if size > budget:
+            errors.append(f"{relative}: character budget exceeded ({size} > {budget})")
+    for source, text in documents.items():
+        validate_references(source, text, errors)
+    validate_golden_tests(documents, errors)
     for term in ["Fable5 Enhanced", "Fable5 Distilled Patterns"]:
         if term in runtime:
             errors.append(f"prohibited model-specific Runtime term in CHATGPT.md: {term}")
-
-    if "## Intent Classifier" not in runtime:
-        errors.append("CHATGPT.md: missing Intent Classifier section")
 
     if errors:
         print("ChatGPT transfer-pack validation failed:")
         for error in errors:
             print(f"- {error}")
         return 1
-    print("ChatGPT transfer-pack validation passed.")
+    print(f"ChatGPT transfer-pack validation passed ({len(EXPECTED_TASKS)} routes, {len(EXPECTED_TEST_IDS)} required scenarios).")
     return 0
 
 

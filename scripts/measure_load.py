@@ -36,9 +36,7 @@ SAMPLE_DOMAIN_SECTIONS = ("RHEL", "Kubernetes", "OpenShift")
 
 def file_bytes(rel: str) -> int:
     path = ROOT / rel
-    if not path.is_file():
-        return 0
-    return path.stat().st_size
+    return len(path.read_text(encoding="utf-8-sig").encode("utf-8"))
 
 
 def rough_tokens(nbytes: int) -> int:
@@ -48,8 +46,6 @@ def rough_tokens(nbytes: int) -> int:
 def parse_sections(rel: str) -> dict[str, int]:
     """Return {section_title: byte_size} for each ## section (incl. leading intro before first ##)."""
     path = ROOT / rel
-    if not path.is_file():
-        return {}
     text = path.read_text(encoding="utf-8-sig")
     parts = re.split(r"(?m)^## ", text)
     sizes: dict[str, int] = {}
@@ -69,7 +65,9 @@ def section_load_bytes(rel: str, section_title: str, *, include_intro: bool = Tr
     sizes = parse_sections(rel)
     if not sizes:
         return file_bytes(rel)
-    total = sizes.get(section_title, 0)
+    if section_title not in sizes:
+        raise ValueError(f"{rel}: missing section {section_title!r}")
+    total = sizes[section_title]
     if include_intro:
         total += sizes.get("__intro__", 0)
     # Engineering tasks also commonly need Execution Shape for multi-context guidance
@@ -110,14 +108,15 @@ def required_paths(required_cell: str) -> list[str]:
     return out
 
 
-def main() -> int:
+def report() -> int:
     core_paths = [
         "docs/chatgpt-5.5-project-instructions.md",
         "docs/chatgpt-operational-integrity-rules.md",
     ]
     core_nbytes = sum(file_bytes(p) for p in core_paths)
 
-    print("ChatGPT transfer-pack load estimate (required files; tokens ≈ bytes/4)")
+    print("Logical Core + task load estimates; excludes entry/router overhead and host/tool prompts.")
+    print("Bytes: UTF-8 without BOM, LF newlines. Tokens: uncalibrated bytes/4 heuristic, not actual usage.")
     print(f"{'Task Type':<52} {'bytes':>8} {'~tokens':>8}  files")
     print("-" * 100)
 
@@ -126,6 +125,9 @@ def main() -> int:
         if "Core Runtime only" in required_cell:
             nbytes = core_nbytes
             label_paths = ["Core Runtime (canonical docs)"]
+        elif paths and all(p in HEAVY_OPTIONAL for p in paths):
+            nbytes = sum(file_bytes(p) for p in paths)
+            label_paths = paths
         else:
             nbytes = core_nbytes + sum(file_bytes(p) for p in paths)
             label_paths = ["Core"] + paths
@@ -165,12 +167,19 @@ def main() -> int:
         n = file_bytes(rel)
         print(f"  {rel}: {n} bytes (~{rough_tokens(n)} tokens)")
 
-    entry_n = ENTRY.stat().st_size if ENTRY.is_file() else 0
-    agents = ROOT / "AGENTS.md"
-    agents_n = agents.stat().st_size if agents.is_file() else 0
+    entry_n = file_bytes("CHATGPT.md")
+    agents_n = file_bytes("AGENTS.md")
     print()
     print(f"Entry sizes: CHATGPT.md={entry_n} bytes, AGENTS.md={agents_n} bytes")
     return 0
+
+
+def main() -> int:
+    try:
+        return report()
+    except (OSError, UnicodeError, ValueError) as error:
+        print(f"Load estimate failed: {error}")
+        return 1
 
 
 if __name__ == "__main__":
