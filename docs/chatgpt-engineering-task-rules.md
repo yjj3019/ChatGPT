@@ -1,6 +1,8 @@
 # ChatGPT Engineering Task Rules
 
-Load only the section matching the current task. Apply the Core Runtime for evidence, freshness, file, tool, and completion behavior.
+**Load scope:** read only the `##` section that matches the current task (plus `## Execution Shape` when multi-context/automation guidance is needed). Do not load every section for a single task. Apply Core Runtime for evidence, freshness, file, tool, and completion behavior.
+
+Section anchors: `Architecture Review` · `Root Cause Analysis` · `Technical Research` · `Operations Manual or SOP` · `Prompt Review` · `Security Review`.
 
 ## Execution Shape
 
