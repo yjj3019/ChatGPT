@@ -14,8 +14,8 @@ TEST_RE = re.compile(r"^# Golden Test (\d{3}):", re.MULTILINE)
 
 # Context-budget entry size caps (bytes). Adjust slightly after intentional slim/expand;
 # keep CHATGPT lean enough for Project Instructions and AGENTS lean for Codex cold start.
-CHATGPT_MAX_BYTES = 14000
-AGENTS_MAX_BYTES = 4500
+CHATGPT_MAX_BYTES = 13800
+AGENTS_MAX_BYTES = 4000
 
 # Never required by Autoload Protocol itself; only via explicit Task Loading Map rows
 # (optional / one-shot). Autoload must not mandate these for every task.
@@ -49,9 +49,9 @@ EXPECTED_TASKS = {
     "One-shot copy/paste setup",
 }
 
-# Golden tests 015–029 (inclusive) expected present after context-budget suite.
+# Golden tests 015–030 (inclusive) expected present after context-budget / routing suite.
 EXPECTED_GOLDEN_MIN = 15
-EXPECTED_GOLDEN_MAX = 29
+EXPECTED_GOLDEN_MAX = 30
 
 
 def validate_inlined_runtime(errors: list[str]) -> None:

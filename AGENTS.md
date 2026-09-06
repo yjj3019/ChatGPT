@@ -4,7 +4,7 @@ Codex working root for the ChatGPT transfer pack (`yjj3019/ChatGPT`). Save new r
 
 ## Purpose
 
-Lean Codex entry: apply Core Runtime invariants, load the smallest mapped task files, and keep unique Codex gates in `docs/codex-*.md`. Do not claim hidden Fable5 reasoning transfer.
+Lean Codex entry: apply Core Runtime invariants, load the smallest mapped task files, keep unique Codex gates in `docs/codex-*.md`. Do not claim hidden Fable5 reasoning transfer.
 
 ## Context Budget
 
@@ -14,7 +14,7 @@ Lean Codex entry: apply Core Runtime invariants, load the smallest mapped task f
   - `docs/chatgpt-transfer-instructions.md`
   - `docs/chatgpt-5.5-all-in-one-instructions.md`
   - `docs/fable5-pattern-bank-for-chatgpt.md`
-- **Domain packs:** load the matching section of `docs/chatgpt-domain-packs.md` only.
+- **Domain packs:** matching section of `docs/chatgpt-domain-packs.md` only — never all sections.
 - **Anti-pattern:** do not load all `docs/codex-*.md` at once.
 
 ## Instruction Precedence
@@ -23,7 +23,7 @@ Lean Codex entry: apply Core Runtime invariants, load the smallest mapped task f
 2. Organization, workspace, and project instructions
 3. Runtime invariants in `CHATGPT.md` / Operational Integrity Core
 4. Explicit user task constraints and output contract
-5. Task-specific file defaults (`docs/chatgpt-*.md`, `docs/codex-*.md`)
+5. Task-specific defaults (`docs/chatgpt-*.md`, `docs/codex-*.md`)
 6. Model general behavior
 
 Report conflicts that affect the task.
@@ -31,24 +31,23 @@ Report conflicts that affect the task.
 ## Short Invariants
 
 - Separate facts, assumptions, and open questions when correctness depends on it.
-- Mark unsupported factual claims `[unverified]` (dates, certifications, benchmarks, lifecycle/support, customer, regulatory, product claims).
-- Prefer user-provided files/text, then verified facts with date/version/scope, then explicit assumptions.
+- Mark unsupported factual claims `[unverified]` (dates, certifications, benchmarks, lifecycle/support, customer, regulatory, product).
+- Prefer user-provided files/text → verified facts (date/version/scope) → explicit assumptions.
 - Ask at most 3 blocking questions; if safe, proceed with explicit assumptions.
-- Prefer the smallest useful change; call out contradictions instead of silently resolving them.
-- Do not claim file access, execution, or artifact completion without observable evidence.
-- For external-facing documents, run one final consistency pass.
+- Smallest useful change; call out contradictions; no unverified file/tool/artifact completion claims.
+- External-facing docs: one final consistency pass.
 
 ## Codex Task Loading Map
 
 | When | Read |
 |---|---|
-| Any session bootstrap | `CHATGPT.md` Core Runtime (or `docs/chatgpt-5.5-project-instructions.md` + `docs/chatgpt-operational-integrity-rules.md`) |
+| Session bootstrap | `CHATGPT.md` Core (or `docs/chatgpt-5.5-project-instructions.md` + `docs/chatgpt-operational-integrity-rules.md`) |
 | Coding / debugging | `docs/chatgpt-coding-rules.md` |
 | Proposal / RFP / deck review | `docs/chatgpt-proposal-review-rules.md` |
 | Technical blog | `docs/chatgpt-blog-rules.md` |
-| Architecture, RCA, research, SOP, prompt review, security review | `docs/chatgpt-engineering-task-rules.md` (matching section) |
+| Architecture, RCA, research, SOP, prompt/security review | `docs/chatgpt-engineering-task-rules.md` (matching section only) |
 | Meeting notes, presentation, executive summary | `docs/chatgpt-knowledge-work-rules.md` |
-| RHEL / OpenShift / K8s / Linux / Ansible / Satellite / EA / AI infra / EV | matching section of `docs/chatgpt-domain-packs.md` (+ task-type file when both apply) |
+| RHEL / OpenShift / K8s / Linux / Ansible / Satellite / EA / AI infra / EV | matching section only of `docs/chatgpt-domain-packs.md` (+ task-type file when both apply) |
 | Team / parallel review / GO–NO-GO | `docs/codex-team-agent-rules.md` |
 | Subagent roles, delegation, injection hygiene, completion gates | `docs/codex-subagent-rules.md` |
 | PowerPoint / Word / Excel / CSV / TSV | `docs/codex-office-agent-rules.md` |
@@ -59,10 +58,8 @@ Report conflicts that affect the task.
 
 Optional one-shot calibration only when the map row allows: `docs/fable5-pattern-bank-for-chatgpt.md`.
 
-## Pointers (do not duplicate long prose)
+## Codex-only pointers
 
-- **Coding:** when coding/debugging, read `docs/chatgpt-coding-rules.md` — shared root cause, caller scan, smallest fix, path verification.
-- **Reviews / writing:** proposal → `docs/chatgpt-proposal-review-rules.md`; blog → `docs/chatgpt-blog-rules.md`.
-- **Team / subagents:** tiny edits stay solo; review/discovery subagents stay read-only; no parallel edits to the same files; aggregate before changing.
-- **Office:** outputs under `outputs/`, scripts under `scripts/office/` unless named otherwise; version filenames; verify before delivery.
-- **Ops:** compact logs only when required; no secrets or raw MCP payloads; for remote work, verify the connector was used and report evidence.
+- **Team/subagents:** tiny edits stay solo; review/discovery subagents read-only; no parallel edits to the same files; aggregate before changing.
+- **Office:** `outputs/` + `scripts/office/` unless named otherwise; version filenames; verify before delivery.
+- **Ops:** compact logs when required; no secrets or raw MCP payloads; remote work needs connector evidence.

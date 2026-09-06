@@ -48,7 +48,7 @@ See `CHATGPT.md` (Context Budget, Task Loading Map, Intent Classifier) and the l
 - `docs/chatgpt-5.5-all-in-one-instructions.md` — single-paste fallback (one-shot only).
 - `docs/codex-*.md` — Codex team, subagent, office, prompt-engineering, and operations gates (load by task, not all at once).
 - `prompts/chatgpt-task-prompts.md` — task-specific copy/paste prompts.
-- `tests/GoldenTest-015.md` through `tests/GoldenTest-029.md` — Operational Integrity, task-routing, proportional-governance, knowledge-governance, and context-budget regression scenarios.
+- `tests/GoldenTest-015.md` through `tests/GoldenTest-030.md` — Operational Integrity, task-routing, proportional-governance, knowledge-governance, context-budget, and section-scope regression scenarios.
 
 ## Codex Use
 
@@ -74,5 +74,17 @@ python3 scripts/measure_load.py
 ```
 
 - `sync_runtime.py` — regenerates the inlined Core Runtime in `CHATGPT.md` from the two canonical docs.
-- `validate_framework.py` — structure, sync, Task Loading Map, path existence, Context Budget sections, entry size caps (`CHATGPT.md` ≤ 14000 bytes, `AGENTS.md` ≤ 4500 bytes), Autoload never-require heavy files, Golden Tests 015–029.
-- `measure_load.py` — per task type, prints required file bytes and rough token estimate (bytes/4).
+- `validate_framework.py` — structure, sync, Task Loading Map, path existence, Context Budget sections, entry size caps (`CHATGPT.md` ≤ 13800 bytes, `AGENTS.md` ≤ 4000 bytes), Autoload never-require heavy files, Golden Tests 015–030.
+- `measure_load.py` — per task type, prints required file bytes and rough token estimate (bytes/4), plus section-aware estimates for engineering-task and domain-packs.
+
+## Training Rounds (instruction-pack closed loop)
+
+Five measure → change → validate rounds on branch `perf/context-budget-routing` (not ML training):
+
+1. **Core token diet** — slim canonical Core sources; `sync_runtime.py` regenerates inlined Core.
+2. **AGENTS lean** — cut duplicated pointers; keep Budget + map + hard gates.
+3. **Routing precision** — clearer Intent Classifier / Selection Rules; Golden Test 030 (domain section-only).
+4. **Load path efficiency** — section-scope banners on domain + engineering packs; section-aware `measure_load.py`.
+5. **Final polish** — recalibrated entry size caps; Scorecard + README updated.
+
+After edits to Core sources, always run `python3 scripts/sync_runtime.py` then validate + measure.

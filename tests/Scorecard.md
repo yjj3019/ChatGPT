@@ -12,7 +12,12 @@ Score observable behavior, not similarity to any model's wording.
 - Task-specific contract completeness
 - Context Budget compliance (smallest mapped load; no transfer/all-in-one/fable5 unless the map row allows)
 - Intent routing accuracy (coding vs RCA vs proposal vs blog vs knowledge-work vs domain)
+- Section-scoped loading (engineering-task and domain-packs: matching `##` section only)
 
-Regression suite: `tests/GoldenTest-015.md` through `tests/GoldenTest-029.md` (includes 027–029 context-budget / routing cases).
+Regression suite: `tests/GoldenTest-015.md` through `tests/GoldenTest-030.md` (includes 027–030 context-budget / routing / section-scope cases).
 
 Compare the existing pack, revised pack, and any external-model reference separately. Human-defined rubrics are the gold criteria; an external model output is not a gold answer.
+
+## Training rounds (instruction-pack closed loop)
+
+Five measure→change→validate rounds on `perf/context-budget-routing` (Core diet, AGENTS lean, routing precision + Golden 030, section-aware load measurement, budget recalibration). See `/workspace/ChatGPT-training-log.md` when present in the agent workspace, and the README training summary in-repo.
