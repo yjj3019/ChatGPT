@@ -1,4 +1,5 @@
 """Exercise the real maintenance commands against disposable repository copies."""
+import importlib.util
 import shutil
 import subprocess
 import sys
@@ -246,6 +247,53 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.assertEqual(after.returncode, 0, after.stdout + after.stderr)
         self.assertEqual(before.stdout, after.stdout)
 
+
+    def _load_markdown_sections(self):
+        module_path = self.root / "scripts" / "markdown_sections.py"
+        spec = importlib.util.spec_from_file_location("markdown_sections_under_test", module_path)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        return module
+
+    def test_fence_aware_section_parse_ignores_headings_in_fences(self):
+        ms = self._load_markdown_sections()
+        sample = (
+            "# Title\n\n## Real One\n\nBody\n\n"
+            "```text\n## Fake Inside\n## Also Fake\n```\n\n"
+            "## Real Two\n\nMore\n"
+        )
+        titles = [t for t in ms.parse_sections(sample) if t != "__intro__"]
+        self.assertEqual(titles, ["Real One", "Real Two"])
+        self.assertIn("## Fake Inside", ms.section_body(sample, "Real One"))
+        blog = (self.root / "docs/chatgpt-blog-rules.md").read_text(encoding="utf-8-sig")
+        blog_titles = sorted(t for t in ms.parse_sections(blog) if t != "__intro__")
+        self.assertEqual(blog_titles, ["Outline", "Review Checklist", "Style"])
+
+    def test_meta_phrase_inside_inlined_core_fails(self):
+        entry = self.root / "CHATGPT.md"
+        text = entry.read_text(encoding="utf-8")
+        begin = "<!-- BEGIN INLINED CORE RUNTIME (generated from docs/ — do not edit here) -->"
+        self.assertIn(begin, text)
+        poisoned = text.replace(begin, begin + "\nsync_runtime maintainer note\n", 1)
+        entry.write_text(poisoned, encoding="utf-8")
+        self.assert_failure(self.run_script("validate_framework.py"), "maintainer/meta phrase inside inlined Core")
+
+    def test_invariant_coverage_detects_missing_unverified_marker(self):
+        # Strip the invariant needle from Core sources and AGENTS without removing required headings.
+        self.rewrite("docs/chatgpt-operational-integrity-rules.md", "[unverified]", "[not-verified-marker]")
+        self.rewrite("AGENTS.md", "[unverified]", "[not-verified-marker]")
+        self.assertEqual(self.run_script("sync_runtime.py").returncode, 0)
+        self.assert_failure(self.run_script("validate_framework.py"), "invariant coverage failed: unverified_marker")
+
+    def test_measurement_blog_outline_not_split_by_fence(self):
+        result = self.run_script("measure_load.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        ms = self._load_markdown_sections()
+        blog = (self.root / "docs/chatgpt-blog-rules.md").read_text(encoding="utf-8-sig")
+        sizes = {title: len(body.encode("utf-8")) for title, body in ms.parse_sections(blog).items()}
+        self.assertIn("Outline", sizes)
+        self.assertNotIn("Why this matters now", sizes)
 
 if __name__ == "__main__":
     unittest.main()

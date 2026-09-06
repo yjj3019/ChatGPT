@@ -10,6 +10,8 @@ import re
 import sys
 from pathlib import Path
 
+from markdown_sections import parse_sections, section_bytes
+
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "CHATGPT.md"
 PATH_RE = re.compile(r"`((?:docs|prompts)/[^`]+\.md)`")
@@ -43,36 +45,22 @@ def rough_tokens(nbytes: int) -> int:
     return max(0, (nbytes + 3) // 4)
 
 
-def parse_sections(rel: str) -> dict[str, int]:
-    """Return {section_title: byte_size} for each ## section (incl. leading intro before first ##)."""
-    path = ROOT / rel
-    text = path.read_text(encoding="utf-8-sig")
-    parts = re.split(r"(?m)^## ", text)
-    sizes: dict[str, int] = {}
-    if parts:
-        intro = parts[0]
-        sizes["__intro__"] = len(intro.encode("utf-8"))
-    for chunk in parts[1:]:
-        line, _, body = chunk.partition("\n")
-        title = line.strip()
-        # Section content = "## " + title line + rest until next section
-        section_text = "## " + chunk
-        sizes[title] = len(section_text.encode("utf-8"))
-    return sizes
+def parse_file_sections(rel: str) -> dict[str, int]:
+    """Return {section_title: byte_size} using fence-aware ## parsing."""
+    text = (ROOT / rel).read_text(encoding="utf-8-sig")
+    return {title: len(body.encode("utf-8")) for title, body in parse_sections(text).items()}
 
 
 def section_load_bytes(rel: str, section_title: str, *, include_intro: bool = True) -> int:
-    sizes = parse_sections(rel)
-    if not sizes:
-        return file_bytes(rel)
-    if section_title not in sizes:
+    text = (ROOT / rel).read_text(encoding="utf-8-sig")
+    sections = parse_sections(text)
+    if section_title not in sections:
         raise ValueError(f"{rel}: missing section {section_title!r}")
-    total = sizes[section_title]
-    if include_intro:
-        total += sizes.get("__intro__", 0)
+    total = section_bytes(text, section_title, include_intro=include_intro)
     # Engineering tasks also commonly need Execution Shape for multi-context guidance
     if rel.endswith("chatgpt-engineering-task-rules.md") and section_title != "Execution Shape":
-        total += sizes.get("Execution Shape", 0)
+        if "Execution Shape" in sections:
+            total += len(sections["Execution Shape"].encode("utf-8"))
     return total
 
 

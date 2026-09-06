@@ -47,7 +47,7 @@ python scripts/measure_load.py
 
 The sync check never writes files. Validation checks generated-document parity, routing targets, local file references, required Golden Test contracts, and repository-defined character budgets. Regression tests use disposable sibling copies, so the repository parent must be writable.
 
-GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12. The optional load report uses normalized UTF-8 bytes; its bytes/4 heuristic is not actual token usage and excludes entry/router and host/tool overhead. Structural checks do not run ChatGPT/Codex behavior trials. Use `tests/Scorecard.md` and `tests/GoldenTest-015.md` through `tests/GoldenTest-035.md` for controlled behavior evaluation.
+GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12. The optional load report uses normalized UTF-8 bytes; its bytes/4 heuristic is not actual token usage and excludes entry/router and host/tool overhead. Structural checks do not run ChatGPT/Codex behavior trials. Use `tests/Scorecard.md` and `tests/GoldenTest-015.md` through `tests/GoldenTest-037.md` for controlled behavior evaluation.
 
 ## Improvement Evidence
 
