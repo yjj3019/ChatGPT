@@ -10,7 +10,7 @@ from sync_runtime import BEGIN, END, generated_documents
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "CHATGPT.md"
-PATH_RE = re.compile(r"`((?:(?:docs|prompts|tests|scripts|\.github)/[^`\n]+|(?:CHATGPT|AGENTS|README)\.md))`")
+PATH_RE = re.compile(r"`((?:(?:docs|prompts|tests|scripts|\.github)/[^`\n]+|(?:CHATGPT|AGENTS|README(?:\.(?:en|ko))?)\.md))`")
 LINK_RE = re.compile(r"(?<!!)\[[^\]\n]+\]\(([^\s)]+)\)")
 TEST_RE = re.compile(r"^# Golden Test (\d{3}):", re.MULTILINE)
 # Repository maintenance budgets, not model token or product limits.
@@ -19,7 +19,7 @@ RUNTIME_CHARACTER_BUDGETS = {
     "docs/chatgpt-5.5-all-in-one-instructions.md": 8000,
 }
 REQUIRED = [
-    "CHATGPT.md", "AGENTS.md", "README.md", "tests/Scorecard.md",
+    "CHATGPT.md", "AGENTS.md", "README.md", "README.en.md", "README.ko.md", "tests/Scorecard.md",
     "docs/chatgpt-5.5-project-instructions.md",
     "docs/chatgpt-operational-integrity-rules.md",
     "docs/chatgpt-coding-rules.md",

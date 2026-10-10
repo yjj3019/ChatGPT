@@ -1,5 +1,6 @@
 """Exercise the real maintenance commands against disposable repository copies."""
 import importlib.util
+import re
 import shutil
 import subprocess
 import sys
@@ -158,6 +159,36 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.rewrite("tests/GoldenTest-015.md", "# Golden Test 015:", "# Golden Test 099:")
         self.assert_failure(self.run_script("validate_framework.py"), "filename/header mismatch")
 
+    def test_readme_languages_preserve_commands_references_and_links(self):
+        korean = (self.root / "README.md").read_text(encoding="utf-8-sig")
+        english = (self.root / "README.en.md").read_text(encoding="utf-8-sig")
+        alias = (self.root / "README.ko.md").read_text(encoding="utf-8-sig")
+        self.assertIn("](README.en.md)", korean)
+        self.assertIn("](README.md)", english)
+        self.assertIn("](README.md)", alias)
+        self.assertLess(len(alias), 500)
+        command_lines = lambda text: [line for line in text.splitlines()
+                                     if line.startswith(("git ", "cd ", "python ", "python3 "))]
+        self.assertEqual(command_lines(korean), command_lines(english))
+        references = lambda text: set(re.findall(r"`((?:docs|scripts|prompts|tests)/[^`]+)`", text))
+        self.assertEqual(references(korean), references(english))
+        for text in (korean, english):
+            for contract in ("--force", "--dry-run", "--check", "--with-tests",
+                             "Validation Gap", "README", "Python 3.11"):
+                self.assertIn(contract, text)
+        result = self.run_script("validate_framework.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_missing_english_readme_is_rejected(self):
+        (self.root / "README.en.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required file: README.en.md")
+
+    def test_missing_localized_inline_readme_reference_is_rejected(self):
+        path = self.root / "README.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\n`README.en.md`\n", encoding="utf-8")
+        (self.root / "README.en.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "references missing file: README.en.md")
+
     def test_missing_inline_reference_is_rejected(self):
         path = self.root / "README.md"
         path.write_text(path.read_text(encoding="utf-8") + "\n`scripts/missing.py`\n", encoding="utf-8")
@@ -279,7 +310,7 @@ class FrameworkCommandsTest(unittest.TestCase):
             self.assertIn(required, routing)
         for obsolete in ("## Model Roster", "## Default Picks", "## Escalation Ladder", "gpt-5.6-terra"):
             self.assertNotIn(obsolete, routing)
-        for relative in ("AGENTS.md", "docs/codex-operations-rules.md", "README.md", "README.ko.md"):
+        for relative in ("AGENTS.md", "docs/codex-operations-rules.md", "README.md", "README.en.md", "README.ko.md"):
             text = (self.root / relative).read_text(encoding="utf-8")
             self.assertNotIn("escalate model when blocked", text)
             self.assertNotIn("escalate the model when blocked", text)
@@ -287,6 +318,69 @@ class FrameworkCommandsTest(unittest.TestCase):
             self.assertNotIn("gpt-5.6-terra", text)
             self.assertNotIn("**escalate the model**", text)
             self.assertNotIn("**모델을 상향**", text)
+
+    def test_setup_smoke_check_has_bilingual_contract_parity(self):
+        common = (
+            "ChatGPT Work", "Codex", "API", "primary folder", "`cwd`",
+            "AGENTS.override.md", "32 KiB", "project_doc_max_bytes", "2026-10-10",
+            "https://learn.chatgpt.com/docs/projects",
+            "docs/codex-operations-rules.md#host-setup-smoke-check",
+            "docs/chatgpt-codex-model-routing.md#verify-the-product-surface",
+        )
+        localized = {
+            "README.md": ("실제 출처", "전역·상위 지침", "클라이언트·버전", "인증 방식",
+                          "존재해도 지침이 로드됐다는 뜻은 아닙니다", "접근 권한을 주지 않습니다",
+                          "선택한 가이드", "정적 검사", "스모크 테스트를 대신하지 않습니다"),
+            "README.en.md": ("active `AGENTS.md` source", "global/parent instructions",
+                             "client/version", "authentication method",
+                             "presence does not prove", "does not grant access",
+                             "selected guide", "Static repository checks", "do not replace"),
+        }
+        for relative, phrases in localized.items():
+            with self.subTest(relative=relative):
+                text = (self.root / relative).read_text(encoding="utf-8")
+                for phrase in common + phrases:
+                    self.assertIn(phrase, text)
+
+    def test_optional_host_guides_keep_compatibility_and_evidence_boundaries(self):
+        routing = (self.root / "docs/chatgpt-codex-model-routing.md").read_text(encoding="utf-8")
+        for required in (
+            "Chat, ChatGPT Work, Codex, or API", "client/version", "authentication method",
+            "actually exposed", "tools and permissions", "Do not transplant API parameters",
+            "model_context_window", "not a capacity upgrade", "Static checks cannot replace",
+            "https://learn.chatgpt.com/docs/models", "https://learn.chatgpt.com/docs/model-selection",
+            "https://learn.chatgpt.com/docs/config-file/config-reference", "2026-10-10",
+        ):
+            self.assertIn(required, routing)
+        operations = (self.root / "docs/codex-operations-rules.md").read_text(encoding="utf-8")
+        for required in (
+            "## Host Setup Smoke Check", "not before every task", "not evidence",
+            "project-root-to-`cwd`", "AGENTS.override.md", "32 KiB", "project_doc_max_bytes",
+            "selected guide", "do not execute host/model smoke trials", "2026-10-10",
+            "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+            "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+        ):
+            self.assertIn(required, operations)
+
+    def test_optional_host_guides_do_not_expand_generated_runtime(self):
+        entries = [self.root / relative for relative in (
+            "CHATGPT.md", "AGENTS.md", "docs/chatgpt-5.5-all-in-one-instructions.md",
+            "docs/chatgpt-transfer-instructions.md",
+        )]
+        # Exercise Windows checkout endings on every platform, then establish
+        # canonical generated bytes before testing optional-guide isolation.
+        for entry in entries:
+            entry.write_bytes(entry.read_text(encoding="utf-8-sig").replace("\n", "\r\n").encode("utf-8"))
+        initial_sync = self.run_script("sync_runtime.py")
+        self.assertEqual(initial_sync.returncode, 0, initial_sync.stdout + initial_sync.stderr)
+        before = [entry.read_bytes() for entry in entries]
+        for relative in ("docs/chatgpt-codex-model-routing.md", "docs/codex-operations-rules.md"):
+            path = self.root / relative
+            path.write_text(path.read_text(encoding="utf-8") + "\nOptional host-check sentinel.\n",
+                            encoding="utf-8")
+        result = self.run_script("sync_runtime.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual([entry.read_bytes() for entry in entries], before)
 
     def test_readonly_reviewer_requires_evidence_and_parent_retesting(self):
         review = (self.root / "docs/codex-subagent-rules.md").read_text(encoding="utf-8")

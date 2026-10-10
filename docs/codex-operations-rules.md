@@ -24,6 +24,17 @@ This file consolidates generally useful operational patterns:
 - If source material is noisy, flatten it to concise markdown before using it as long-lived context.
 
 
+## Host Setup Smoke Check
+
+Run this read-only check when setting up or diagnosing instruction loading, not before every task. A file on disk is not evidence that the host loaded it.
+
+- Record Chat, ChatGPT Work, Codex, or API; client/version; and the actual primary folder or `cwd`. Verify folder access separately from project membership.
+- For Codex discovery, inspect the active instruction sources: global guidance, the project-root-to-`cwd` chain, and `AGENTS.override.md` before `AGENTS.md` at each level. Preserve higher-priority host instructions. Combined discovery defaults to 32 KiB, configurable with `project_doc_max_bytes`; check the effective limit rather than increasing it automatically.
+- Verify the selected guide's readable path/source and relevant section in the current session. A self-report without supporting host evidence does not prove loading. Mark unavailable evidence as `[unverified]` and block only dependent work.
+- Record the observed result and any gap. Repository sync, validation, and unit tests check static structure; they do not execute host/model smoke trials or establish behavioral gains.
+
+Official references (checked 2026-10-10): [AGENTS.md discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Projects and folder access](https://learn.chatgpt.com/docs/projects), [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference). Keep this setup guidance optional and task-scoped, consistent with [minimal routers and progressive disclosure](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra).
+
 ## Model Selection
 
 - Keep the current model and effort by default. Distinguish missing evidence or authorization from demonstrated capability limits. Change only supported model/effort settings with evidence and authorization; see `docs/chatgpt-codex-model-routing.md`. Preserve Integrity and Context Budget; do not expand unrelated file loads.
@@ -31,6 +42,7 @@ This file consolidates generally useful operational patterns:
 
 - Use an existing Codex skill when the task matches it.
 - Read the selected `SKILL.md` before acting.
+- The installed pack emits YAML `name`/`description` metadata and explicitly reads its adjacent `AGENTS.md` after selection. The installer validates its own generated metadata format and content hashes, not live discovery or activation. See [skill metadata and invocation](https://learn.chatgpt.com/docs/build-skills) (checked 2026-10-10).
 - Treat skills as workflow routers: load only the relevant references, scripts, and templates.
 - For custom/reusable workflows, document trigger, inputs, dependencies, output path, and verification.
 - Do not install or create a new skill for a one-off task.

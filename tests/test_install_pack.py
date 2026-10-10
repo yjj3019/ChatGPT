@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import io
 import json
 import stat
@@ -28,6 +29,37 @@ def load_install_pack():
 
 
 install_pack = load_install_pack()
+
+
+class SkillMetadataTests(unittest.TestCase):
+    def test_generated_skill_has_metadata_and_relative_minimal_entry(self):
+        content = install_pack.skill_hint()
+        install_pack.validate_skill_metadata(content)
+        metadata = dict(line.split(": ", 1) for line in content.splitlines()[1:3])
+        self.assertEqual(json.loads(metadata["name"]), install_pack.PACK_NAME)
+        self.assertLess(len(json.loads(metadata["description"])), 200)
+        self.assertIn("Read [AGENTS.md](AGENTS.md) relative to this SKILL.md directory", content)
+        self.assertIn("Not for unrelated", json.loads(metadata["description"]))
+        self.assertIn("explicit skill invocation", content)
+        self.assertLess(len(content.encode("utf-8")), 1300)
+
+    def test_invalid_generated_metadata_is_rejected(self):
+        valid = install_pack.skill_hint()
+        cases = (
+            valid.split("---", 2)[-1],
+            valid.replace('name: "chatgpt-transfer"', 'name: "wrong-pack"'),
+            valid.replace('name: "chatgpt-transfer"', 'name: null'),
+            valid.replace('name: "chatgpt-transfer"', 'description: "duplicate"'),
+            valid.replace('name: "chatgpt-transfer"', 'name: [broken'),
+        )
+        for content in cases:
+            with self.subTest(content=content[:70]), self.assertRaises(ValueError):
+                install_pack.validate_skill_metadata(content)
+        lines = valid.splitlines()
+        for description in (None, True, [], "", " ", "x" * 1025, "a\nb"):
+            lines[2] = "description: " + json.dumps(description)
+            with self.subTest(description=description), self.assertRaises(ValueError):
+                install_pack.validate_skill_metadata("\n".join(lines))
 
 
 class DetectTargetsTests(unittest.TestCase):
@@ -176,6 +208,20 @@ class InstallPackTests(unittest.TestCase):
         self.assertIn("Unchanged", second.stdout)
         self.assertTrue((dest / "chatgpt-transfer" / "CHATGPT.md").is_file())
 
+    def test_installed_pack_contains_both_languages_and_compatibility_entry(self):
+        dest = self.home / "skills"
+        proc = self._run("--dest", str(dest))
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        pack = dest / "chatgpt-transfer"
+        manifest = json.loads((pack / install_pack.MANIFEST_FILE).read_text(encoding="utf-8"))
+        for name in ("README.md", "README.en.md", "README.ko.md"):
+            self.assertEqual((pack / name).read_bytes(), (ROOT / name).read_bytes())
+            self.assertIn(name, manifest["files"])
+        self.assertIn("](README.en.md)", (pack / "README.md").read_text(encoding="utf-8"))
+        self.assertIn("](README.md)", (pack / "README.en.md").read_text(encoding="utf-8"))
+        (pack / "README.en.md").unlink()
+        self.assertTrue(install_pack.verify_install(pack))
+
     def test_print_chatgpt_mentions_entry(self):
         proc = self._run("--print-chatgpt")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
@@ -311,6 +357,36 @@ class SafeInstallTests(unittest.TestCase):
             link.symlink_to(target, target_is_directory=directory)
         except (OSError, NotImplementedError) as exc:
             self.skipTest(f"Symlinks unavailable: {exc}")
+
+    def test_installed_skill_metadata_is_in_manifest_and_integrity_checked(self):
+        self.install()
+        skill = self.pack / "SKILL.md"
+        manifest = self.read_manifest()
+        self.assertEqual(manifest["files"]["SKILL.md"], hashlib.sha256(skill.read_bytes()).hexdigest())
+        install_pack.validate_skill_metadata(skill.read_text(encoding="utf-8"))
+        skill.write_text("# Missing metadata\n", encoding="utf-8")
+        # Even self-consistent checksums cannot make malformed metadata valid.
+        manifest["files"]["SKILL.md"] = hashlib.sha256(skill.read_bytes()).hexdigest()
+        self.write_manifest(manifest)
+        self.assertTrue(any("SKILL.md" in problem for problem in install_pack.verify_install(self.pack)))
+        with patch.object(install_pack, "run_validate") as validate:
+            self.assertEqual(install_pack.main(["--check", "--dest", str(self.root)]), 1)
+        validate.assert_not_called()
+
+    def test_invalid_generated_skill_refuses_before_replacing_pack(self):
+        self.install()
+        before = self.snapshot()
+        with patch.object(install_pack, "skill_hint", return_value="# No metadata\n"):
+            with self.assertRaisesRegex(SystemExit, "SKILL.md"):
+                self.install(force=True)
+        self.assertEqual(before, self.snapshot())
+        self.assertEqual(list(self.root.iterdir()), [self.pack])
+
+    def test_invalid_generated_skill_dry_run_creates_nothing(self):
+        with patch.object(install_pack, "skill_hint", return_value="# No metadata\n"):
+            with self.assertRaisesRegex(SystemExit, "SKILL.md"):
+                self.install(dry_run=True)
+        self.assertFalse(self.root.exists())
 
     def test_identical_install_skips_copy_and_preserves_user_content(self):
         self.install()
