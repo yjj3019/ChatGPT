@@ -61,14 +61,14 @@ class DetectTargetsTests(unittest.TestCase):
         pack.mkdir()
         with patch.dict(os.environ, {"AI_PACK_DIR": str(pack)}, clear=True):
             targets = install_pack.detect_targets(self.home)
-        self.assertEqual([p for _, p in targets], [pack.resolve()])
+        self.assertEqual([p for _, p in targets], [pack.absolute()])
 
     def test_env_codex_home(self):
         codex = self.home / "codex-home"
         codex.mkdir()
         with patch.dict(os.environ, {"CODEX_HOME": str(codex)}, clear=True):
             targets = install_pack.detect_targets(self.home)
-        self.assertEqual([p for _, p in targets], [(codex / "skills").resolve()])
+        self.assertEqual([p for _, p in targets], [(codex / "skills").absolute()])
 
     def test_dedupes_codex_and_agents_marker(self):
         (self.home / ".codex").mkdir()
@@ -76,7 +76,23 @@ class DetectTargetsTests(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True):
             targets = install_pack.detect_targets(self.home)
         paths = [p for _, p in targets]
-        self.assertEqual(paths, [(self.home / ".agents/skills").resolve()])
+        self.assertEqual(paths, [(self.home / ".agents/skills").absolute()])
+
+
+    def test_detect_preserves_symlink_path_so_install_can_refuse_it(self):
+        target = self.home / "real-skills"
+        target.mkdir()
+        link = self.home / "linked-skills"
+        try:
+            link.symlink_to(target, target_is_directory=True)
+        except (OSError, NotImplementedError) as exc:
+            self.skipTest(f"Symlinks unavailable: {exc}")
+        with patch.dict(os.environ, {"AI_PACK_DIR": str(link)}, clear=True):
+            targets = install_pack.detect_targets(self.home)
+        self.assertEqual([p for _, p in targets], [link.absolute()])
+        with self.assertRaisesRegex(SystemExit, "Symlink|junction"):
+            install_pack.install_pack(targets[0][1])
+        self.assertEqual(list(target.iterdir()), [])
 
 
 class InstallPackTests(unittest.TestCase):
@@ -224,7 +240,7 @@ class InstallPackTests(unittest.TestCase):
         (self.home / ".cursor").mkdir()
         proc = self._run("--list-targets")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertIn(".cursor/skills", proc.stdout)
+        self.assertIn(str(Path(".cursor") / "skills"), proc.stdout)
         self.assertFalse((self.home / ".cursor/skills").exists())
 
     def test_destination_root_requires_config(self):
