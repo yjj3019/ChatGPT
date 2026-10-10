@@ -114,30 +114,51 @@ def pack_source_paths(with_tests: bool) -> list[tuple[str, Path]]:
 
 
 def skill_hint() -> str:
-    """Render a minimal SKILL.md so skill-style hosts can discover the pack."""
-    content = """# ChatGPT / Codex Transfer Pack
+    """Render a narrow skill entry, not a second always-loaded runtime."""
+    description = (
+        "Apply the chatgpt-transfer guidance when the user requests this pack "
+        "for a task or a setup review. Not for unrelated coding or writing."
+    )
+    return (
+        "---\nname: " + json.dumps(PACK_NAME) + "\ndescription: "
+        + json.dumps(description) + "\n---\n"
+        + """# ChatGPT / Codex Transfer Pack
 
-Model-independent working guidance for ChatGPT Projects and Codex workspaces.
+Use when this pack is requested, including explicit skill invocation. Do not
+replace the user's chosen workflow or apply the pack to unrelated tasks.
 
-## When to use
+Read [AGENTS.md](AGENTS.md) relative to this SKILL.md directory as the minimal
+entry, then read only the task-relevant guides it selects, relative to this pack.
+Do not preload CHATGPT.md as a second entry or load every guide. Host and existing
+workspace instructions still take precedence; invoking a skill does not make
+this directory the host's primary folder or auto-load its AGENTS.md.
 
-- Engineering, debugging, reviews, proposals, blogs, and evidence-backed completion
-- Prefer opening a clone of this repository as a Codex workspace (`AGENTS.md`)
-- For ChatGPT web: paste `CHATGPT.md` into Project Instructions (`python scripts/install_pack.py --print-chatgpt`)
-
-## Layout
-
-- `CHATGPT.md` — ChatGPT Project entry
-- `AGENTS.md` — Codex / AGENTS-compatible entry
-- `docs/` — focused guides (load only when relevant)
-- `prompts/` — optional task prompts
-- `scripts/` — sync / validate / measure / install
-
-## Context Budget
-
-Normally Core + 1–2 mapped guides (or one task section + one domain section). Do not preload full, standalone, or all Codex guides. Model changes keep the same integrity rules; use the current model by default; diagnose blockers before supported effort/model changes. Do not expand unrelated guides.
+For a requested ChatGPT Project setup, use [README.en.md](README.en.md) or
+[README.md](README.md). Files being installed does not prove discovery, activation,
+or access in a live client. Keep the current model and granted permissions.
 """
-    return content
+    )
+
+
+def validate_skill_metadata(content: str) -> None:
+    """Check this generator's two JSON-quoted YAML scalars, not arbitrary YAML."""
+    lines = content.splitlines()
+    if len(lines) < 5 or lines[0] != "---" or lines[3] != "---":
+        raise ValueError("invalid SKILL.md frontmatter")
+    metadata = {}
+    for line in lines[1:3]:
+        key, separator, value = line.partition(": ")
+        if not separator or key not in {"name", "description"} or key in metadata:
+            raise ValueError("invalid SKILL.md metadata keys")
+        try:
+            metadata[key] = json.loads(value)
+        except ValueError as exc:
+            raise ValueError("invalid SKILL.md metadata scalar") from exc
+    description = metadata.get("description")
+    if (metadata.get("name") != PACK_NAME or not isinstance(description, str)
+            or not description.strip() or len(description) > 1024
+            or any(ord(char) < 32 for char in description)):
+        raise ValueError("invalid SKILL.md name or description")
 
 
 def bootstrap_note() -> str:
@@ -149,13 +170,16 @@ This directory is a copy of the ChatGPT/Codex transfer pack for skill-style host
 **Preferred Codex setup:** clone https://github.com/yjj3019/ChatGPT.git and open that
 repository as the workspace so `AGENTS.md` loads at the workspace root.
 
-**This copy:** use `AGENTS.md` here as the Codex entry when the host loads skills from
-this folder. Keep Operational Integrity and Context Budget unchanged across models.
+**This copy:** invoke the skill; its instructions explicitly read the adjacent
+`AGENTS.md`. Installing files alone does not prove host discovery or activation.
+Keep Operational Integrity and Context Budget unchanged across models.
 
 **ChatGPT Project:** paste `CHATGPT.md` into Project Instructions; attach needed `docs/` files.
 Run `python scripts/install_pack.py --print-chatgpt` from a clone for exact steps.
 
-**Verify:** `python scripts/validate_framework.py` (from this pack or the clone).
+**Verify files:** `python scripts/install_pack.py --check --dest <skills-root>`
+from the clone, using the original installation destination. This checks files,
+not live host loading; use the README smoke check to verify actual application.
 """
     return note
 
@@ -244,6 +268,11 @@ def verify_install(dest_pack: Path) -> list[str]:
                 problems.append(f"modified file: {name}")
         except (OSError, ValueError) as exc:
             problems.append(f"cannot verify {name}: {exc}")
+    try:
+        _safe_path(dest_pack / "SKILL.md")
+        validate_skill_metadata((dest_pack / "SKILL.md").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        problems.append(str(exc))
     return problems
 
 
@@ -268,6 +297,7 @@ def install_pack(skills_root: Path, *, with_tests: bool = False,
             raise ValueError(f"Pack destination is not a directory: {dest}")
         files = _source_files(with_tests)
         generated = {"SKILL.md": skill_hint(), "INSTALL_NOTE.md": bootstrap_note()}
+        validate_skill_metadata(generated["SKILL.md"])
         files.update({name: hashlib.sha256(text.encode("utf-8")).hexdigest()
                       for name, text in generated.items()})
         expected = {"version": 1, "with_tests": with_tests, "files": files}

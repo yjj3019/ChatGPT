@@ -10,7 +10,7 @@ Model-independent working guidance for engineering, writing, and evidence-backed
 git clone https://github.com/yjj3019/ChatGPT.git
 cd ChatGPT
 python3 scripts/install_pack.py --auto
-# then: Codex → open this repo as workspace (loads AGENTS.md)
+# then: Codex → open this repo as workspace (verify AGENTS.md is active)
 # ChatGPT → paste CHATGPT.md into Project Instructions; attach docs/ as needed
 ```
 
@@ -23,7 +23,7 @@ Existing identical installs are skipped and user files are preserved. Changed, i
 
 For a source ZIP, run `python scripts/validate_framework.py`; source-mode `install_pack.py --check` requires a Git checkout. ZIP sources can still be installed.
 
-Preferred Codex path: **open this clone as the workspace** so `AGENTS.md` loads at the root. Skill copies are for hosts that discover packs under `~/.agents/skills` (and similar). Keep existing higher-priority workspace rules when adopting this pack.
+Preferred Codex path: **open this clone as the workspace** and verify that the root `AGENTS.md` is active. Skill copies are for hosts that discover packs under `~/.agents/skills` (and similar). Keep existing higher-priority workspace rules when adopting this pack.
 
 ## What this is / is not
 
@@ -39,11 +39,21 @@ Preferred Codex path: **open this clone as the workspace** so `AGENTS.md` loads 
 | Use | Entry |
 |---|---|
 | ChatGPT Project | Put `CHATGPT.md` in Project Instructions; make relevant `docs/` available as project knowledge. |
-| Codex | Start Codex **in this repository** so it loads `AGENTS.md`. |
+| Codex | Start Codex **in this repository** and verify that `AGENTS.md` is active. |
 | One-shot copy/paste | Use `docs/chatgpt-5.5-all-in-one-instructions.md` for Core + coding / proposal / blog when you cannot attach the repo. |
 | Skill-style host | After `--auto`, use the installed `chatgpt-transfer/` pack (`SKILL.md` + `AGENTS.md`). |
 
 Read the chosen entry when available at session start. The entry routes each task to the **smallest** relevant guide. Simple tasks use the Core alone. Full and standalone guides are alternatives, not layers to stack on every task.
+
+## Check the actual host after setup
+
+A file's presence does not prove its instructions were loaded. A ChatGPT Project alone does not grant access to a computer folder; upload relevant files or provide an authorized connection. See [Projects documentation](https://learn.chatgpt.com/docs/projects) (checked 2026-10-10).
+
+1. Record the surface (Chat, ChatGPT Work, Codex, API), client/version, and authentication method. For local work, also verify the primary folder or `cwd`.
+2. For Codex, verify the active `AGENTS.md` source, global/parent instructions, and `AGENTS.override.md`. See the [operations guide](docs/codex-operations-rules.md#host-setup-smoke-check) for the default combined 32 KiB limit and `project_doc_max_bytes` setting.
+3. In the current session, verify access to one selected guide and that its relevant section was read. Do not report successful loading without evidence.
+
+These are checks for the user to perform in that host. Static repository checks do not replace actual host/model smoke tests. Before model selection, verify the exposed models, effort settings, tools, and permissions in the [model guide](docs/chatgpt-codex-model-routing.md#verify-the-product-surface).
 
 ## Context Budget + Model-Invariant Floor
 

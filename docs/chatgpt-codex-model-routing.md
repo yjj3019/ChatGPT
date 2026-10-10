@@ -6,6 +6,14 @@ Load only when choosing or switching models, or when the user asks for model adv
 
 Use the current session model and effort by default. Respect explicit user choices and host requirements. Do not maintain a fixed preferred roster or switch automatically because a task is complex, risky, or has failed a set number of times.
 
+## Verify the Product Surface
+
+Before advising a change, record the actual surface (Chat, ChatGPT Work, Codex, or API), client/version, and authentication method (for example, ChatGPT sign-in versus API/provider credentials). Verify the models and effort levels actually exposed to that session, plus available tools and permissions. Product documentation and API catalogs are not a fixed host roster.
+
+Do not transplant API parameters or an API context-window figure such as 1.05M into an app's capabilities. The `model_context_window` configuration describes available context; setting it is not a capacity upgrade. Check the active product/model's documented limits and observed configuration. This guide does not authorize settings changes, new model calls, or global installation.
+
+Official references (checked 2026-10-10): [product model availability](https://learn.chatgpt.com/docs/models), [model selection and product differences](https://learn.chatgpt.com/docs/model-selection), [configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference). These references inform compatibility checks; they do not establish performance gains in this repository. Static checks cannot replace an authorized trial against the same acceptance criteria in the actual host/model.
+
 ## Diagnose Before Switching
 
 1. Identify the blocker from actual results. Missing source evidence, unavailable tools, permission boundaries, incorrect assumptions, and failing implementation are not proof of a model capability limit.

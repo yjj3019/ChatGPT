@@ -10,7 +10,7 @@
 git clone https://github.com/yjj3019/ChatGPT.git
 cd ChatGPT
 python3 scripts/install_pack.py --auto
-# 다음: Codex → 이 저장소를 워크스페이스로 연다 (AGENTS.md 로드)
+# 다음: Codex → 이 저장소를 워크스페이스로 연다 (AGENTS.md 적용 여부 확인)
 # ChatGPT → CHATGPT.md를 Project Instructions에 붙여넣기; 필요 시 docs/ 첨부
 ```
 
@@ -23,7 +23,7 @@ python3 scripts/install_pack.py --auto
 
 소스 ZIP은 `python scripts/validate_framework.py`로 검사하세요. 원본에서 `install_pack.py --check`를 쓰려면 Git 체크아웃이 필요합니다. ZIP 소스도 설치할 수 있습니다.
 
-Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `AGENTS.md`가 로드되게 합니다. 스킬 복사는 `~/.agents/skills` 등에서 팩을 찾는 호스트용입니다. 이미 있는 더 높은 우선순위 워크스페이스 규칙은 유지하세요.
+Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `AGENTS.md` 적용 여부를 확인합니다. 스킬 복사는 `~/.agents/skills` 등에서 팩을 찾는 호스트용입니다. 이미 있는 더 높은 우선순위 워크스페이스 규칙은 유지하세요.
 
 ## 이 팩이 하는 일 / 하지 않는 일
 
@@ -39,11 +39,21 @@ Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `A
 | 용도 | 진입 |
 |---|---|
 | ChatGPT Project | `CHATGPT.md`를 Project Instructions에 넣고, 관련 `docs/`를 프로젝트 지식으로 제공 |
-| Codex | **이 저장소에서** Codex를 시작해 `AGENTS.md`를 로드 |
+| Codex | **이 저장소에서** Codex를 시작하고 `AGENTS.md` 적용 확인 |
 | 원샷 복사/붙여넣기 | 저장소를 붙일 수 없을 때 `docs/chatgpt-5.5-all-in-one-instructions.md` (Core + 코딩/제안/블로그) |
 | 스킬형 호스트 | `--auto` 후 설치된 `chatgpt-transfer/` (`SKILL.md` + `AGENTS.md`) |
 
 세션 시작 시 선택한 진입을 읽습니다. 진입점은 작업을 **가장 작은** 관련 가이드로 보냅니다. 단순 작업은 Core만 사용합니다. 전체·단독 가이드는 대안이며 매 작업에 쌓는 층이 아닙니다.
+
+## 설치 후 실제 호스트 확인
+
+설치 파일이 존재해도 지침이 로드됐다는 뜻은 아닙니다. ChatGPT Project 자체는 컴퓨터 폴더 접근 권한을 주지 않습니다. 관련 파일은 업로드하거나 허용된 연결로 제공하세요. [Projects 공식 안내](https://learn.chatgpt.com/docs/projects) (확인일 2026-10-10).
+
+1. 사용 표면(Chat, ChatGPT Work, Codex, API), 클라이언트·버전, 인증 방식을 기록합니다. 로컬 작업은 primary folder 또는 `cwd`도 확인합니다.
+2. Codex 사용 시 적용 중인 `AGENTS.md`의 실제 출처와 전역·상위 지침, `AGENTS.override.md`를 확인합니다. 합산 기본 32 KiB 제한과 `project_doc_max_bytes` 설정은 [운영 가이드](docs/codex-operations-rules.md#host-setup-smoke-check)를 참고하세요.
+3. 현재 세션에서 선택한 가이드 하나의 접근 가능 여부와 관련 섹션을 읽었는지 확인합니다. 확인되지 않으면 로드 성공으로 보고하지 않습니다.
+
+이는 사용자가 해당 호스트에서 수행할 확인 절차입니다. 저장소 정적 검사는 실제 호스트·모델 스모크 테스트를 대신하지 않습니다. 모델 선택 전에는 [모델 가이드](docs/chatgpt-codex-model-routing.md#verify-the-product-surface)의 가용 모델·노력 수준·도구·권한을 확인하세요.
 
 ## Context Budget + Model-Invariant Floor
 

@@ -319,6 +319,63 @@ class FrameworkCommandsTest(unittest.TestCase):
             self.assertNotIn("**escalate the model**", text)
             self.assertNotIn("**모델을 상향**", text)
 
+    def test_setup_smoke_check_has_bilingual_contract_parity(self):
+        common = (
+            "ChatGPT Work", "Codex", "API", "primary folder", "`cwd`",
+            "AGENTS.override.md", "32 KiB", "project_doc_max_bytes", "2026-10-10",
+            "https://learn.chatgpt.com/docs/projects",
+            "docs/codex-operations-rules.md#host-setup-smoke-check",
+            "docs/chatgpt-codex-model-routing.md#verify-the-product-surface",
+        )
+        localized = {
+            "README.md": ("실제 출처", "전역·상위 지침", "클라이언트·버전", "인증 방식",
+                          "존재해도 지침이 로드됐다는 뜻은 아닙니다", "접근 권한을 주지 않습니다",
+                          "선택한 가이드", "정적 검사", "스모크 테스트를 대신하지 않습니다"),
+            "README.en.md": ("active `AGENTS.md` source", "global/parent instructions",
+                             "client/version", "authentication method",
+                             "presence does not prove", "does not grant access",
+                             "selected guide", "Static repository checks", "do not replace"),
+        }
+        for relative, phrases in localized.items():
+            with self.subTest(relative=relative):
+                text = (self.root / relative).read_text(encoding="utf-8")
+                for phrase in common + phrases:
+                    self.assertIn(phrase, text)
+
+    def test_optional_host_guides_keep_compatibility_and_evidence_boundaries(self):
+        routing = (self.root / "docs/chatgpt-codex-model-routing.md").read_text(encoding="utf-8")
+        for required in (
+            "Chat, ChatGPT Work, Codex, or API", "client/version", "authentication method",
+            "actually exposed", "tools and permissions", "Do not transplant API parameters",
+            "model_context_window", "not a capacity upgrade", "Static checks cannot replace",
+            "https://learn.chatgpt.com/docs/models", "https://learn.chatgpt.com/docs/model-selection",
+            "https://learn.chatgpt.com/docs/config-file/config-reference", "2026-10-10",
+        ):
+            self.assertIn(required, routing)
+        operations = (self.root / "docs/codex-operations-rules.md").read_text(encoding="utf-8")
+        for required in (
+            "## Host Setup Smoke Check", "not before every task", "not evidence",
+            "project-root-to-`cwd`", "AGENTS.override.md", "32 KiB", "project_doc_max_bytes",
+            "selected guide", "do not execute host/model smoke trials", "2026-10-10",
+            "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+            "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+        ):
+            self.assertIn(required, operations)
+
+    def test_optional_host_guides_do_not_expand_generated_runtime(self):
+        entries = [self.root / relative for relative in (
+            "CHATGPT.md", "AGENTS.md", "docs/chatgpt-5.5-all-in-one-instructions.md",
+            "docs/chatgpt-transfer-instructions.md",
+        )]
+        before = [entry.read_bytes() for entry in entries]
+        for relative in ("docs/chatgpt-codex-model-routing.md", "docs/codex-operations-rules.md"):
+            path = self.root / relative
+            path.write_text(path.read_text(encoding="utf-8") + "\nOptional host-check sentinel.\n",
+                            encoding="utf-8")
+        result = self.run_script("sync_runtime.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual([entry.read_bytes() for entry in entries], before)
+
     def test_readonly_reviewer_requires_evidence_and_parent_retesting(self):
         review = (self.root / "docs/codex-subagent-rules.md").read_text(encoding="utf-8")
         for required in (
