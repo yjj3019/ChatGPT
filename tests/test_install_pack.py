@@ -176,6 +176,20 @@ class InstallPackTests(unittest.TestCase):
         self.assertIn("Unchanged", second.stdout)
         self.assertTrue((dest / "chatgpt-transfer" / "CHATGPT.md").is_file())
 
+    def test_installed_pack_contains_both_languages_and_compatibility_entry(self):
+        dest = self.home / "skills"
+        proc = self._run("--dest", str(dest))
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        pack = dest / "chatgpt-transfer"
+        manifest = json.loads((pack / install_pack.MANIFEST_FILE).read_text(encoding="utf-8"))
+        for name in ("README.md", "README.en.md", "README.ko.md"):
+            self.assertEqual((pack / name).read_bytes(), (ROOT / name).read_bytes())
+            self.assertIn(name, manifest["files"])
+        self.assertIn("](README.en.md)", (pack / "README.md").read_text(encoding="utf-8"))
+        self.assertIn("](README.md)", (pack / "README.en.md").read_text(encoding="utf-8"))
+        (pack / "README.en.md").unlink()
+        self.assertTrue(install_pack.verify_install(pack))
+
     def test_print_chatgpt_mentions_entry(self):
         proc = self._run("--print-chatgpt")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)

@@ -1,5 +1,6 @@
 """Exercise the real maintenance commands against disposable repository copies."""
 import importlib.util
+import re
 import shutil
 import subprocess
 import sys
@@ -158,6 +159,36 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.rewrite("tests/GoldenTest-015.md", "# Golden Test 015:", "# Golden Test 099:")
         self.assert_failure(self.run_script("validate_framework.py"), "filename/header mismatch")
 
+    def test_readme_languages_preserve_commands_references_and_links(self):
+        korean = (self.root / "README.md").read_text(encoding="utf-8-sig")
+        english = (self.root / "README.en.md").read_text(encoding="utf-8-sig")
+        alias = (self.root / "README.ko.md").read_text(encoding="utf-8-sig")
+        self.assertIn("](README.en.md)", korean)
+        self.assertIn("](README.md)", english)
+        self.assertIn("](README.md)", alias)
+        self.assertLess(len(alias), 500)
+        command_lines = lambda text: [line for line in text.splitlines()
+                                     if line.startswith(("git ", "cd ", "python ", "python3 "))]
+        self.assertEqual(command_lines(korean), command_lines(english))
+        references = lambda text: set(re.findall(r"`((?:docs|scripts|prompts|tests)/[^`]+)`", text))
+        self.assertEqual(references(korean), references(english))
+        for text in (korean, english):
+            for contract in ("--force", "--dry-run", "--check", "--with-tests",
+                             "Validation Gap", "README", "Python 3.11"):
+                self.assertIn(contract, text)
+        result = self.run_script("validate_framework.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_missing_english_readme_is_rejected(self):
+        (self.root / "README.en.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required file: README.en.md")
+
+    def test_missing_localized_inline_readme_reference_is_rejected(self):
+        path = self.root / "README.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\n`README.en.md`\n", encoding="utf-8")
+        (self.root / "README.en.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "references missing file: README.en.md")
+
     def test_missing_inline_reference_is_rejected(self):
         path = self.root / "README.md"
         path.write_text(path.read_text(encoding="utf-8") + "\n`scripts/missing.py`\n", encoding="utf-8")
@@ -279,7 +310,7 @@ class FrameworkCommandsTest(unittest.TestCase):
             self.assertIn(required, routing)
         for obsolete in ("## Model Roster", "## Default Picks", "## Escalation Ladder", "gpt-5.6-terra"):
             self.assertNotIn(obsolete, routing)
-        for relative in ("AGENTS.md", "docs/codex-operations-rules.md", "README.md", "README.ko.md"):
+        for relative in ("AGENTS.md", "docs/codex-operations-rules.md", "README.md", "README.en.md", "README.ko.md"):
             text = (self.root / relative).read_text(encoding="utf-8")
             self.assertNotIn("escalate model when blocked", text)
             self.assertNotIn("escalate the model when blocked", text)
