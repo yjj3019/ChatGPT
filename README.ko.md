@@ -19,6 +19,10 @@ python3 scripts/install_pack.py --auto
 - `python3 scripts/install_pack.py --check` — 설치 파일 확인 + `validate_framework.py` 실행
 - `python3 scripts/install_pack.py --help` — `--dest`, `--with-tests`, `--dry-run` 등
 
+동일한 설치는 건너뛰며 사용자 파일을 보존합니다. 변경·누락되었거나 구형인 설치는 덮어쓰지 않습니다. `--force`는 사용자 추가 파일까지 전체 교체하므로 먼저 백업하세요. `--dry-run`은 쓰기 없이 충돌을 검사하고, `--check`는 로컬 콘텐츠 매니페스트의 무결성을 확인합니다(배포자 인증은 아님). 같은 대상에 설치를 동시에 실행하지 마세요.
+
+소스 ZIP은 `python scripts/validate_framework.py`로 검사하세요. 원본에서 `install_pack.py --check`를 쓰려면 Git 체크아웃이 필요합니다. ZIP 소스도 설치할 수 있습니다.
+
 Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `AGENTS.md`가 로드되게 합니다. 스킬 복사는 `~/.agents/skills` 등에서 팩을 찾는 호스트용입니다. 이미 있는 더 높은 우선순위 워크스페이스 규칙은 유지하세요.
 
 ## 이 팩이 하는 일 / 하지 않는 일
@@ -28,7 +32,7 @@ Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `A
 | 선택 로딩이 있는 얇은 ChatGPT·Codex 진입점 | 파인튜닝·가중치 학습·CoT 증류 |
 | 모델 공통 Context Budget + Model-Invariant Floor | 모든 모델이 동일 성능을 낸다는 보장 |
 | sync / validate / measure / 골든 테스트 유지보수 도구 | 자동 교차 세션 기억·비밀 저장 |
-| 권고형 모델 라우팅 (`gpt-6-astra` … `gpt-5.4-mini`) | 호스트 모델 가용성 확인의 대체 |
+| 증거 기반 모델·추론 노력 수준 선택 | 호스트 모델 가용성 확인의 대체 |
 
 ## 진입점 하나 고르기
 
@@ -45,15 +49,15 @@ Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `A
 
 **Context Budget (일반 사용):** Core + 매핑된 가이드 1–2개, 또는 작업 섹션 1개 + 도메인 섹션 1개. 전체 transfer 가이드·all-in-one·패턴 뱅크·모든 `docs/codex-*.md`를 **미리 로드하지 마세요**.
 
-**Model-Invariant Floor** (`docs/chatgpt-codex-model-routing.md`): `gpt-6-astra` … `gpt-5.4-mini`와 무관하게:
+**Model-Invariant Floor** (`docs/chatgpt-codex-model-routing.md`): 모든 모델에서:
 
 1. 동일한 Core + Operational Integrity (증거·완료·권한·비밀 금지).
 2. 동일한 Context Budget — 약한/강한 모델에 문서를 더 쏟아 “보정”하지 않음.
 3. 동일한 Task Loading Map / Intent Classifier.
 4. 동일한 출력 계약 (`[unverified]`, 최소 완전 변경, 가짜 완료 금지).
-5. 막히면: **모델을 상향** (`mini` → `luna` → `terra` → `sol` → `astra`); 무관한 지침을 **늘리지 않음**.
+5. 막히면 먼저 원인을 확인합니다. 증거나 권한 부족을 모델의 역량 한계로 보지 않으며, 무관한 지침을 **늘리지 않습니다**.
 
-권고 기본값(가용성 확인 필요): 복잡 → `gpt-6-astra`; 일상 에이전틱 → `gpt-5.6-sol`; 일상 코딩 → `gpt-5.6-terra`; 저비용/빠른 코딩 → `gpt-5.6-luna`; 아주 작은 작업 → `gpt-5.4-mini`.
+기본적으로 현재 세션의 모델과 추론 노력 수준을 유지합니다. 작업 증거로 필요성이 확인되고, 호스트가 지원하며, 권한이 허용할 때만 변경합니다. `docs/chatgpt-codex-model-routing.md`를 따르며, 고정 모델 목록이나 자동 상향 순서를 적용하지 않습니다.
 
 ## 집중 가이드
 
@@ -64,7 +68,7 @@ Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `A
 - `docs/chatgpt-engineering-task-rules.md` — 아키텍처·RCA·리서치·SOP·프롬프트/보안 리뷰 (**해당 섹션만**)
 - `docs/chatgpt-domain-packs.md` — RHEL, OpenShift, Kubernetes, Linux, Ansible, Satellite, EA, AI 인프라, EV (**해당 섹션만**)
 - `docs/chatgpt-knowledge-work-rules.md` — 회의·발표·경영 요약
-- `docs/chatgpt-codex-model-routing.md` — 날짜가 있는 모델 권고 + Model-Invariant Floor
+- `docs/chatgpt-codex-model-routing.md` — 현재 모델 유지 기본값·증거 기반 변경·Model-Invariant Floor
 - `docs/codex-*.md` — Codex 운영·Office·서브에이전트·팀 게이트 (필요할 때만)
 - `prompts/chatgpt-task-prompts.md` — 선택적 작업 프롬프트
 - `docs/chatgpt-transfer-instructions.md` — 생성되는 전체 참고; 요청 시에만 로드

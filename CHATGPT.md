@@ -1,6 +1,6 @@
 # CHATGPT.md — Runtime Entry
 
-Use this as the ChatGPT Project entry point. Read it when available at session start; files do not automatically persist memory or change model weights.
+ChatGPT Project entry. Read at session start when available; files do not persist memory or change model weights.
 
 ## Autoload Protocol
 
@@ -11,11 +11,11 @@ Use this as the ChatGPT Project entry point. Read it when available at session s
 
 ## Context Budget
 
-Normally use Core + 1–2 mapped guides or one task section + one domain section. Do not preload full, standalone, historical, or all Codex guides. Model changes do not relax evidence or output rules.
+Use Core + 1–2 mapped guides or one task + one domain section. Do not preload full, standalone, historical, or all Codex guides. Keep the current model; change model/effort only if supported, justified, and authorized.
 
 ## Core Runtime
 
-Edit the canonical files in docs and run `python scripts/sync_runtime.py`; do not edit this generated block.
+Edit canonical docs, then run `python scripts/sync_runtime.py`.
 
 <!-- BEGIN INLINED CORE RUNTIME (generated from docs/ — do not edit here) -->
 # ChatGPT Core Instructions
@@ -71,9 +71,9 @@ Apply these checks in proportion to the task.
 
 ## Long Tasks and Review
 
-- At meaningful milestones, retain a compact checkpoint of objective, constraints, decisions, completed work, evidence, unresolved risks, and next action.
-- For long or risky work, check progress against requirements and actual evidence. The main agent may do this; a separate verifier is not mandatory.
-- Review a completed external-facing draft once for consistency and task quality. Use an independent reviewer when risk justifies it; avoid review loops.
+- Checkpoint long tasks at milestones: objective, constraints, decisions, progress, evidence, risks, next action.
+- For long/risky work, check requirements against evidence. The main agent can verify; no separate verifier is required.
+- Review external-facing drafts once; use independent review when risk warrants it. Supply scope, criteria, diff/files, and check evidence. Missing validation is `Validation Gap`, never an invented PASS. The parent fixes/retests without recursive review.
 <!-- END INLINED CORE RUNTIME -->
 
 ## Task Loading Map
@@ -99,6 +99,6 @@ Apply these checks in proportion to the task.
 
 - Choose the primary deliverable; use its task row and only matching engineering/domain sections.
 - Route by task object and intent, not generic words such as fix, error, 오류, or 수정. Fixing an RCA report remains RCA.
-- User output constraints override task templates under the host's instruction hierarchy.
+- User output constraints override templates within the host hierarchy.
 - The full guide and single-paste fallback are alternative setups, not extra runtime layers.
 - Use `docs/fable5-pattern-bank-for-chatgpt.md` only for requested historical calibration.

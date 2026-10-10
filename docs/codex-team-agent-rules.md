@@ -23,7 +23,8 @@ Use team/subagents only when they reduce real work: broad codebase scans, indepe
 4. Use structured outputs for handoff: `status`, `findings`, `evidence`, `risks`, `next_action`.
 5. Do not let subagents edit the same files in parallel.
 6. Aggregate results before acting on them.
-7. Stop and ask the user after the same blocker repeats 3 times.
+7. Diagnose repeated blockers from evidence; missing access or authorization is not a model capability limit. Ask only for needed user input; continue independent authorized work.
+8. For reviewers, supply scope, criteria, diff/files, command, working directory, exit status, and failure evidence per `docs/codex-subagent-rules.md`. Missing validation is `Validation Gap`, never an invented PASS. Review stays read-only; the parent fixes/retests without recursive review.
 
 ## Output Contract
 

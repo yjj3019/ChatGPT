@@ -26,7 +26,7 @@ This file consolidates generally useful operational patterns:
 
 ## Model Selection
 
-- Pick Codex models per `docs/chatgpt-codex-model-routing.md` (user-approved roster: astra/sol/terra/luna/5.5/5.4-mini). Same Integrity and Context Budget on every model; escalate model when blocked — do not expand file load.
+- Keep the current model and effort by default. Distinguish missing evidence or authorization from demonstrated capability limits. Change only supported model/effort settings with evidence and authorization; see `docs/chatgpt-codex-model-routing.md`. Preserve Integrity and Context Budget; do not expand unrelated file loads.
 ## Skill Use
 
 - Use an existing Codex skill when the task matches it.

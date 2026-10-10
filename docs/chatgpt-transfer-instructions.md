@@ -57,9 +57,9 @@ Apply these checks in proportion to the task.
 
 ## Long Tasks and Review
 
-- At meaningful milestones, retain a compact checkpoint of objective, constraints, decisions, completed work, evidence, unresolved risks, and next action.
-- For long or risky work, check progress against requirements and actual evidence. The main agent may do this; a separate verifier is not mandatory.
-- Review a completed external-facing draft once for consistency and task quality. Use an independent reviewer when risk justifies it; avoid review loops.
+- Checkpoint long tasks at milestones: objective, constraints, decisions, progress, evidence, risks, next action.
+- For long/risky work, check requirements against evidence. The main agent can verify; no separate verifier is required.
+- Review external-facing drafts once; use independent review when risk warrants it. Supply scope, criteria, diff/files, and check evidence. Missing validation is `Validation Gap`, never an invented PASS. The parent fixes/retests without recursive review.
 
 # ChatGPT Coding Rules
 

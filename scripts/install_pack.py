@@ -11,18 +11,23 @@ ChatGPT Project Instructions (web) cannot be fully automated; use --print-chatgp
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
-from pathlib import Path
+import tempfile
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACK_NAME = "chatgpt-transfer"
 REQUIRED_FILES = ("CHATGPT.md", "AGENTS.md", "README.md")
 REQUIRED_DIRS = ("docs", "prompts", "scripts")
 OPTIONAL_DIRS = ("tests",)
-MARKER_FILE = "CHATGPT.md"
+MANIFEST_FILE = ".chatgpt-transfer-manifest.json"
+GENERATED_FILES = ("SKILL.md", "INSTALL_NOTE.md")
 
 # (label, home marker dir, skills/packs root relative to home)
 HOSTS: list[tuple[str, str, str]] = [
@@ -60,7 +65,7 @@ def detect_targets(home: Path | None = None) -> list[tuple[str, Path]]:
     for label, marker, skills_dir in HOSTS:
         if not (home / marker).is_dir():
             continue
-        target = (home / skills_dir).resolve()
+        target = (home / skills_dir).absolute()
         if target not in seen:
             seen.add(target)
             found.append((label, target))
@@ -69,14 +74,14 @@ def detect_targets(home: Path | None = None) -> list[tuple[str, Path]]:
         raw = os.environ.get(env_name)
         if not raw:
             continue
-        target = Path(raw).expanduser().resolve()
+        target = Path(raw).expanduser().absolute()
         if target not in seen:
             seen.add(target)
             found.append((f"${env_name}", target))
 
     codex_home = os.environ.get("CODEX_HOME")
     if codex_home:
-        target = (Path(codex_home).expanduser() / "skills").resolve()
+        target = (Path(codex_home).expanduser() / "skills").absolute()
         if target not in seen:
             seen.add(target)
             found.append(("$CODEX_HOME/skills", target))
@@ -108,8 +113,8 @@ def pack_source_paths(with_tests: bool) -> list[tuple[str, Path]]:
     return items
 
 
-def write_skill_hint(dest_pack: Path) -> None:
-    """Write a minimal SKILL.md so skill-style hosts can discover the pack."""
+def skill_hint() -> str:
+    """Render a minimal SKILL.md so skill-style hosts can discover the pack."""
     content = """# ChatGPT / Codex Transfer Pack
 
 Model-independent working guidance for ChatGPT Projects and Codex workspaces.
@@ -130,12 +135,12 @@ Model-independent working guidance for ChatGPT Projects and Codex workspaces.
 
 ## Context Budget
 
-Normally Core + 1–2 mapped guides (or one task section + one domain section). Do not preload full, standalone, or all Codex guides. Model changes keep the same integrity rules; escalate the model when blocked — do not expand unrelated guides.
+Normally Core + 1–2 mapped guides (or one task section + one domain section). Do not preload full, standalone, or all Codex guides. Model changes keep the same integrity rules; use the current model by default; diagnose blockers before supported effort/model changes. Do not expand unrelated guides.
 """
-    (dest_pack / "SKILL.md").write_text(content, encoding="utf-8")
+    return content
 
 
-def write_bootstrap_note(dest_pack: Path) -> None:
+def bootstrap_note() -> str:
     """Short note at pack root pointing Codex users at AGENTS.md / clone workflow."""
     note = """# Installed pack bootstrap
 
@@ -152,64 +157,174 @@ Run `python scripts/install_pack.py --print-chatgpt` from a clone for exact step
 
 **Verify:** `python scripts/validate_framework.py` (from this pack or the clone).
 """
-    (dest_pack / "INSTALL_NOTE.md").write_text(note, encoding="utf-8")
+    return note
 
 
-def install_pack(
-    skills_root: Path,
-    *,
-    with_tests: bool = False,
-    dry_run: bool = False,
-) -> Path:
-    """Copy the pack into skills_root/chatgpt-transfer/. Overwrites idempotently."""
-    skills_root = skills_root.expanduser()
-    if skills_root.exists() and not skills_root.is_dir():
-        raise SystemExit(f"Destination is not a directory: {skills_root}")
-    dest = skills_root / PACK_NAME
-    items = pack_source_paths(with_tests=with_tests)
+def _safe_path(path: Path) -> None:
+    """Reject links/reparse points before resolving or reading their targets."""
+    for part in (path, *path.parents):
+        try:
+            info = part.lstat()
+        except FileNotFoundError:
+            continue
+        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+            raise ValueError(f"Symlink or junction is not supported: {part}")
 
-    if dry_run:
-        return dest
 
-    if dest.exists():
-        shutil.rmtree(dest)
-    dest.mkdir(parents=True, exist_ok=True)
+def _hash(path: Path) -> str:
+    _safe_path(path)
+    if not path.is_file():
+        raise ValueError(f"Not a regular file: {path}")
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
-    for relative, source in items:
-        target = dest / relative
-        if source.is_dir():
-            shutil.copytree(source, target, ignore=COPY_IGNORE)
-        else:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, target)
 
-    write_skill_hint(dest)
-    write_bootstrap_note(dest)
+def _source_files(with_tests: bool) -> dict[str, str]:
+    files = {}
+    _safe_path(REPO_ROOT)
+    for relative, source in pack_source_paths(with_tests):
+        _safe_path(source)
+        if source.is_file():
+            files[relative] = _hash(source)
+            continue
+        for directory, dirs, names in os.walk(source, followlinks=False):
+            ignored = COPY_IGNORE(directory, dirs + names)
+            dirs[:] = [name for name in dirs if name not in ignored]
+            for name in dirs + [name for name in names if name not in ignored]:
+                _safe_path(Path(directory) / name)
+            for name in names:
+                if name not in ignored:
+                    path = Path(directory) / name
+                    files[path.relative_to(REPO_ROOT).as_posix()] = _hash(path)
+    return files
 
-    if not (dest / MARKER_FILE).is_file():
-        shutil.rmtree(dest, ignore_errors=True)
-        raise SystemExit(f"Installation verification failed: missing {MARKER_FILE} in {dest}")
-    return dest
+
+def _read_manifest(pack: Path) -> dict:
+    _safe_path(pack / MANIFEST_FILE)
+    manifest = json.loads((pack / MANIFEST_FILE).read_text(encoding="utf-8"))
+    if (not isinstance(manifest, dict) or type(manifest.get("version")) is not int or manifest["version"] != 1
+            or type(manifest.get("with_tests")) is not bool
+            or not isinstance(manifest.get("files"), dict) or not manifest["files"]):
+        raise ValueError("invalid manifest format")
+    for name, checksum in manifest["files"].items():
+        if (not isinstance(name, str) or not name or "\\" in name or ":" in name
+                or "\x00" in name or PurePosixPath(name).is_absolute()
+                or any(part in {"", ".", ".."} or part.endswith((".", " "))
+                       or PureWindowsPath(part).is_reserved() for part in name.split("/"))
+                or any(ord(c) < 32 for c in name)
+                or name == MANIFEST_FILE or not isinstance(checksum, str)
+                or len(checksum) != 64 or any(c not in "0123456789abcdef" for c in checksum)):
+            raise ValueError("invalid manifest path or checksum")
+    required = (*REQUIRED_FILES, *GENERATED_FILES, "scripts/install_pack.py",
+                "scripts/sync_runtime.py", "scripts/validate_framework.py")
+    if not set(required).issubset(manifest["files"]):
+        raise ValueError("manifest is missing required files")
+    if manifest["with_tests"] and "tests/Scorecard.md" not in manifest["files"]:
+        raise ValueError("manifest is missing tests")
+    return manifest
 
 
 def verify_install(dest_pack: Path) -> list[str]:
-    """Return problems found in an installed pack (empty = OK)."""
-    problems: list[str] = []
-    if not dest_pack.is_dir():
-        return [f"missing pack directory: {dest_pack}"]
-    for name in REQUIRED_FILES:
-        if not (dest_pack / name).is_file():
-            problems.append(f"missing file: {name}")
+    """Verify shipped content; unrelated user files are preserved and ignored."""
+    try:
+        _safe_path(dest_pack)
+        manifest = _read_manifest(dest_pack)
+    except (OSError, ValueError) as exc:
+        return [f"invalid or missing integrity manifest: {exc}"]
+    problems = []
     for name in REQUIRED_DIRS:
-        if not (dest_pack / name).is_dir():
-            problems.append(f"missing directory: {name}")
-        else:
-            # scripts needed for sync/validate
-            if name == "scripts":
-                for script in ("validate_framework.py", "sync_runtime.py", "install_pack.py"):
-                    if not (dest_pack / "scripts" / script).is_file():
-                        problems.append(f"missing scripts/{script}")
+        try:
+            _safe_path(dest_pack / name)
+            if not (dest_pack / name).is_dir():
+                problems.append(f"missing directory: {name}")
+        except (OSError, ValueError) as exc:
+            problems.append(str(exc))
+    for name, checksum in manifest["files"].items():
+        try:
+            if _hash(dest_pack / name) != checksum:
+                problems.append(f"modified file: {name}")
+        except (OSError, ValueError) as exc:
+            problems.append(f"cannot verify {name}: {exc}")
     return problems
+
+
+def install_pack(skills_root: Path, *, with_tests: bool = False,
+                 dry_run: bool = False, force: bool = False) -> Path:
+    """Skip identical installs; refuse differences unless explicitly forced.
+
+    Stage and verify before replacement. A failed publish restores the old pack.
+    This is not a lock against hostile concurrent filesystem modifications.
+    """
+    skills_root = skills_root.expanduser().absolute()
+    dest = skills_root / PACK_NAME
+    try:
+        _safe_path(dest)
+        _safe_path(REPO_ROOT)
+        source_root, target = REPO_ROOT.resolve(), dest.resolve()
+        if target.is_relative_to(source_root) or source_root.is_relative_to(target):
+            raise ValueError("Source and destination overlap")
+        if skills_root.exists() and not skills_root.is_dir():
+            raise ValueError(f"Destination is not a directory: {skills_root}")
+        if dest.exists() and not dest.is_dir():
+            raise ValueError(f"Pack destination is not a directory: {dest}")
+        files = _source_files(with_tests)
+        generated = {"SKILL.md": skill_hint(), "INSTALL_NOTE.md": bootstrap_note()}
+        files.update({name: hashlib.sha256(text.encode("utf-8")).hexdigest()
+                      for name, text in generated.items()})
+        expected = {"version": 1, "with_tests": with_tests, "files": files}
+        if dest.exists():
+            if not force and not verify_install(dest) and _read_manifest(dest) == expected:
+                print(f"Unchanged (preserved): {dest}")
+                return dest
+            if not force:
+                raise ValueError(f"Refusing to overwrite existing pack at {dest}. "
+                                 "Back up user files, then pass --force to replace.")
+            print(f"WARNING: --force replaces ALL contents, including user files: {dest}",
+                  file=sys.stderr)
+        if dry_run:
+            return dest
+        skills_root.mkdir(parents=True, exist_ok=True)
+        work = Path(tempfile.mkdtemp(prefix=".chatgpt-transfer-", dir=skills_root))
+        stage, backup = work / "new", work / "old"
+        published = False
+        try:
+            stage.mkdir()
+            for relative, source in pack_source_paths(with_tests):
+                if source.is_dir():
+                    shutil.copytree(source, stage / relative, ignore=COPY_IGNORE)
+                else:
+                    shutil.copy2(source, stage / relative)
+            for name, text in generated.items():
+                (stage / name).write_text(text, encoding="utf-8", newline="\n")
+            copied = {}
+            for path in stage.rglob("*"):
+                _safe_path(path)
+                if path.is_file():
+                    copied[path.relative_to(stage).as_posix()] = _hash(path)
+            if copied != files:
+                raise ValueError("Staged content differs from source snapshot; retry installation")
+            (stage / MANIFEST_FILE).write_text(json.dumps(expected, sort_keys=True, indent=2)
+                                               + "\n", encoding="utf-8")
+            problems = verify_install(stage)
+            if problems:
+                raise ValueError("Staged verification failed: " + "; ".join(problems))
+            _safe_path(dest)
+            if dest.exists():
+                dest.rename(backup)
+            try:
+                stage.rename(dest)
+                published = True
+            except OSError:
+                if backup.exists():
+                    backup.rename(dest)
+                raise
+        finally:
+            if published or not backup.exists():
+                shutil.rmtree(work)
+            else:
+                print(f"Recovery required; original pack retained at {backup}", file=sys.stderr)
+        return dest
+    except (OSError, ValueError) as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 def run_validate(tree: Path) -> int:
@@ -243,7 +358,7 @@ def print_chatgpt_steps() -> None:
     print("   Do not attach the full transfer guide or all-in-one unless requested.")
     print("5. Keep Context Budget: Core + 1–2 mapped guides (or one task + one domain section).")
     print("6. Model choice (advisory): see docs/chatgpt-codex-model-routing.md")
-    print("   (astra…mini). Same Operational Integrity / Context Budget on every model.")
+    print("   Use the current model by default; preserve integrity and context limits.")
     print()
     print("Exact file to paste:")
     print(f"  {entry}")
@@ -310,6 +425,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Show destinations without copying files",
     )
+    parser.add_argument("--force", action="store_true",
+                        help="Replace ALL existing pack contents, including user files; back up first")
     args = parser.parse_args(argv)
     _utf8_console()
 
@@ -345,8 +462,11 @@ def main(argv: list[str] | None = None) -> int:
         failed = False
         for pack in roots:
             print(f"Checking: {pack}")
-            problems = verify_install(pack) if pack != REPO_ROOT else []
-            if pack == REPO_ROOT:
+            # Only a checkout is a source tree. Installed scripts run with their
+            # own pack as REPO_ROOT, even after install metadata is removed.
+            source_checkout = pack == REPO_ROOT and (pack / ".git").exists()
+            problems = [] if source_checkout else verify_install(pack)
+            if source_checkout:
                 for name in REQUIRED_FILES:
                     if not (pack / name).is_file():
                         problems.append(f"missing file: {name}")
@@ -378,7 +498,7 @@ def main(argv: list[str] | None = None) -> int:
             targets = [("AGENTS.md compatible (fallback)", fallback)]
         summaries: list[str] = []
         for label, root in targets:
-            dest = install_pack(root, with_tests=args.with_tests, dry_run=args.dry_run)
+            dest = install_pack(root, with_tests=args.with_tests, dry_run=args.dry_run, force=args.force)
             action = "Would install" if args.dry_run else "Installed"
             line = f"{action}: {dest}  ({label})"
             print(line)
@@ -401,7 +521,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Explicit --dest or env-based single install
     root = destination_root(args.dest)
-    dest = install_pack(root, with_tests=args.with_tests, dry_run=args.dry_run)
+    dest = install_pack(root, with_tests=args.with_tests, dry_run=args.dry_run, force=args.force)
     action = "Would install" if args.dry_run else "Installed"
     print(f"{action}: {dest}")
     if not args.dry_run:
