@@ -1,6 +1,6 @@
 # Codex Working Rules
 
-Guidance and Python maintenance scripts for ChatGPT/Codex. This is the Codex entry; `CHATGPT.md` is the alternative ChatGPT entry. Do not preload both. Guidance changes working behavior, not model weights or hidden reasoning.
+ChatGPT/Codex guidance and Python maintenance scripts. Codex entry; `CHATGPT.md` is the ChatGPT alternative. Do not preload both. Guidance changes behavior, not weights or hidden reasoning.
 
 ## Working Contract
 
@@ -16,7 +16,7 @@ Guidance and Python maintenance scripts for ChatGPT/Codex. This is the Codex ent
 
 ## Context Budget
 
-Normally use Core + 1–2 mapped guides or one task section + one domain section. Do not preload full, standalone, historical, or all Codex guides. Search before whole-file reads, reuse unchanged evidence, batch independent reads, and keep dependent actions sequential. Small tasks stay in one context. Checkpoint long tasks at milestones. Model changes keep the same integrity/output rules and Context Budget; escalate the model when blocked, do not expand unrelated guides (`docs/chatgpt-codex-model-routing.md`).
+Use Core + 1–2 mapped guides or one task + one domain section. Do not preload full, standalone, historical, or all Codex guides. Search before whole-file reads, reuse evidence, batch independent reads, and sequence dependencies. Keep small tasks in one context; checkpoint long tasks. Keep the current model by default; diagnose evidence/permission gaps before capability limits. Change model/effort only when supported, justified, and authorized (`docs/chatgpt-codex-model-routing.md`).
 
 ## Load Only When Relevant
 
@@ -34,7 +34,7 @@ Normally use Core + 1–2 mapped guides or one task section + one domain section
 | Proposal review / blog | `docs/chatgpt-proposal-review-rules.md` / `docs/chatgpt-blog-rules.md` |
 | Evidence/completion detail | `docs/chatgpt-operational-integrity-rules.md` |
 
-Disclose unavailable optional guides and continue safely. Missing essential evidence, authorization, or required templates blocks only dependent work. Keep reviewers read-only, avoid overlapping edits, and aggregate once.
+Disclose missing optional guides; continue safely. Missing essential evidence, authorization, or required templates blocks only dependent work. Supply reviewers scoped evidence; report missing validation as `Validation Gap`. Keep review read-only; fix/retest without recursive review.
 
 ## Repository Checks
 
@@ -47,4 +47,4 @@ python -m unittest discover -s tests -p "test_*.py"
 python scripts/measure_load.py
 ```
 
-Edit canonical docs, then run `python scripts/sync_runtime.py`. Preserve historical filenames. Save related work here; Office outputs in `outputs/` and reusable scripts in `scripts/office/`. Version existing artifacts and reopen/render before delivery.
+Edit canonical docs, then run `python scripts/sync_runtime.py`. Preserve historical filenames. Save work here; Office outputs in `outputs/` and reusable scripts in `scripts/office/`. Version existing artifacts and reopen/render before delivery.

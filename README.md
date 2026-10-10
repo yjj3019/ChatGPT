@@ -19,6 +19,10 @@ python3 scripts/install_pack.py --auto
 - `python3 scripts/install_pack.py --check` — verify files and run `validate_framework.py`
 - `python3 scripts/install_pack.py --help` — destinations, `--dest`, `--with-tests`, `--dry-run`
 
+Existing identical installs are skipped and user files are preserved. Changed, incomplete, or legacy installs are refused. Back up local files before using `--force`: it replaces the entire pack, including user-added files. `--dry-run` checks conflicts without writing; `--check` verifies the local content manifest (not publisher authenticity). Do not run concurrently against the same destination.
+
+For a source ZIP, run `python scripts/validate_framework.py`; source-mode `install_pack.py --check` requires a Git checkout. ZIP sources can still be installed.
+
 Preferred Codex path: **open this clone as the workspace** so `AGENTS.md` loads at the root. Skill copies are for hosts that discover packs under `~/.agents/skills` (and similar). Keep existing higher-priority workspace rules when adopting this pack.
 
 ## What this is / is not
@@ -28,7 +32,7 @@ Preferred Codex path: **open this clone as the workspace** so `AGENTS.md` loads 
 | Lean ChatGPT + Codex entry points with selective guide loading | Fine-tuning, weight training, or CoT distillation |
 | Context Budget + Model-Invariant Floor across models | A guarantee that every model performs equally |
 | Sync / validate / measure / golden-test maintenance tooling | Automatic cross-session memory or secret storage |
-| Advisory model routing (`gpt-6-astra` … `gpt-5.4-mini`) | A substitute for verifying host model availability |
+| Evidence-based model/effort routing | A substitute for verifying host model availability |
 
 ## Choose one entry point
 
@@ -45,15 +49,15 @@ Read the chosen entry when available at session start. The entry routes each tas
 
 **Context Budget (normal use):** Core + 1–2 mapped guides, or one task section + one domain section. Do **not** preload the full transfer guide, all-in-one fallback, pattern bank, or every `docs/codex-*.md`.
 
-**Model-Invariant Floor** (see `docs/chatgpt-codex-model-routing.md`): regardless of `gpt-6-astra` … `gpt-5.4-mini`:
+**Model-Invariant Floor** (see `docs/chatgpt-codex-model-routing.md`): on every model:
 
 1. Same Core + Operational Integrity (evidence, completion, authorization, no secrets).
 2. Same Context Budget — do not dump extra docs onto weaker or stronger models to “compensate.”
 3. Same Task Loading Map / Intent Classifier.
 4. Same output contract (`[unverified]`, smallest complete change, no fake completion).
-5. When blocked: **escalate the model** (`mini` → `luna` → `terra` → `sol` → `astra`); do **not** expand unrelated instructions.
+5. Diagnose blockers first: missing evidence or permission is not a model capability limit. Do **not** expand unrelated instructions.
 
-Advisory defaults (verify availability): complex → `gpt-6-astra`; everyday agentic → `gpt-5.6-sol`; everyday coding → `gpt-5.6-terra`; cheap/fast coding → `gpt-5.6-luna`; tiny → `gpt-5.4-mini`.
+Keep the current session model and effort by default. Change only when task evidence justifies it, the host supports it, and authorization permits it. Follow `docs/chatgpt-codex-model-routing.md`; no fixed roster or automatic escalation ladder applies.
 
 ## Focused guides
 
@@ -64,7 +68,7 @@ Advisory defaults (verify availability): complex → `gpt-6-astra`; everyday age
 - `docs/chatgpt-engineering-task-rules.md` — architecture, RCA, research, SOP, prompt/security review (**matching section only**).
 - `docs/chatgpt-domain-packs.md` — RHEL, OpenShift, Kubernetes, Linux, Ansible, Satellite, EA, AI infra, EV (**matching section only**).
 - `docs/chatgpt-knowledge-work-rules.md` — meetings, presentations, executive summaries.
-- `docs/chatgpt-codex-model-routing.md` — dated advisory model preferences + Model-Invariant Floor.
+- `docs/chatgpt-codex-model-routing.md` — current-model default, evidence-based changes, and Model-Invariant Floor.
 - `docs/codex-*.md` — Codex ops, Office, subagents, team gates (load only when relevant).
 - `prompts/chatgpt-task-prompts.md` — optional task prompts.
 - `docs/chatgpt-transfer-instructions.md` — generated full reference; load only when requested.

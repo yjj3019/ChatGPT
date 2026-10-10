@@ -248,6 +248,61 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.assertEqual(before.stdout, after.stdout)
 
 
+    def test_entry_byte_budgets_do_not_grow(self):
+        for relative, maximum in (("CHATGPT.md", 7928), ("AGENTS.md", 3915)):
+            with self.subTest(path=relative):
+                # Match measure_load.file_bytes: UTF-8 without BOM and normalized LF.
+                size = len((self.root / relative).read_text(encoding="utf-8-sig").encode("utf-8"))
+                self.assertLessEqual(size, maximum)
+
+    def test_entry_byte_budgets_and_measurement_ignore_crlf_and_bom(self):
+        before = self.run_script("measure_load.py")
+        self.assertEqual(before.returncode, 0, before.stdout + before.stderr)
+        for relative in ("CHATGPT.md", "AGENTS.md"):
+            path = self.root / relative
+            text = path.read_text(encoding="utf-8-sig")
+            path.write_bytes(b"\xef\xbb\xbf" + text.replace("\n", "\r\n").encode("utf-8"))
+        self.test_entry_byte_budgets_do_not_grow()
+        after = self.run_script("measure_load.py")
+        self.assertEqual(after.returncode, 0, after.stdout + after.stderr)
+        self.assertEqual(before.stdout, after.stdout)
+
+    def test_model_routing_requires_diagnosis_and_authorized_supported_changes(self):
+        routing = (self.root / "docs/chatgpt-codex-model-routing.md").read_text(encoding="utf-8")
+        for required in (
+            "Use the current session model and effort by default",
+            "Missing source evidence", "permission boundaries",
+            "currently supported effort settings and models",
+            "within the user's authorization and host rules",
+            "same acceptance criteria", "Do not expand unrelated instructions",
+        ):
+            self.assertIn(required, routing)
+        for obsolete in ("## Model Roster", "## Default Picks", "## Escalation Ladder", "gpt-5.6-terra"):
+            self.assertNotIn(obsolete, routing)
+        for relative in ("AGENTS.md", "docs/codex-operations-rules.md", "README.md", "README.ko.md"):
+            text = (self.root / relative).read_text(encoding="utf-8")
+            self.assertNotIn("escalate model when blocked", text)
+            self.assertNotIn("escalate the model when blocked", text)
+            self.assertNotIn("user-approved roster", text)
+            self.assertNotIn("gpt-5.6-terra", text)
+            self.assertNotIn("**escalate the model**", text)
+            self.assertNotIn("**모델을 상향**", text)
+
+    def test_readonly_reviewer_requires_evidence_and_parent_retesting(self):
+        review = (self.root / "docs/codex-subagent-rules.md").read_text(encoding="utf-8")
+        for required in (
+            "scope and acceptance criteria", "exact diff/base or revision", "relevant files",
+            "verification command, working directory, exit status",
+            "failure evidence", "Stay read-only", "Validation Gap",
+            "never an invented PASS", "The parent owns fixes and focused retests",
+            "Do not recursively re-review", "Missing required verification blocks GO",
+        ):
+            self.assertIn(required, review)
+        for relative in ("CHATGPT.md", "docs/codex-team-agent-rules.md"):
+            text = (self.root / relative).read_text(encoding="utf-8")
+            self.assertIn("Validation Gap", text)
+            self.assertIn("without recursive review", text)
+
     def _load_markdown_sections(self):
         module_path = self.root / "scripts" / "markdown_sections.py"
         spec = importlib.util.spec_from_file_location("markdown_sections_under_test", module_path)

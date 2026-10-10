@@ -76,14 +76,25 @@ Output:
 
 ### Reviewer
 
-- Do not edit files.
-- Prioritize Critical/Major correctness, security, regression, and test gaps.
-- Include file/line evidence where possible.
+The caller must provide a review packet before requesting a verdict:
+
+- scope and acceptance criteria, including required checks
+- exact diff/base or revision and relevant files, including unchanged callers
+- verification command, working directory, exit status, and relevant output for each check
+- failure evidence or the explicit reason a check was not run; never omit unsuccessful checks
+
+Keep reports tied to that revision; edits invalidate affected earlier results. If the packet is incomplete, identify the missing evidence rather than assuming it passed.
+
+- Stay read-only: inspect supplied files/diffs and evidence; do not fix code, run mutating checks, or launch another reviewer. The parent or tester runs checks that need writes.
+- Prioritize Critical/Major correctness, security, regression, and test gaps, with file/line evidence.
+- Distinguish static inspection from executed verification. Mark missing, stale, failed-to-run, or insufficient validation as `Validation Gap`, never an invented PASS. Report an observed failed check as FAIL, with evidence.
+- Give the specific missing check/evidence and residual risk. Missing required verification blocks GO; it is not proof of a code defect or model limitation.
+- The parent owns fixes and focused retests, then reconciles findings against fresh evidence. Do not recursively re-review or start review loops; report unresolved findings explicitly.
 
 ### Tester
 
 - Run the smallest relevant command.
-- Report exact command and result.
+- Report exact command, working directory, exit status, and relevant success/failure output, tied to the tested revision.
 - If tests cannot run, state the blocker and residual risk.
 
 ## Completion Gate
