@@ -190,6 +190,23 @@ class InstallPackTests(unittest.TestCase):
         pack = self.home / ".agents/skills/chatgpt-transfer"
         self.assertTrue((pack / "CHATGPT.md").is_file())
 
+    def test_auto_install_preserves_codex_settings_and_memory_state(self):
+        codex = self.home / ".codex"
+        (codex / "memories").mkdir(parents=True)
+        config = codex / "config.toml"
+        memory = codex / "memories" / "MEMORY.md"
+        config.write_text("[memories]\nuse_memories = false\n", encoding="utf-8")
+        memory.write_text("Benign synthetic memory fixture.\n", encoding="utf-8")
+        before = {path: path.read_bytes() for path in (config, memory)}
+        proc = self._run("--auto")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertEqual({path: path.read_bytes() for path in before}, before)
+        pack = self.home / ".agents/skills/chatgpt-transfer"
+        self.assertEqual((pack / "docs/codex-memories-maintenance.md").read_bytes(),
+                         (ROOT / "docs/codex-memories-maintenance.md").read_bytes())
+        self.assertFalse((pack / "config.toml").exists())
+        self.assertFalse((pack / "memories").exists())
+
     def test_with_tests_copies_tests_dir(self):
         dest = self.home / "skills"
         proc = self._run("--dest", str(dest), "--with-tests")

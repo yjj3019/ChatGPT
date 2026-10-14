@@ -42,7 +42,7 @@ EXPECTED_TASKS = {
     "One-shot copy/paste setup": "docs/chatgpt-5.5-all-in-one-instructions.md",
 }
 EXPECTED_GOLDEN_MIN = 15
-EXPECTED_GOLDEN_MAX = 37
+EXPECTED_GOLDEN_MAX = 38
 EXPECTED_TEST_IDS = {f"{number:03d}" for number in range(EXPECTED_GOLDEN_MIN, EXPECTED_GOLDEN_MAX + 1)}
 HEAVY_FILES = (
     "docs/chatgpt-transfer-instructions.md",
