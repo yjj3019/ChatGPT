@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -374,13 +375,37 @@ class FrameworkCommandsTest(unittest.TestCase):
         initial_sync = self.run_script("sync_runtime.py")
         self.assertEqual(initial_sync.returncode, 0, initial_sync.stdout + initial_sync.stderr)
         before = [entry.read_bytes() for entry in entries]
-        for relative in ("docs/chatgpt-codex-model-routing.md", "docs/codex-operations-rules.md"):
+        for relative in ("docs/chatgpt-codex-model-routing.md", "docs/codex-operations-rules.md",
+                         "docs/codex-memories-maintenance.md", "docs/codex-three-model-setup.md",
+                         "docs/distribution-standard.md"):
             path = self.root / relative
             path.write_text(path.read_text(encoding="utf-8") + "\nOptional host-check sentinel.\n",
                             encoding="utf-8")
         result = self.run_script("sync_runtime.py")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual([entry.read_bytes() for entry in entries], before)
+
+    def test_memories_default_example_is_valid_and_has_no_model_override(self):
+        guide = (self.root / "docs/codex-memories-maintenance.md").read_text(encoding="utf-8")
+        examples = re.findall(r"^```toml\n(.*?)^```", guide, re.MULTILINE | re.DOTALL)
+        self.assertEqual(len(examples), 1)
+        config = tomllib.loads(examples[0])
+        self.assertEqual(config, {
+            "features": {"memories": True},
+            "memories": {"generate_memories": True, "use_memories": True},
+        })
+
+    def test_memories_update_scenario_is_required(self):
+        (self.root / "tests/GoldenTest-038.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 038")
+
+    def test_three_model_scenario_is_required(self):
+        (self.root / "tests/GoldenTest-039.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 039")
+
+    def test_distribution_scenario_is_required(self):
+        (self.root / "tests/GoldenTest-040.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 040")
 
     def test_readonly_reviewer_requires_evidence_and_parent_retesting(self):
         review = (self.root / "docs/codex-subagent-rules.md").read_text(encoding="utf-8")

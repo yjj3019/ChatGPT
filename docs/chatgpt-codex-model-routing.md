@@ -32,3 +32,5 @@ Official references (checked 2026-10-10): [product model availability](https://l
 ## Codex Usage
 
 Use only the model/effort controls actually supported by the host. `AGENTS.md` still governs task loading. This routing guide is advisory, not authorization to change settings or a substitute for task-specific guidance.
+
+Conversation-model selection is separate from local memory extraction/consolidation. For Memories defaults, optional overrides, version/support gates, and safe update recovery, load `docs/codex-memories-maintenance.md` only when relevant. Host-managed defaults do not promise an unchanged model or automatic recovery from a retired override; validate the same acceptance criteria after updates.

@@ -1,6 +1,6 @@
 # Codex Working Rules
 
-ChatGPT/Codex guidance and Python maintenance scripts. Codex entry; `CHATGPT.md` is the ChatGPT alternative. Do not preload both. Guidance changes behavior, not weights or hidden reasoning.
+Model-independent ChatGPT/Codex instruction distribution. Codex entry; `CHATGPT.md` is the ChatGPT alternative. Do not preload both. Guidance changes behavior, not weights or hidden reasoning.
 
 ## Working Contract
 

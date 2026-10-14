@@ -190,6 +190,38 @@ class InstallPackTests(unittest.TestCase):
         pack = self.home / ".agents/skills/chatgpt-transfer"
         self.assertTrue((pack / "CHATGPT.md").is_file())
 
+    def test_auto_install_preserves_codex_settings_and_memory_state(self):
+        codex = self.home / ".codex"
+        (codex / "memories").mkdir(parents=True)
+        config = codex / "config.toml"
+        memory = codex / "memories" / "MEMORY.md"
+        config.write_text('model = "recipient-model-fixture"\nmodel_reasoning_effort = "low"\n'
+                          '[features]\nmulti_agent = false\n[memories]\nuse_memories = false\n',
+                          encoding="utf-8")
+        memory.write_text("Benign synthetic memory fixture.\n", encoding="utf-8")
+        (codex / "agents").mkdir()
+        existing_role = codex / "agents/recipient-role.toml"
+        existing_role.write_text('name = "recipient_role"\ndescription = "Fixture"\n'
+                                 'developer_instructions = "Preserve this recipient role."\n',
+                                 encoding="utf-8")
+        before = {path: path.read_bytes() for path in (config, memory, existing_role)}
+        proc = self._run("--auto")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertEqual({path: path.read_bytes() for path in before}, before)
+        pack = self.home / ".agents/skills/chatgpt-transfer"
+        self.assertEqual((pack / "docs/codex-memories-maintenance.md").read_bytes(),
+                         (ROOT / "docs/codex-memories-maintenance.md").read_bytes())
+        self.assertFalse((pack / "config.toml").exists())
+        self.assertFalse((pack / "memories").exists())
+        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml", "AGENTS.snippet.md"):
+            relative = Path("docs/examples/codex-three-models") / filename
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
+        self.assertFalse((pack / ".codex").exists())
+        for filename in ("pack-explorer.toml", "pack-runner.toml", "pack-reviewer.toml", "AGENTS.snippet.md"):
+            relative = Path("docs/examples/codex-standard-agents") / filename
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
+        self.assertEqual(list((codex / "agents").iterdir()), [existing_role])
+
     def test_with_tests_copies_tests_dir(self):
         dest = self.home / "skills"
         proc = self._run("--dest", str(dest), "--with-tests")

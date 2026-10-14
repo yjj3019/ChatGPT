@@ -38,6 +38,11 @@ Official references (checked 2026-10-10): [AGENTS.md discovery](https://learn.ch
 ## Model Selection
 
 - Keep the current model and effort by default. Distinguish missing evidence or authorization from demonstrated capability limits. Change only supported model/effort settings with evidence and authorization; see `docs/chatgpt-codex-model-routing.md`. Preserve Integrity and Context Budget; do not expand unrelated file loads.
+
+## Memories Setup and Updates
+
+For requested local Codex Memories setup, override support checks, or update recovery, use `docs/codex-memories-maintenance.md`. Keep mandatory rules in checked-in guidance; installing this pack does not enable Memories or edit user configuration. Leave memory-model overrides absent by default. Load this guide only for a matching task.
+
 ## Skill Use
 
 - Use an existing Codex skill when the task matches it.
