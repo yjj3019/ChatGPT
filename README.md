@@ -1,6 +1,8 @@
 # ChatGPT·Codex 전이 팩
 
-엔지니어링·문서 작업·증거 기반 완료를 위한 **모델 비의존** 작업 지침입니다. 이 저장소는 **지침과 라우팅**을 바꾸며, 모델 가중치나 숨은 추론을 학습·복사하지 않습니다. 세션 간 자동 기억도 만들지 않습니다.
+여러 사용자와 호스트에 배포하는 **모델 비의존 지침 배포판**입니다. 엔지니어링·문서 작업·증거 기반 완료를 위한 **지침과 라우팅**을 제공하며, 모델 가중치나 숨은 추론을 학습·복사하지 않습니다. 세션 간 자동 기억도 만들지 않습니다.
+
+배포 기본값은 **수신 환경의 모델·추론 수준·권한·기존 설정 유지**입니다. 특정 PC나 모델 조합을 요구하지 않습니다. [배포 표준](docs/distribution-standard.md)은 모델을 지정하지 않는 공통 역할 예시, 선택형 구성의 적용 조건, 환경별 검증·복구 기준을 정의합니다. 설치만으로 사용자 설정·역할·메모리 기능을 활성화하지 않습니다.
 
 **언어:** 한국어 | [English](README.en.md)
 
@@ -113,6 +115,6 @@ GitHub Actions는 Windows·Linux에서 Python 3.11·3.12로 검사합니다. `me
 
 - [5차 개선 리포트](docs/optimization-report-2026-09-06.md) — Core 다이어트, AGENTS 축소, 라우팅, 예산
 - [Simulation-10 리포트](docs/simulation-10-report-2026-09-06.md) — context budget, model floor, sync, 펜스 인식 섹션, 불변식 (PR #4/#5/#6/#7 이후)
-- 행동 평가 루브릭: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-039.md`
+- 행동 평가 루브릭: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-040.md`
 
 구조 검사는 실제 ChatGPT/Codex 행동 시험을 실행하지 않습니다. 라우팅에 참고한 공식 원칙(속도·정확도 이득의 증명은 아님): [AGENTS.md 발견](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [선택적 스킬 로딩](https://learn.chatgpt.com/docs/build-skills), [지침 명확성](https://developers.openai.com/api/docs/guides/latest-model) (확인일 2026-09-06).

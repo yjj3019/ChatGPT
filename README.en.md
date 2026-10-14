@@ -1,6 +1,8 @@
 # ChatGPT and Codex Transfer Pack
 
-Model-independent working guidance for engineering, writing, and evidence-backed completion. This repository changes **instructions and routing**, not model weights or hidden reasoning. It does **not** create automatic cross-session memory.
+A **model-independent instruction distribution** for multiple recipients and hosts, supporting engineering, writing, and evidence-backed completion. This repository provides **instructions and routing**, not model weights or hidden reasoning. It does **not** create automatic cross-session memory.
+
+The baseline **preserves the recipient's model, reasoning effort, permissions, and existing settings**. No particular machine or model combination is required. The [distribution standard](docs/distribution-standard.md) defines model-inheriting role examples, opt-in activation, and environment-specific verification/rollback. Installation alone does not activate user settings, roles, or memory features.
 
 **Language:** [한국어](README.md) | English
 
@@ -113,6 +115,6 @@ GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12.
 
 - [Five-round improvement report](docs/optimization-report-2026-09-06.md) — Core diet, AGENTS lean, routing, budgets.
 - [Simulation-10 report](docs/simulation-10-report-2026-09-06.md) — context budget, model floor, sync, fence-aware sections, invariants (post PR #4/#5/#6/#7).
-- Controlled behavior rubrics: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-039.md`.
+- Controlled behavior rubrics: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-040.md`.
 
 Structural checks do not run live ChatGPT/Codex behavior trials. Official principles that informed routing (not proof of speed/accuracy gains): [AGENTS.md discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [selective skill loading](https://learn.chatgpt.com/docs/build-skills), [instruction clarity](https://developers.openai.com/api/docs/guides/latest-model) (checked 2026-09-06).

@@ -167,6 +167,10 @@ def bootstrap_note() -> str:
 
 This directory is a copy of the ChatGPT/Codex transfer pack for skill-style hosts.
 
+Distribution baseline: preserve recipient models, permissions, and settings.
+See docs/distribution-standard.md for model-inheriting role examples; installation
+does not activate role files, named presets, or memory features.
+
 **Preferred Codex setup:** clone https://github.com/yjj3019/ChatGPT.git and open that
 repository as the workspace so `AGENTS.md` loads at the workspace root.
 

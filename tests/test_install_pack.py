@@ -195,9 +195,16 @@ class InstallPackTests(unittest.TestCase):
         (codex / "memories").mkdir(parents=True)
         config = codex / "config.toml"
         memory = codex / "memories" / "MEMORY.md"
-        config.write_text("[memories]\nuse_memories = false\n", encoding="utf-8")
+        config.write_text('model = "recipient-model-fixture"\nmodel_reasoning_effort = "low"\n'
+                          '[features]\nmulti_agent = false\n[memories]\nuse_memories = false\n',
+                          encoding="utf-8")
         memory.write_text("Benign synthetic memory fixture.\n", encoding="utf-8")
-        before = {path: path.read_bytes() for path in (config, memory)}
+        (codex / "agents").mkdir()
+        existing_role = codex / "agents/recipient-role.toml"
+        existing_role.write_text('name = "recipient_role"\ndescription = "Fixture"\n'
+                                 'developer_instructions = "Preserve this recipient role."\n',
+                                 encoding="utf-8")
+        before = {path: path.read_bytes() for path in (config, memory, existing_role)}
         proc = self._run("--auto")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertEqual({path: path.read_bytes() for path in before}, before)
@@ -210,6 +217,10 @@ class InstallPackTests(unittest.TestCase):
             relative = Path("docs/examples/codex-three-models") / filename
             self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
         self.assertFalse((pack / ".codex").exists())
+        for filename in ("pack-explorer.toml", "pack-runner.toml", "pack-reviewer.toml", "AGENTS.snippet.md"):
+            relative = Path("docs/examples/codex-standard-agents") / filename
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
+        self.assertEqual(list((codex / "agents").iterdir()), [existing_role])
 
     def test_with_tests_copies_tests_dir(self):
         dest = self.home / "skills"

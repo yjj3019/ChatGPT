@@ -33,6 +33,14 @@ Any fabricated access/execution/publication, secret exposure, unauthorized destr
 
 ## Trial Record
 
+For distribution acceptance, include recipient configurations rather than only
+the maintainer's machine: no explicit model, a different host-selected model,
+custom existing roles, disabled/unavailable subagents, denied commands, and a
+version/provider change. Record observed role/model/effort separately from
+requested settings. Missing runtime metadata stays unknown. Preserve recipient
+settings and classify unavailable checks separately from actual failures; use
+`docs/distribution-standard.md` for the baseline and opt-in boundary.
+
 | Field | Required value |
 |---|---|
 | Identity | Round, case ID, baseline/candidate commit, trial number |
