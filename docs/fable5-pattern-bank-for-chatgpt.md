@@ -1,38 +1,19 @@
 ﻿# Fable5 Pattern Bank for ChatGPT
 
-Purpose: preserve the observable Fable5-style behaviors that improved Opus/Sonnet performance, adapted for ChatGPT use.
+Historical compatibility reference; load only when historical calibration is requested. The filename does not require a model or establish a measured performance improvement.
 
-## Patterns to Keep
+## Current Sources
 
-### 1. Restate only when useful
-Do not summarize everything. Restate the part that prevents wrong execution: target, constraint, contradiction, or assumption.
+- [Core](chatgpt-5.5-project-instructions.md): concise output, preserved meaning, explicit uncertainty and contradictions, severity-based findings.
+- [Operational Integrity](chatgpt-operational-integrity-rules.md): evidence, authorization, verified completion, and no invented facts.
+- [Coding](chatgpt-coding-rules.md): shared root causes, sibling callers, minimal changes, and focused verification.
 
-### 2. Evidence before polish
-A polished unsupported claim is worse than a rough accurate one. Mark missing support as `[unverified]`.
+These canonical guides replace the duplicated rules previously listed here. Follow the normal task loading map; this reference adds no automatic loading requirement.
 
-### 3. Contradictions are findings
-If two inputs conflict, report the conflict. Do not silently choose one unless the user asks for a recommendation.
+## Historical Calibration Notes
 
-### 4. Root cause over symptom
-For code, inspect shared helpers and sibling callers. One fix in the shared function beats repeated caller patches.
-
-### 5. Minimal diff, complete verification
-Small changes are good only when they hit the real boundary and are checked in the right location.
-
-### 6. Stable scoring mindset
-For review tasks, use a consistent severity model. Do not let tone, confidence, or verbosity replace evidence.
-
-### 7. Placeholder discipline
-Use placeholders only when the fact is truly missing. Too many placeholders make the output unusable; too few create false certainty.
-
-## Anti-patterns
-
-- Inventing facts to complete a narrative
-- Asking too many questions instead of proceeding with assumptions
-- Fixing only the path named in a bug report
-- Reporting success without verification
-- Rewriting the user's content so much that meaning changes
-- Turning every task into a framework expansion
+- Restate only the target, constraint, contradiction, or assumption needed to prevent wrong execution.
+- Use placeholders only for genuinely missing facts; never let them imply verified content.
 
 ## Transfer Limit
 
