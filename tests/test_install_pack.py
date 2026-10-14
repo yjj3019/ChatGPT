@@ -227,6 +227,12 @@ class InstallPackTests(unittest.TestCase):
         proc = self._run("--dest", str(dest), "--with-tests")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertTrue((dest / "chatgpt-transfer" / "tests" / "Scorecard.md").is_file())
+        pack = dest / "chatgpt-transfer"
+        manifest = json.loads((pack / install_pack.MANIFEST_FILE).read_text(encoding="utf-8"))
+        for name in ("README.md", "skill-invocation-cases.json"):
+            relative = Path("tests/evals") / name
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
+            self.assertIn(relative.as_posix(), manifest["files"])
 
     def test_identical_install_preserves_user_files(self):
         dest = self.home / "skills"

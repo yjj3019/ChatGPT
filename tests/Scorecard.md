@@ -57,8 +57,12 @@ Do not write raw conversations or sensitive payloads to this public repository. 
 
 Use structured repository simulations to catch routing, load, sync, and parser defects without fabricating host-model quality scores.
 
-1. Design at least 10 scenarios covering Core-only Q&A, coding, RCA, domain+task section scope, proposal/blog, model routing, weak-model escalation (escalate model, not context), heavy-guide non-autoload, sync `--check` drift on a temp copy, and fence-aware `##` section parsing.
-2. For each scenario record intent, expected loads (files/sections), expected model tier from `docs/chatgpt-codex-model-routing.md`, mechanical checks (`validate_framework.py`, `measure_load.py`, section parse, `sync_runtime.py --check`), and PASS/FAIL/PARTIAL with issue IDs.
+1. Design at least 10 scenarios covering Core-only Q&A, coding, RCA, domain+task section scope, proposal/blog, model routing, diagnosing evidence/tool/permission gaps before a model change, heavy-guide non-autoload, sync `--check` drift on a temp copy, and fence-aware `##` section parsing.
+2. For each scenario record intent, expected loads (files/sections), preservation of the host-selected model/effort and any justified, supported, authorized change under `docs/chatgpt-codex-model-routing.md`, mechanical checks (`validate_framework.py`, `measure_load.py`, section parse, `sync_runtime.py --check`), and PASS/FAIL/PARTIAL with issue IDs. Do not prescribe a model tier or automatic escalation ladder.
 3. Score **structural/routing/load outcomes** only. If a rubric score is invented for prioritization, label it as a simulation rubric — not host model quality. Do not invent behavioral /100 scores without a stated method.
 4. Derive P0/P1 defects from failures/partials, implement fixes, re-run mechanical checks, and keep Context Budget + model-invariant floor intact.
 5. File the dated report under docs/ (name pattern simulation-N-report-YYYY-MM-DD.md) and keep a workspace copy when used. Reference: `docs/simulation-10-report-2026-09-06.md`.
+
+## Skill Invocation Trials
+
+Use the [invocation cases and procedure](evals/README.md) for explicit, implicit, contextual, and negative skill-selection trials. These complement Golden Tests; dataset validation does not execute Codex or prove selection, loading, or model behavior. Keep the recipient's model, effort, permissions, and invocation policy unchanged. Record unavailable trials separately from failures.

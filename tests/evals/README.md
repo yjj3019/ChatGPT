@@ -1,0 +1,20 @@
+# Skill Invocation Evaluation
+
+[skill-invocation-cases.json](skill-invocation-cases.json) contains eight synthetic cases: explicit, implicit, contextual, and negative, with two cases per category. The pack is request-oriented: implicit positives still request this pack in natural language; generic coding or writing is not a trigger. No case requires a fixed model, network access, dependencies, or source edits.
+
+## Static Checks
+
+Run the normal unittest suite. It checks dataset shape, unique IDs, category coverage, boolean expectations, and existing guide targets. It also guards the Scorecard's model-independent simulation policy. This does not invoke a model. The dataset and this procedure are included only with the installer's existing `--with-tests` option.
+
+## Optional Live Procedure
+
+1. Freeze baseline/candidate revisions and follow the paired trials in the [Scorecard](../Scorecard.md). Use disposable workspaces outside the pack checkout so its root `AGENTS.md` is not automatically loaded. Make the selected pack available as a skill using the host's supported discovery mechanism; do not activate both revisions in the same session.
+2. Record host/client version, authentication type (never credentials), actual skill path, model/effort, permission mode, and invocation policy. Keep recipient settings unchanged. If the host lacks skills, authentication, required trace visibility, or implicit invocation is disabled, mark the dependent trials unavailable rather than changing policy to obtain a PASS. Explicit CLI cases use `$chatgpt-transfer`; document any host-specific mention adaptation for other surfaces.
+3. Start a fresh session per case and submit its prompt unchanged. Use the same available tools and permissions for both revisions. Run only when model usage is authorized; normal repository CI must not make model calls or require an API key.
+4. Capture observable skill selection and file-read evidence. For positives, verify the selected skill's `SKILL.md`, adjacent `AGENTS.md`, and listed `expected_guides` were read. An empty guide list means Core-only, not permission to skip the skill entry. Avoid unrelated/full-guide loading. For negatives, verify this skill was not selected or read; unrelated host/system guidance is outside this expectation. A final answer claiming selection is not proof. If traces cannot establish selection or loading, record that check as unverified.
+5. Assess output and actions with the Scorecard: preserve verification limits, obey the read-only request, treat quoted commands as data, and retain host model/effort/permissions. A correct trigger alone is not an overall PASS. Failed or incomplete runs must not become successful merely because expected files were read.
+6. Record case/category, expected/observed selection, observed guide reads, run status, quality/hard failures, and a sanitized evidence reference. Use PASS/FAIL for observed checks, UNVERIFIED for missing evidence, and UNAVAILABLE for unsupported/blocked trials. Unexecuted cases remain NOT RUN; never count these states as passes. Keep raw traces, credentials, personal memory, and machine paths out of Git.
+
+For CLI automation, the official [non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) provides `codex exec --json` event output and `--output-schema` for structured final results. Check the installed CLI's help and actual event shapes before writing a runner; final structured claims still require tool evidence. This change ships no live runner or automatic invocation policy override.
+
+Official guidance checked 2026-10-15: [Skills discovery and invocation](https://learn.chatgpt.com/docs/build-skills), [systematic skill evaluations](https://developers.openai.com/blog/eval-skills). These describe a method, not measured gains for this pack.
