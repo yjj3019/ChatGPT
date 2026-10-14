@@ -88,6 +88,8 @@ Historical filenames containing `5.5` are retained for compatibility; they do no
 
 ## Maintain and verify
 
+For an explicitly requested Sol main / Luna explorer-runner / conditional Astra reviewer setup, use the [optional three-model guide](docs/codex-three-model-setup.md) and its role TOML/delegation examples. It covers inherited permissions, support/conflict checks, fresh-session verification, and rollback. Pack installation does not activate the preset; normal routing stays model-independent.
+
 For Codex Memories setup or model updates, optionally read the [Memories maintenance guide](docs/codex-memories-maintenance.md). Its default example omits model IDs; apply only justified overrides after checking the installed version, supported keys, and access for each memory role. It covers unsupported-pin removal and default revalidation, error-specific stop conditions, and the difference between config and memory-state rollback. Installing the pack does not change user settings or memories. Report static checks separately from live host trials.
 
 Python 3.11+ and the standard library only. No package install, API key, or model call is required for repository checks.
@@ -111,6 +113,6 @@ GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12.
 
 - [Five-round improvement report](docs/optimization-report-2026-09-06.md) — Core diet, AGENTS lean, routing, budgets.
 - [Simulation-10 report](docs/simulation-10-report-2026-09-06.md) — context budget, model floor, sync, fence-aware sections, invariants (post PR #4/#5/#6/#7).
-- Controlled behavior rubrics: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-038.md`.
+- Controlled behavior rubrics: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-039.md`.
 
 Structural checks do not run live ChatGPT/Codex behavior trials. Official principles that informed routing (not proof of speed/accuracy gains): [AGENTS.md discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [selective skill loading](https://learn.chatgpt.com/docs/build-skills), [instruction clarity](https://developers.openai.com/api/docs/guides/latest-model) (checked 2026-09-06).

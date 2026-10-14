@@ -376,7 +376,7 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.assertEqual(initial_sync.returncode, 0, initial_sync.stdout + initial_sync.stderr)
         before = [entry.read_bytes() for entry in entries]
         for relative in ("docs/chatgpt-codex-model-routing.md", "docs/codex-operations-rules.md",
-                         "docs/codex-memories-maintenance.md"):
+                         "docs/codex-memories-maintenance.md", "docs/codex-three-model-setup.md"):
             path = self.root / relative
             path.write_text(path.read_text(encoding="utf-8") + "\nOptional host-check sentinel.\n",
                             encoding="utf-8")
@@ -397,6 +397,10 @@ class FrameworkCommandsTest(unittest.TestCase):
     def test_memories_update_scenario_is_required(self):
         (self.root / "tests/GoldenTest-038.md").unlink()
         self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 038")
+
+    def test_three_model_scenario_is_required(self):
+        (self.root / "tests/GoldenTest-039.md").unlink()
+        self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 039")
 
     def test_readonly_reviewer_requires_evidence_and_parent_retesting(self):
         review = (self.root / "docs/codex-subagent-rules.md").read_text(encoding="utf-8")

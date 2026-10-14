@@ -17,6 +17,8 @@ Do not use subagents for simple answers, tiny edits, or one-file mechanical chan
 
 ## Standard Codex Subagent Roles
 
+The read-only roles below describe behavior, not independent child sandbox enforcement. For an explicitly requested Sol/Luna/Astra configuration, use the optional `docs/codex-three-model-setup.md`; it provides supported TOML examples and explains inherited permissions. Do not preload or activate that preset for unrelated work.
+
 - `orchestrator`: breaks complex work into independent tasks, assigns roles, merges results.
 - `planner`: read-only; turns requirements into vertical slices, acceptance criteria, test plan, and open questions.
 - `explorer`: read-only; scans files, callers, dependencies, and existing patterns.

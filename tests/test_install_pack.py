@@ -206,6 +206,10 @@ class InstallPackTests(unittest.TestCase):
                          (ROOT / "docs/codex-memories-maintenance.md").read_bytes())
         self.assertFalse((pack / "config.toml").exists())
         self.assertFalse((pack / "memories").exists())
+        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml", "AGENTS.snippet.md"):
+            relative = Path("docs/examples/codex-three-models") / filename
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
+        self.assertFalse((pack / ".codex").exists())
 
     def test_with_tests_copies_tests_dir(self):
         dest = self.home / "skills"

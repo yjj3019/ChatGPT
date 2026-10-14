@@ -88,6 +88,8 @@ Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `A
 
 ## 유지보수와 검증
 
+Sol 메인·Luna 탐색/검증·Astra 조건부 검토 구성을 원하는 경우 [선택적 3모델 설정 가이드](docs/codex-three-model-setup.md)의 역할 TOML과 위임 지침 예시를 사용하세요. 공식 권한 상속 제약, 지원·충돌 확인, 새 세션 검증, 복구 절차를 포함합니다. 팩 설치는 이 예시를 활성화하지 않으며 기본 모델 비의존 정책을 유지합니다.
+
 Codex Memories 설정·모델 업데이트 시 [Memories 유지보수 가이드](docs/codex-memories-maintenance.md)를 선택적으로 읽으세요. 기본 예시는 모델명을 생략하며, 필요한 override만 설치 버전·지원 키·메모리 역할별 접근을 확인한 뒤 적용합니다. 미지원 override의 제거·기본값 재검증, 오류별 중단, 설정 복원과 메모리 상태 복원의 차이를 설명합니다. 팩 설치는 실제 사용자 설정이나 메모리를 변경하지 않습니다. 정적 검사와 실제 호스트 시험은 별도로 보고합니다.
 
 Python 3.11+와 표준 라이브러리만 사용합니다. 저장소 검사에 패키지 설치·API 키·모델 호출은 필요 없습니다.
@@ -111,6 +113,6 @@ GitHub Actions는 Windows·Linux에서 Python 3.11·3.12로 검사합니다. `me
 
 - [5차 개선 리포트](docs/optimization-report-2026-09-06.md) — Core 다이어트, AGENTS 축소, 라우팅, 예산
 - [Simulation-10 리포트](docs/simulation-10-report-2026-09-06.md) — context budget, model floor, sync, 펜스 인식 섹션, 불변식 (PR #4/#5/#6/#7 이후)
-- 행동 평가 루브릭: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-038.md`
+- 행동 평가 루브릭: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-039.md`
 
 구조 검사는 실제 ChatGPT/Codex 행동 시험을 실행하지 않습니다. 라우팅에 참고한 공식 원칙(속도·정확도 이득의 증명은 아님): [AGENTS.md 발견](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [선택적 스킬 로딩](https://learn.chatgpt.com/docs/build-skills), [지침 명확성](https://developers.openai.com/api/docs/guides/latest-model) (확인일 2026-09-06).
