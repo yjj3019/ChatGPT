@@ -1,4 +1,4 @@
-# ChatGPT·Codex 전이 팩
+# TaskForge
 
 엔지니어링·문서 작업·증거 기반 완료를 위한 **모델 비의존 지침 팩**입니다. Codex 앱에서는 GitHub marketplace 플러그인으로 설치하고, ChatGPT에서는 Project Instructions로 사용할 수 있습니다. 모델 가중치나 숨은 추론을 학습·복사하거나 자동 교차 세션 기억을 만들지 않습니다.
 
@@ -10,7 +10,7 @@
 
 | 환경·목적 | 사용할 방식 |
 |---|---|
-| **Codex 앱 — 기본 설치** | 아래 marketplace 절차로 `chatgpt-transfer` 플러그인 설치 |
+| **Codex 앱 — 기본 설치** | 아래 marketplace 절차로 `taskforge` 플러그인 설치 |
 | ChatGPT Project | `CHATGPT.md`를 Project Instructions에 넣고 필요한 `docs/` 파일 제공 |
 | 다른 스킬형 호스트·기존 설치 방식 | 아래 Python 설치기로 `chatgpt-transfer/` 복사 |
 | 저장소 개발·워크스페이스 규칙 적용 | 저장소를 열고 루트 `AGENTS.md`의 실제 적용 여부 확인 |
@@ -20,7 +20,7 @@
 
 ## Codex 앱 marketplace 설치·삭제·업데이트
 
-Codex CLI가 필요합니다. `codex plugin --help`와 `codex plugin marketplace --help`에서 아래 명령을 지원하는지 먼저 확인합니다. marketplace 이름은 `yjj3019-chatgpt`, 플러그인 이름은 `chatgpt-transfer`입니다. GitHub 기반 marketplace이며, 공개 플러그인 디렉터리의 심사·등록과는 별도입니다.
+Codex CLI가 필요합니다. `codex plugin --help`와 `codex plugin marketplace --help`에서 아래 명령을 지원하는지 먼저 확인합니다. marketplace 이름은 `yjj3019`, 플러그인 이름은 `taskforge`입니다. `taskforge@yjj3019`에서 `@` 앞은 플러그인, 뒤는 marketplace 식별자입니다. GitHub 기반 marketplace이며, 공개 플러그인 디렉터리의 심사·등록과는 별도입니다.
 
 ### 설치
 
@@ -28,15 +28,15 @@ Codex CLI가 필요합니다. `codex plugin --help`와 `codex plugin marketplace
 
 ```text
 codex plugin marketplace add yjj3019/ChatGPT --ref main
-codex plugin add chatgpt-transfer@yjj3019-chatgpt
+codex plugin add taskforge@yjj3019
 ```
 
-Codex 앱을 다시 시작하고 새 채팅에서 사용합니다. 요청 예: “chatgpt-transfer 팩을 적용해 이 코드를 검토해줘.” 플러그인은 자기 설치 경로의 `AGENTS.md`와 필요한 가이드를 읽으며, 사용자의 작업 폴더를 팩 저장소로 바꾸지 않습니다.
+Codex 앱을 다시 시작하고 새 채팅에서 사용합니다. 요청 예: “TaskForge를 적용해 이 코드를 검토해줘.” 플러그인은 자기 설치 경로의 `AGENTS.md`와 필요한 가이드를 읽으며, 사용자의 작업 폴더를 팩 저장소로 바꾸지 않습니다.
 
 ### 설치 상태 확인
 
 ```text
-codex plugin list --marketplace yjj3019-chatgpt --json
+codex plugin list --marketplace yjj3019 --json
 ```
 
 설치 목록·버전을 확인하고 앱의 Plugins에서도 설치 상태를 확인합니다. 설치 파일이 존재하는 것과 실제 모델이 지침을 선택·준수하는 것은 별도 검증입니다.
@@ -46,9 +46,9 @@ codex plugin list --marketplace yjj3019-chatgpt --json
 검증한 Windows CLI의 캐시 교체 오류를 피하도록 **제거 → marketplace 갱신 → 재설치** 순서를 사용합니다. 각 명령의 성공을 확인한 뒤 다음 명령을 실행합니다.
 
 ```text
-codex plugin remove chatgpt-transfer@yjj3019-chatgpt
-codex plugin marketplace upgrade yjj3019-chatgpt
-codex plugin add chatgpt-transfer@yjj3019-chatgpt
+codex plugin remove taskforge@yjj3019
+codex plugin marketplace upgrade yjj3019
+codex plugin add taskforge@yjj3019
 ```
 
 갱신 중에는 팩이 일시적으로 미설치 상태입니다. 네트워크 갱신이 실패하면 연결을 복구한 뒤 갱신·설치를 다시 실행합니다. 완료 후 설치 상태를 확인하고 앱을 다시 시작해 새 채팅을 엽니다.
@@ -56,7 +56,7 @@ codex plugin add chatgpt-transfer@yjj3019-chatgpt
 ### 플러그인 삭제
 
 ```text
-codex plugin remove chatgpt-transfer@yjj3019-chatgpt
+codex plugin remove taskforge@yjj3019
 ```
 
 이 플러그인의 설치 설정·캐시를 제거합니다. 기존 Python 설치본과 Git 클론은 삭제하지 않습니다.
@@ -66,7 +66,7 @@ codex plugin remove chatgpt-transfer@yjj3019-chatgpt
 플러그인을 삭제한 뒤 이 marketplace도 더 이상 사용하지 않을 때 실행합니다.
 
 ```text
-codex plugin marketplace remove yjj3019-chatgpt
+codex plugin marketplace remove yjj3019
 ```
 
 ### 확인한 범위
@@ -74,6 +74,19 @@ codex plugin marketplace remove yjj3019-chatgpt
 Windows의 Codex CLI `0.162.0-alpha.17.2`, 별도 임시 설정·캐시에서 실제 GitHub URL의 등록·설치·재설치 갱신·삭제와 로컬 시험용 버전·문서 내용 갱신을 확인했습니다. 설치 상태로 marketplace를 갱신할 때는 기존 캐시 교체가 액세스 거부로 실패했고, 위 재설치 순서는 성공했습니다. 실제 앱 화면 표시와 모델 행동은 별도 검증 대상입니다.
 
 [공식 패키징 안내](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [공식 관리 명령](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (확인일 2026-10-15).
+
+## 이전 플러그인에서 전환
+
+기존 `chatgpt-transfer@yjj3019-chatgpt` 설치 사용자만 실행합니다. 이름 변경은 자동 업데이트되지 않으므로 이전 플러그인과 marketplace 등록을 제거한 뒤 새 이름으로 설치합니다. 각 명령의 성공을 확인하고 다음 명령을 실행합니다. 저장소 URL은 그대로입니다.
+
+```text
+codex plugin remove chatgpt-transfer@yjj3019-chatgpt
+codex plugin marketplace remove yjj3019-chatgpt
+codex plugin marketplace add yjj3019/ChatGPT --ref main
+codex plugin add taskforge@yjj3019
+```
+
+전환 중에는 플러그인이 일시적으로 미설치 상태입니다. 실패하면 남은 단계를 복구 후 실행하고, 완료하면 앱을 다시 시작해 새 채팅에서 TaskForge를 사용합니다. 기존 Python 설치기는 호환성을 위해 `chatgpt-transfer/` 이름을 유지합니다.
 
 ## ChatGPT Project에서 사용
 

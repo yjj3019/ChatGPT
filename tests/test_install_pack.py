@@ -44,6 +44,13 @@ class SkillMetadataTests(unittest.TestCase):
         self.assertIn("explicit skill invocation", content)
         self.assertLess(len(content.encode("utf-8")), 1300)
 
+    def test_native_name_validation_preserves_legacy_defaults(self):
+        self.assertEqual(install_pack.PACK_NAME, "chatgpt-transfer")
+        renamed = install_pack.skill_hint().replace('name: "chatgpt-transfer"', 'name: "taskforge"')
+        install_pack.validate_skill_metadata(renamed, expected_name="taskforge")
+        with self.assertRaises(ValueError):
+            install_pack.validate_skill_metadata(renamed)
+
     def test_invalid_generated_metadata_is_rejected(self):
         valid = install_pack.skill_hint()
         cases = (

@@ -1,4 +1,4 @@
-# ChatGPT and Codex Transfer Pack
+# TaskForge
 
 A **model-independent instruction pack** for engineering, writing, and evidence-backed completion. Install it as a GitHub marketplace plugin in the Codex app, or use Project Instructions in ChatGPT. It does not train or copy model weights or hidden reasoning, or create automatic cross-session memory.
 
@@ -10,7 +10,7 @@ The guidance preserves the current model, reasoning effort, and permissions whil
 
 | Environment or purpose | Method |
 |---|---|
-| **Codex app — default installation** | Install `chatgpt-transfer` through the marketplace steps below |
+| **Codex app — default installation** | Install `taskforge` through the marketplace steps below |
 | ChatGPT Project | Put `CHATGPT.md` in Project Instructions and provide relevant `docs/` files |
 | Other skill-style hosts or existing installation method | Copy `chatgpt-transfer/` with the Python installer below |
 | Repository development or workspace rules | Open the repository and verify that root `AGENTS.md` is active |
@@ -20,7 +20,7 @@ Choose one entry point. Using both the marketplace plugin and a Python copy can 
 
 ## Codex app marketplace install, remove, and update
 
-Codex CLI is required. Check `codex plugin --help` and `codex plugin marketplace --help` for support before running these commands. The marketplace is `yjj3019-chatgpt`; the plugin is `chatgpt-transfer`. This GitHub marketplace is separate from review and listing in the universal public plugin directory.
+Codex CLI is required. Check `codex plugin --help` and `codex plugin marketplace --help` for support before running these commands. The marketplace is `yjj3019`; the plugin is `taskforge`. In `taskforge@yjj3019`, the part before `@` is the plugin and the part after it is the marketplace identifier. This GitHub marketplace is separate from review and listing in the universal public plugin directory.
 
 ### Install
 
@@ -28,15 +28,15 @@ Register the repository marketplace and install the plugin from a terminal. No m
 
 ```text
 codex plugin marketplace add yjj3019/ChatGPT --ref main
-codex plugin add chatgpt-transfer@yjj3019-chatgpt
+codex plugin add taskforge@yjj3019
 ```
 
-Restart the Codex app and use a new chat. Example: “Apply the chatgpt-transfer pack to review this code.” The plugin reads its installed `AGENTS.md` and relevant guides; it does not change the user's working folder to the pack repository.
+Restart the Codex app and use a new chat. Example: “Apply TaskForge to review this code.” The plugin reads its installed `AGENTS.md` and relevant guides; it does not change the user's working folder to the pack repository.
 
 ### Check installation
 
 ```text
-codex plugin list --marketplace yjj3019-chatgpt --json
+codex plugin list --marketplace yjj3019 --json
 ```
 
 Check the installed entry/version and installation status in the app's Plugins view. File installation and actual model selection/compliance are separate checks.
@@ -46,9 +46,9 @@ Check the installed entry/version and installation status in the app's Plugins v
 Use **remove → refresh marketplace → reinstall** to avoid the cache replacement error observed on the tested Windows CLI. Check each command succeeds before running the next.
 
 ```text
-codex plugin remove chatgpt-transfer@yjj3019-chatgpt
-codex plugin marketplace upgrade yjj3019-chatgpt
-codex plugin add chatgpt-transfer@yjj3019-chatgpt
+codex plugin remove taskforge@yjj3019
+codex plugin marketplace upgrade yjj3019
+codex plugin add taskforge@yjj3019
 ```
 
 The pack is temporarily uninstalled during this update. If network refresh fails, restore connectivity and rerun refresh/install. Then check installation, restart the app, and open a new chat.
@@ -56,7 +56,7 @@ The pack is temporarily uninstalled during this update. If network refresh fails
 ### Remove the plugin
 
 ```text
-codex plugin remove chatgpt-transfer@yjj3019-chatgpt
+codex plugin remove taskforge@yjj3019
 ```
 
 This removes the plugin's installation settings/cache, not previous Python copies or Git clones.
@@ -66,7 +66,7 @@ This removes the plugin's installation settings/cache, not previous Python copie
 After removing the plugin, run this only if you no longer want to use this marketplace.
 
 ```text
-codex plugin marketplace remove yjj3019-chatgpt
+codex plugin marketplace remove yjj3019
 ```
 
 ### Validation scope
@@ -74,6 +74,19 @@ codex plugin marketplace remove yjj3019-chatgpt
 Codex CLI `0.162.0-alpha.17.2` on Windows was tested with separate temporary configuration/cache. Actual GitHub URL registration, installation, update by reinstalling, and removal were verified, alongside local fixture version/document updates. Refreshing while installed failed with access denied during cache replacement; the reinstall sequence above succeeded. Actual app presentation and model behavior require separate validation.
 
 [Official packaging guide](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [official management commands](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (checked 2026-10-15).
+
+## Migrate from the previous plugin
+
+Run this only if `chatgpt-transfer@yjj3019-chatgpt` is installed. Renaming does not automatically update existing installs: remove the old plugin and marketplace registration, then install the new identity. Check each command succeeds before proceeding. The repository URL is unchanged.
+
+```text
+codex plugin remove chatgpt-transfer@yjj3019-chatgpt
+codex plugin marketplace remove yjj3019-chatgpt
+codex plugin marketplace add yjj3019/ChatGPT --ref main
+codex plugin add taskforge@yjj3019
+```
+
+The plugin is temporarily uninstalled during migration. Recover any failure before continuing the remaining steps, then restart the app and use TaskForge in a new chat. The Python installer keeps its `chatgpt-transfer/` name for compatibility.
 
 ## Use in a ChatGPT Project
 

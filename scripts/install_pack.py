@@ -143,8 +143,8 @@ or access in a live client. Keep the current model and granted permissions.
     )
 
 
-def validate_skill_metadata(content: str) -> None:
-    """Check this generator's two JSON-quoted YAML scalars, not arbitrary YAML."""
+def validate_skill_metadata(content: str, *, expected_name: str = PACK_NAME) -> None:
+    """Check two JSON-quoted YAML scalars, preserving the legacy name by default."""
     lines = content.splitlines()
     if len(lines) < 5 or lines[0] != "---" or lines[3] != "---":
         raise ValueError("invalid SKILL.md frontmatter")
@@ -158,7 +158,7 @@ def validate_skill_metadata(content: str) -> None:
         except ValueError as exc:
             raise ValueError("invalid SKILL.md metadata scalar") from exc
     description = metadata.get("description")
-    if (metadata.get("name") != PACK_NAME or not isinstance(description, str)
+    if (metadata.get("name") != expected_name or not isinstance(description, str)
             or not description.strip() or len(description) > 1024
             or any(ord(char) < 32 for char in description)):
         raise ValueError("invalid SKILL.md name or description")

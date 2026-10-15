@@ -1,8 +1,8 @@
 ---
-name: "chatgpt-transfer"
-description: "Apply the chatgpt-transfer guidance when the user requests this pack for a task or a setup review. Not for unrelated coding or writing."
+name: "taskforge"
+description: "Apply TaskForge guidance when the user requests this pack for a task or a setup review. Not for unrelated coding or writing."
 ---
-# ChatGPT / Codex Transfer Pack
+# TaskForge
 
 Use when this pack is requested, including explicit skill invocation. Preserve
 the user's task, model, effort, permissions, and existing workspace instructions.

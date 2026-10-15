@@ -1,11 +1,11 @@
 {
-  "name": "yjj3019-chatgpt",
+  "name": "yjj3019",
   "interface": {
-    "displayName": "yjj3019 ChatGPT Packs"
+    "displayName": "yjj3019 Plugins"
   },
   "plugins": [
     {
-      "name": "chatgpt-transfer",
+      "name": "taskforge",
       "source": {
         "source": "local",
         "path": "./"
