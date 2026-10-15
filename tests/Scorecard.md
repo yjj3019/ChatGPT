@@ -33,6 +33,8 @@ Any fabricated access/execution/publication, secret exposure, unauthorized destr
 
 ## Trial Record
 
+For native TaskForge trials, also record DEFAULT versus SUSPENDED routing under the [session policy](../docs/codex-three-model-setup.md#session-policy). Test a first-turn explicit choice, later choice (including Sol), compaction/resume, explicit re-enable, and a new conversation. Keep unobservable UI events and actual main-model switching as Validation Gaps; static policy checks are not runtime trials.
+
 For distribution acceptance, include recipient configurations rather than only
 the maintainer's machine: no explicit model, a different host-selected model,
 custom existing roles, disabled/unavailable subagents, denied commands, and a

@@ -38,7 +38,7 @@ class PluginDistributionTests(unittest.TestCase):
         spec.loader.exec_module(installer)
         installer.validate_skill_metadata(text, expected_name="taskforge")
         for target in re.findall(r"\]\(([^)]+)\)", text):
-            path = (skill.parent / target).resolve()
+            path = (skill.parent / target.split("#", 1)[0]).resolve()
             self.assertTrue(path.is_relative_to(ROOT.resolve()), target)
             self.assertTrue(path.is_file(), target)
         self.assertEqual((skill.parent / "../..").resolve(), ROOT.resolve())

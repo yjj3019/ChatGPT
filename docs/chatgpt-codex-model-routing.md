@@ -6,6 +6,8 @@ Load only when choosing or switching models, or when the user asks for model adv
 
 Use the current session model and effort by default. Respect explicit user choices and host requirements. Do not maintain a fixed preferred roster or switch automatically because a task is complex, risky, or has failed a set number of times.
 
+Exception: the native TaskForge skill uses its [session policy](codex-three-model-setup.md#session-policy) as the Codex default. Explicit model choices suspend that preset for the conversation. This exception does not change ChatGPT or legacy entry defaults, grant settings permissions, or prove an actual main-model switch.
+
 ## Verify the Product Surface
 
 Before advising a change, record the actual surface (Chat, ChatGPT Work, Codex, or API), client/version, and authentication method (for example, ChatGPT sign-in versus API/provider credentials). Verify the models and effort levels actually exposed to that session, plus available tools and permissions. Product documentation and API catalogs are not a fixed host roster.

@@ -1,13 +1,13 @@
 # Distribution Baseline
 
-This repository is a distributable instruction pack for multiple recipients and hosts. This baseline is the pack's maintenance contract, not an OpenAI certification or a promise that every host supports every feature. A maintainer's personal model, client version, paths, credentials, memory, and successful local checks are not distribution defaults.
+This repository is a distributable instruction pack for multiple recipients and hosts. This baseline is the pack's maintenance contract, not an OpenAI certification or a promise that every host supports every feature. TaskForge defines a native Codex session preset; a maintainer's client version, paths, credentials, memory, and successful local checks are not compatibility guarantees.
 
 ## Default Contract
 
 | Area | Distribution baseline | Recipient-specific opt-in |
 |---|---|---|
-| Main model and reasoning | Keep the host/user selection; no model ID, roster, effort, or service-tier override | A justified, supported, authorized override |
-| Subagents | Use supported host controls; inherit model/effort/permissions; main remains responsible | Reviewed custom role files or a named model preset |
+| Main model and reasoning | Native TaskForge follows its session preset unless explicitly overridden; ChatGPT/legacy entries keep host selection | A justified, supported, authorized override |
+| Subagents | Native DEFAULT uses registered Luna/Astra roles; SUSPENDED uses the selected model and unpinned roles only when requested; inherit permissions | Reviewed custom role files or a named model preset |
 | Permission and tools | Preserve host policy, managed requirements, provider, integrations, and existing roles | Separately authorized changes; no privilege expansion to make tests pass |
 | Memory | The pack does not enable memory or ship generated memory state | Supported host memory setup after privacy/support review |
 | Installation | Copy the pack, verify its manifest, preserve conflicts and user files | Explicit conflict resolution after backup; never silent overwrite |
@@ -23,7 +23,7 @@ The names `pack_explorer`, `pack_runner`, and `pack_reviewer` avoid replacing bu
 
 Explorer and Reviewer must not edit. Runner executes only the main's specified verification, allowing its necessary temporary/cache/build outputs within granted permissions. These are behavioral restrictions: custom files do not create separate child sandboxes. For hard read-only isolation, restrict the whole parent session using supported controls. Do not add unsupported permission fields or silently replace the recipient's policy.
 
-The [Sol/Luna/Astra example](codex-three-model-setup.md) is an optional named preset, never the baseline. Its observed versions and trials describe one environment. The [Memories example](codex-memories-maintenance.md) is also opt-in; no memory feature is activated by distributing its TOML documentation.
+The [Sol/Luna/Astra session policy](codex-three-model-setup.md#session-policy) is the native TaskForge default. Explicit model choices suspend it for the conversation; new conversations applying TaskForge restore the default. Resuming the same conversation preserves its state. Role registration remains a separately authorized host setup step, and instructions cannot force model switching or detect unexposed UI selections. Its observed versions and trials describe one environment. The [Memories example](codex-memories-maintenance.md) is also opt-in; no memory feature is activated by distributing its TOML documentation.
 
 ## Support and Change Validation
 
@@ -31,7 +31,7 @@ Official schema references checked 2026-10-15: [custom agents](https://learn.cha
 
 | Recipient scenario | Acceptance criterion |
 |---|---|
-| New installation with no model override | No model/effort/permissions written by the pack; one entry loads without preloading optional presets |
+| New installation with no model override | No model/effort/permissions written by the pack; native session policy loads without preloading the full setup guide; no automatic role registration |
 | Customized model, disabled feature, or existing roles | Original recipient config and role bytes preserved; conflicts reported before replacement |
 | Custom agents unavailable or name discovery stale | No invented API or role substitution; main performs permitted work, dependent trial marked unavailable |
 | Restricted/offline host or denied verification command | No bypass, automatic install, or concealed PASS; required evidence remains a Validation Gap |
@@ -42,4 +42,4 @@ Repository checks require Python 3.11+ and its standard library. The workflow de
 
 For a distribution release, record the revision, each checked environment, command/exit/evidence, skipped or unavailable checks, and rollback instructions. Test benign explicit/implicit delegation and negative cases on available recipient hosts using the [Scorecard](../tests/Scorecard.md). Missing live coverage remains unknown; it does not block publishing an honestly labeled instruction-only package, but it blocks claims of tested live behavior or performance in that environment.
 
-Do not ship user settings, generated memory, private traces, machine-specific installation paths, or secrets. Keep optional integration dependencies separate. Restore only changed recipient files after an authorized opt-in trial, preserving later user edits; pack updates must not reset memory or credentials. Model or platform updates should change compatibility evidence and optional overrides when necessary, not the model-independent baseline.
+Do not ship user settings, generated memory, private traces, machine-specific installation paths, or secrets. Keep optional integration dependencies separate. Restore only changed recipient files after an authorized opt-in trial, preserving later user edits; pack updates must not reset memory or credentials. Model or platform updates should change compatibility evidence and optional overrides when necessary, without overriding explicit session choices.

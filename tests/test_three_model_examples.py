@@ -1,4 +1,4 @@
-"""Validate the opt-in preset's public TOML contract without invoking a host."""
+"""Validate session-policy packaging and role TOML without invoking a host."""
 import tomllib
 import unittest
 from pathlib import Path
@@ -28,6 +28,28 @@ class ThreeModelExamplesTest(unittest.TestCase):
                 self.assertTrue(config["description"].strip())
                 self.assertIsInstance(config["developer_instructions"], str)
                 self.assertTrue(config["developer_instructions"].strip())
+
+    def test_native_entry_links_complete_session_policy(self):
+        skill = (ROOT / "skills/taskforge/SKILL.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "docs/codex-three-model-setup.md").read_text(encoding="utf-8-sig")
+        self.assertIn("../../docs/codex-three-model-setup.md#session-policy", skill)
+        section = guide.split("## Session Policy\n", 1)[1].split("\n## ", 1)[0]
+        for event in (
+            "New conversation applying TaskForge", "including Sol",
+            "compaction", "resuming the same conversation",
+            "Explicit request to re-enable", "first request",
+        ):
+            self.assertIn(event, section)
+        for limitation in (
+            "not a persisted setting", "active model slug alone",
+            "cannot reliably intercept", "does not control app restart",
+            "does not change the running main model", "Do not silently install roles",
+        ):
+            self.assertIn(limitation, section)
+        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml"):
+            config = tomllib.loads((EXAMPLES / filename).read_text(encoding="utf-8-sig"))
+            self.assertIn(config["name"], section)
+            self.assertIn(config["model"], section)
 
     def test_optional_policy_has_one_ordered_marker_pair(self):
         policy = (EXAMPLES / "AGENTS.snippet.md").read_text(encoding="utf-8-sig")

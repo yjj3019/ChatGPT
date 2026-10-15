@@ -1,8 +1,8 @@
 # TaskForge
 
-A **model-independent instruction pack** for engineering, writing, and evidence-backed completion. Install it as a GitHub marketplace plugin in the Codex app, or use Project Instructions in ChatGPT. It does not train or copy model weights or hidden reasoning, or create automatic cross-session memory.
+An **instruction pack** for engineering, writing, and evidence-backed completion. Install it as a GitHub marketplace plugin in the Codex app, or use Project Instructions in ChatGPT. It does not train or copy model weights or hidden reasoning, or create automatic cross-session memory.
 
-The guidance preserves the current model, reasoning effort, and permissions while selecting only relevant task guides. Installation does not activate optional roles, model presets, or memory features. See the [distribution standard](docs/distribution-standard.md).
+New conversations applying the native Codex TaskForge skill default to Sol main / Luna exploration-verification / conditional Astra review. An explicit user model choice suspends three-model routing for that conversation and preserves the chosen model/effort. A new conversation applying TaskForge returns to the default; resuming a conversation or restarting the app alone does not reset it. Installation does not modify user settings, roles, or memories. See the [distribution standard](docs/distribution-standard.md).
 
 **Language:** [한국어](README.md) | English
 
@@ -163,7 +163,7 @@ Historical filenames containing `5.5` are retained for compatibility; they do no
 
 Bump the version in root `plugin.json` when changing distributed plugin content.
 
-For an explicitly requested Sol main / Luna explorer-runner / conditional Astra reviewer setup, use the [optional three-model guide](docs/codex-three-model-setup.md) and its role TOML/delegation examples. It covers inherited permissions, support/conflict checks, fresh-session verification, and rollback. Pack installation does not activate the preset; normal routing stays model-independent.
+Use the [session-based three-model guide](docs/codex-three-model-setup.md) for the native Codex default. Actual execution requires model access and host role registration. Instructions cannot switch the running main model or reliably detect every UI model choice. If the host does not expose your selection, say **"use this model only"**; to restore the preset, explicitly request **"re-enable the TaskForge three-model preset"**. Settings changes require separate authorization and verification. ChatGPT and legacy Python entry points retain the current-model default.
 
 For Codex Memories setup or model updates, optionally read the [Memories maintenance guide](docs/codex-memories-maintenance.md). Its default example omits model IDs; apply only justified overrides after checking the installed version, supported keys, and access for each memory role. It covers unsupported-pin removal and default revalidation, error-specific stop conditions, and the difference between config and memory-state rollback. Installing the pack does not change user settings or memories. Report static checks separately from live host trials.
 
