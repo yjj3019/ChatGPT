@@ -19,15 +19,16 @@ codex plugin add chatgpt-transfer@yjj3019-chatgpt
 
 Codex 앱을 다시 시작한 뒤 Plugins에서 설치 상태를 확인하고 새 채팅에서 사용합니다. 예: “chatgpt-transfer 팩을 적용해 이 코드를 검토해줘.” 단순 설치와 실제 지침 선택·준수는 별도로 확인해야 합니다. 모델·권한·메모리 설정은 팩이 변경하지 않습니다.
 
-업데이트할 때 marketplace의 Git 스냅샷을 갱신한 뒤 플러그인을 다시 추가해 설치본을 새 내용으로 갱신합니다.
+업데이트는 재설치 방식으로 진행합니다. 해당 플러그인을 제거한 뒤 marketplace의 Git 스냅샷을 갱신하고 다시 설치합니다. 각 명령이 성공했는지 확인한 뒤 다음 명령을 실행합니다.
 
 ```text
+codex plugin remove chatgpt-transfer@yjj3019-chatgpt
 codex plugin marketplace upgrade yjj3019-chatgpt
 codex plugin add chatgpt-transfer@yjj3019-chatgpt
 codex plugin list --marketplace yjj3019-chatgpt --json
 ```
 
-업데이트 후 앱을 다시 시작하고 새 채팅에서 확인합니다. 배포자는 플러그인 내용이 바뀔 때 루트 `plugin.json`의 버전도 올립니다. marketplace 갱신과 설치본 갱신은 별도 단계입니다.
+업데이트 후 앱을 다시 시작하고 새 채팅에서 확인합니다. 검증에 사용한 Windows CLI에서는 설치 상태로 marketplace를 갱신하면 기존 캐시 교체가 액세스 거부로 실패했으며, 위 재설치 순서는 성공했습니다. 갱신 중에는 팩이 일시적으로 미설치 상태입니다. 네트워크 갱신이 실패하면 연결을 복구한 뒤 갱신·설치를 다시 실행합니다. 배포자는 플러그인 내용이 바뀔 때 루트 `plugin.json`의 버전도 올립니다.
 
 삭제할 때는 플러그인을 제거합니다. marketplace 등록도 없애려면 두 번째 명령을 추가로 실행합니다.
 
@@ -38,7 +39,7 @@ codex plugin marketplace remove yjj3019-chatgpt
 
 삭제 대상은 이 플러그인의 설정·캐시입니다. 기존 Python 설치기로 복사한 스킬과 Git 클론은 별도로 관리합니다. 두 설치 방식을 동시에 사용하면 지침이 중복 검색될 수 있으므로 하나를 선택합니다. 앱의 실제 표시와 호환성은 설치된 버전에서 확인하세요. [공식 패키징 안내](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [공식 관리 명령](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (확인일 2026-10-15).
 
-로컬 검증 범위: Windows의 Codex CLI `0.162.0-alpha.17.2`, 별도 임시 설정·캐시에서 설치, 시험용 버전·문서 내용 갱신, 삭제를 확인했습니다. 실제 앱 화면 표시와 모델의 지침 준수는 별도 검증 대상입니다.
+검증 범위: Windows의 Codex CLI `0.162.0-alpha.17.2`, 별도 임시 설정·캐시에서 로컬 시험용 버전·문서 내용 갱신과 실제 GitHub URL의 등록·설치·재설치 갱신·삭제를 확인했습니다. 실제 앱 화면 표시와 모델의 지침 준수는 별도 검증 대상입니다.
 
 ## AI 에이전트용 (저장소 URL만 있을 때)
 
