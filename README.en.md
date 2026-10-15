@@ -1,86 +1,109 @@
 # ChatGPT and Codex Transfer Pack
 
-A **model-independent instruction distribution** for multiple recipients and hosts, supporting engineering, writing, and evidence-backed completion. This repository provides **instructions and routing**, not model weights or hidden reasoning. It does **not** create automatic cross-session memory.
+A **model-independent instruction pack** for engineering, writing, and evidence-backed completion. Install it as a GitHub marketplace plugin in the Codex app, or use Project Instructions in ChatGPT. It does not train or copy model weights or hidden reasoning, or create automatic cross-session memory.
 
-The baseline **preserves the recipient's model, reasoning effort, permissions, and existing settings**. No particular machine or model combination is required. The [distribution standard](docs/distribution-standard.md) defines model-inheriting role examples, opt-in activation, and environment-specific verification/rollback. Installation alone does not activate user settings, roles, or memory features.
+The guidance preserves the current model, reasoning effort, and permissions while selecting only relevant task guides. Installation does not activate optional roles, model presets, or memory features. See the [distribution standard](docs/distribution-standard.md).
 
 **Language:** [한국어](README.md) | English
 
+## Choose an installation method
+
+| Environment or purpose | Method |
+|---|---|
+| **Codex app — default installation** | Install `chatgpt-transfer` through the marketplace steps below |
+| ChatGPT Project | Put `CHATGPT.md` in Project Instructions and provide relevant `docs/` files |
+| Other skill-style hosts or existing installation method | Copy `chatgpt-transfer/` with the Python installer below |
+| Repository development or workspace rules | Open the repository and verify that root `AGENTS.md` is active |
+| One-shot copy/paste | Use `docs/chatgpt-5.5-all-in-one-instructions.md` |
+
+Choose one entry point. Using both the marketplace plugin and a Python copy can cause duplicate discovery of this pack.
+
 ## Codex app marketplace install, remove, and update
 
-Check that `codex plugin --help` and `codex plugin marketplace --help` support the commands below. This repository exposes one `chatgpt-transfer` plugin through the `yjj3019-chatgpt` marketplace. This does not mean it has been reviewed or listed in the universal public plugin directory.
+Codex CLI is required. Check `codex plugin --help` and `codex plugin marketplace --help` for support before running these commands. The marketplace is `yjj3019-chatgpt`; the plugin is `chatgpt-transfer`. This GitHub marketplace is separate from review and listing in the universal public plugin directory.
 
-Register the repository marketplace and install the plugin:
+### Install
+
+Register the repository marketplace and install the plugin from a terminal. No manual clone or Python installer is needed.
 
 ```text
 codex plugin marketplace add yjj3019/ChatGPT --ref main
 codex plugin add chatgpt-transfer@yjj3019-chatgpt
 ```
 
-Restart the Codex app, check installation in Plugins, and start a new chat. For example: “Apply the chatgpt-transfer pack to review this code.” Installation and observed skill selection/compliance are separate checks. The pack does not change model, permission, or memory settings.
+Restart the Codex app and use a new chat. Example: “Apply the chatgpt-transfer pack to review this code.” The plugin reads its installed `AGENTS.md` and relevant guides; it does not change the user's working folder to the pack repository.
 
-Update by reinstalling: remove this plugin, refresh the marketplace's Git snapshot, then install it again. Check each command succeeds before running the next:
+### Check installation
+
+```text
+codex plugin list --marketplace yjj3019-chatgpt --json
+```
+
+Check the installed entry/version and installation status in the app's Plugins view. File installation and actual model selection/compliance are separate checks.
+
+### Update
+
+Use **remove → refresh marketplace → reinstall** to avoid the cache replacement error observed on the tested Windows CLI. Check each command succeeds before running the next.
 
 ```text
 codex plugin remove chatgpt-transfer@yjj3019-chatgpt
 codex plugin marketplace upgrade yjj3019-chatgpt
 codex plugin add chatgpt-transfer@yjj3019-chatgpt
-codex plugin list --marketplace yjj3019-chatgpt --json
 ```
 
-Restart the app and verify in a new chat after updating. On the tested Windows CLI, refreshing while installed failed with access denied when replacing the existing cache; the reinstall sequence above succeeded. The pack is temporarily uninstalled during this update. If network refresh fails, restore connectivity and rerun refresh/install. Publishers also bump the version in root `plugin.json` when plugin content changes.
+The pack is temporarily uninstalled during this update. If network refresh fails, restore connectivity and rerun refresh/install. Then check installation, restart the app, and open a new chat.
 
-To uninstall, remove the plugin. Run the second command only if you also want to unregister its marketplace:
+### Remove the plugin
 
 ```text
 codex plugin remove chatgpt-transfer@yjj3019-chatgpt
+```
+
+This removes the plugin's installation settings/cache, not previous Python copies or Git clones.
+
+### Unregister the marketplace — optional
+
+After removing the plugin, run this only if you no longer want to use this marketplace.
+
+```text
 codex plugin marketplace remove yjj3019-chatgpt
 ```
 
-Removal targets this plugin's configuration/cache. Skills copied by the existing Python installer and Git clones are managed separately. Choose one installation method to avoid duplicate discovery. Confirm actual app presentation and compatibility in the installed version. [Official packaging guide](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [official management commands](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (checked 2026-10-15).
+### Validation scope
 
-Validation scope: Codex CLI `0.162.0-alpha.17.2` on Windows, with separate temporary configuration/cache. Local fixture version/document updates and actual GitHub URL registration, installation, update by reinstalling, and removal were verified. Actual app presentation and model compliance require separate validation.
+Codex CLI `0.162.0-alpha.17.2` on Windows was tested with separate temporary configuration/cache. Actual GitHub URL registration, installation, update by reinstalling, and removal were verified, alongside local fixture version/document updates. Refreshing while installed failed with access denied during cache replacement; the reinstall sequence above succeeded. Actual app presentation and model behavior require separate validation.
 
-## For AI agents (repo URL only)
+[Official packaging guide](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [official management commands](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (checked 2026-10-15).
+
+## Use in a ChatGPT Project
+
+1. Put the repository's `CHATGPT.md` in Project Instructions.
+2. Provide only the relevant `docs/` files as project knowledge.
+3. Verify actual access to the selected guide.
+
+The full transfer guide and all-in-one are alternative entries; do not stack them during normal use. For paste instructions, run `python3 scripts/install_pack.py --print-chatgpt` from a local clone.
+
+## Existing Python installation — other skill-style hosts
+
+Use this to copy files for Claude / Grok / Cursor / AGENTS-compatible hosts. Codex CLI is also detected, but the marketplace above is the Codex app's default installation method.
 
 ```bash
 git clone https://github.com/yjj3019/ChatGPT.git
 cd ChatGPT
 python3 scripts/install_pack.py --auto
-# then: Codex → open this repo as workspace (verify AGENTS.md is active)
-# ChatGPT → paste CHATGPT.md into Project Instructions; attach docs/ as needed
 ```
 
-- `python3 scripts/install_pack.py --auto` — detect Claude / Codex / Grok / Cursor / AGENTS hosts and copy the pack to each skills root as `chatgpt-transfer/`
-- `python3 scripts/install_pack.py --print-chatgpt` — exact paste steps for ChatGPT Project Instructions (web cannot fully automate)
-- `python3 scripts/install_pack.py --check` — verify files and run `validate_framework.py`
-- `python3 scripts/install_pack.py --help` — destinations, `--dest`, `--with-tests`, `--dry-run`
+- `--dest` — choose the destination skills root
+- `--with-tests` — also include evaluation/test files
+- `--dry-run` — inspect destinations and conflicts without writing
+- `--check` — check a Python install's file integrity; also run structural validation when test files exist
+- `--force` — replace the entire existing pack, including user-added files; back up first
 
-Existing identical installs are skipped and user files are preserved. Changed, incomplete, or legacy installs are refused. Back up local files before using `--force`: it replaces the entire pack, including user-added files. `--dry-run` checks conflicts without writing; `--check` verifies the local content manifest (not publisher authenticity). Do not run concurrently against the same destination.
+Identical installations are skipped and user files preserved. Changed, incomplete, or legacy installations are refused by default. Do not install concurrently to the same destination. This installer's `--check` does not verify marketplace installation status or publisher authenticity.
 
-For a source ZIP, run `python scripts/validate_framework.py`; source-mode `install_pack.py --check` requires a Git checkout. ZIP sources can still be installed.
+When moving from Python installation to the marketplace, inspect the old destination and back up user-added files, then separately retire only the previous `chatgpt-transfer/` pack. Marketplace commands do not remove previous Python installations automatically.
 
-Preferred Codex path: **open this clone as the workspace** and verify that the root `AGENTS.md` is active. Skill copies are for hosts that discover packs under `~/.agents/skills` (and similar). Keep existing higher-priority workspace rules when adopting this pack.
-
-## What this is / is not
-
-| Is | Is not |
-|---|---|
-| Lean ChatGPT + Codex entry points with selective guide loading | Fine-tuning, weight training, or CoT distillation |
-| Context Budget + Model-Invariant Floor across models | A guarantee that every model performs equally |
-| Sync / validate / measure / golden-test maintenance tooling | Automatic cross-session memory or secret storage |
-| Evidence-based model/effort routing | A substitute for verifying host model availability |
-
-## Choose one entry point
-
-| Use | Entry |
-|---|---|
-| ChatGPT Project | Put `CHATGPT.md` in Project Instructions; make relevant `docs/` available as project knowledge. |
-| Codex | Start Codex **in this repository** and verify that `AGENTS.md` is active. |
-| One-shot copy/paste | Use `docs/chatgpt-5.5-all-in-one-instructions.md` for Core + coding / proposal / blog when you cannot attach the repo. |
-| Skill-style host | After `--auto`, use the installed `chatgpt-transfer/` pack (`SKILL.md` + `AGENTS.md`). |
-
-Read the chosen entry when available at session start. The entry routes each task to the **smallest** relevant guide. Simple tasks use the Core alone. Full and standalone guides are alternatives, not layers to stack on every task.
+For a source ZIP, run `python scripts/validate_framework.py`. Source-mode `install_pack.py --check` requires a Git checkout. ZIP sources can still be installed using Python.
 
 ## Check the actual host after setup
 
@@ -125,6 +148,8 @@ Historical filenames containing `5.5` are retained for compatibility; they do no
 
 ## Maintain and verify
 
+Bump the version in root `plugin.json` when changing distributed plugin content.
+
 For an explicitly requested Sol main / Luna explorer-runner / conditional Astra reviewer setup, use the [optional three-model guide](docs/codex-three-model-setup.md) and its role TOML/delegation examples. It covers inherited permissions, support/conflict checks, fresh-session verification, and rollback. Pack installation does not activate the preset; normal routing stays model-independent.
 
 For Codex Memories setup or model updates, optionally read the [Memories maintenance guide](docs/codex-memories-maintenance.md). Its default example omits model IDs; apply only justified overrides after checking the installed version, supported keys, and access for each memory role. It covers unsupported-pin removal and default revalidation, error-specific stop conditions, and the difference between config and memory-state rollback. Installing the pack does not change user settings or memories. Report static checks separately from live host trials.
@@ -153,3 +178,7 @@ GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12.
 - Controlled behavior rubrics: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-040.md`.
 
 Structural checks do not run live ChatGPT/Codex behavior trials. Official principles that informed routing (not proof of speed/accuracy gains): [AGENTS.md discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [selective skill loading](https://learn.chatgpt.com/docs/build-skills), [instruction clarity](https://developers.openai.com/api/docs/guides/latest-model) (checked 2026-09-06).
+
+## License
+
+[MIT License](LICENSE).

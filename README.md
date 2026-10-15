@@ -1,86 +1,109 @@
 # ChatGPT·Codex 전이 팩
 
-여러 사용자와 호스트에 배포하는 **모델 비의존 지침 배포판**입니다. 엔지니어링·문서 작업·증거 기반 완료를 위한 **지침과 라우팅**을 제공하며, 모델 가중치나 숨은 추론을 학습·복사하지 않습니다. 세션 간 자동 기억도 만들지 않습니다.
+엔지니어링·문서 작업·증거 기반 완료를 위한 **모델 비의존 지침 팩**입니다. Codex 앱에서는 GitHub marketplace 플러그인으로 설치하고, ChatGPT에서는 Project Instructions로 사용할 수 있습니다. 모델 가중치나 숨은 추론을 학습·복사하거나 자동 교차 세션 기억을 만들지 않습니다.
 
-배포 기본값은 **수신 환경의 모델·추론 수준·권한·기존 설정 유지**입니다. 특정 PC나 모델 조합을 요구하지 않습니다. [배포 표준](docs/distribution-standard.md)은 모델을 지정하지 않는 공통 역할 예시, 선택형 구성의 적용 조건, 환경별 검증·복구 기준을 정의합니다. 설치만으로 사용자 설정·역할·메모리 기능을 활성화하지 않습니다.
+현재 모델·추론 수준·권한을 유지하며 필요한 작업 가이드만 읽도록 안내합니다. 설치로 선택형 역할·모델 프리셋·메모리 기능을 활성화하지 않습니다. 배포 원칙은 [배포 표준](docs/distribution-standard.md)을 참고하세요.
 
 **언어:** 한국어 | [English](README.en.md)
 
+## 설치 방식 선택
+
+| 환경·목적 | 사용할 방식 |
+|---|---|
+| **Codex 앱 — 기본 설치** | 아래 marketplace 절차로 `chatgpt-transfer` 플러그인 설치 |
+| ChatGPT Project | `CHATGPT.md`를 Project Instructions에 넣고 필요한 `docs/` 파일 제공 |
+| 다른 스킬형 호스트·기존 설치 방식 | 아래 Python 설치기로 `chatgpt-transfer/` 복사 |
+| 저장소 개발·워크스페이스 규칙 적용 | 저장소를 열고 루트 `AGENTS.md`의 실제 적용 여부 확인 |
+| 원샷 복사/붙여넣기 | `docs/chatgpt-5.5-all-in-one-instructions.md` 사용 |
+
+진입점은 하나를 선택합니다. marketplace 플러그인과 Python 설치본을 함께 사용하면 같은 팩이 중복 검색될 수 있습니다.
+
 ## Codex 앱 marketplace 설치·삭제·업데이트
 
-Codex CLI의 `codex plugin --help`와 `codex plugin marketplace --help`에서 아래 명령을 지원하는지 확인합니다. 이 저장소는 `yjj3019-chatgpt` marketplace에 `chatgpt-transfer` 플러그인 하나를 제공합니다. 공개 플러그인 디렉터리에 심사를 거쳐 등록된 상태를 뜻하지는 않습니다.
+Codex CLI가 필요합니다. `codex plugin --help`와 `codex plugin marketplace --help`에서 아래 명령을 지원하는지 먼저 확인합니다. marketplace 이름은 `yjj3019-chatgpt`, 플러그인 이름은 `chatgpt-transfer`입니다. GitHub 기반 marketplace이며, 공개 플러그인 디렉터리의 심사·등록과는 별도입니다.
 
-설치할 때 저장소를 marketplace로 등록하고 플러그인을 추가합니다.
+### 설치
+
+터미널에서 저장소를 marketplace로 등록하고 플러그인을 설치합니다. 저장소를 직접 클론하거나 Python 설치기를 실행할 필요는 없습니다.
 
 ```text
 codex plugin marketplace add yjj3019/ChatGPT --ref main
 codex plugin add chatgpt-transfer@yjj3019-chatgpt
 ```
 
-Codex 앱을 다시 시작한 뒤 Plugins에서 설치 상태를 확인하고 새 채팅에서 사용합니다. 예: “chatgpt-transfer 팩을 적용해 이 코드를 검토해줘.” 단순 설치와 실제 지침 선택·준수는 별도로 확인해야 합니다. 모델·권한·메모리 설정은 팩이 변경하지 않습니다.
+Codex 앱을 다시 시작하고 새 채팅에서 사용합니다. 요청 예: “chatgpt-transfer 팩을 적용해 이 코드를 검토해줘.” 플러그인은 자기 설치 경로의 `AGENTS.md`와 필요한 가이드를 읽으며, 사용자의 작업 폴더를 팩 저장소로 바꾸지 않습니다.
 
-업데이트는 재설치 방식으로 진행합니다. 해당 플러그인을 제거한 뒤 marketplace의 Git 스냅샷을 갱신하고 다시 설치합니다. 각 명령이 성공했는지 확인한 뒤 다음 명령을 실행합니다.
+### 설치 상태 확인
+
+```text
+codex plugin list --marketplace yjj3019-chatgpt --json
+```
+
+설치 목록·버전을 확인하고 앱의 Plugins에서도 설치 상태를 확인합니다. 설치 파일이 존재하는 것과 실제 모델이 지침을 선택·준수하는 것은 별도 검증입니다.
+
+### 업데이트
+
+검증한 Windows CLI의 캐시 교체 오류를 피하도록 **제거 → marketplace 갱신 → 재설치** 순서를 사용합니다. 각 명령의 성공을 확인한 뒤 다음 명령을 실행합니다.
 
 ```text
 codex plugin remove chatgpt-transfer@yjj3019-chatgpt
 codex plugin marketplace upgrade yjj3019-chatgpt
 codex plugin add chatgpt-transfer@yjj3019-chatgpt
-codex plugin list --marketplace yjj3019-chatgpt --json
 ```
 
-업데이트 후 앱을 다시 시작하고 새 채팅에서 확인합니다. 검증에 사용한 Windows CLI에서는 설치 상태로 marketplace를 갱신하면 기존 캐시 교체가 액세스 거부로 실패했으며, 위 재설치 순서는 성공했습니다. 갱신 중에는 팩이 일시적으로 미설치 상태입니다. 네트워크 갱신이 실패하면 연결을 복구한 뒤 갱신·설치를 다시 실행합니다. 배포자는 플러그인 내용이 바뀔 때 루트 `plugin.json`의 버전도 올립니다.
+갱신 중에는 팩이 일시적으로 미설치 상태입니다. 네트워크 갱신이 실패하면 연결을 복구한 뒤 갱신·설치를 다시 실행합니다. 완료 후 설치 상태를 확인하고 앱을 다시 시작해 새 채팅을 엽니다.
 
-삭제할 때는 플러그인을 제거합니다. marketplace 등록도 없애려면 두 번째 명령을 추가로 실행합니다.
+### 플러그인 삭제
 
 ```text
 codex plugin remove chatgpt-transfer@yjj3019-chatgpt
+```
+
+이 플러그인의 설치 설정·캐시를 제거합니다. 기존 Python 설치본과 Git 클론은 삭제하지 않습니다.
+
+### marketplace 등록 해제 — 선택 사항
+
+플러그인을 삭제한 뒤 이 marketplace도 더 이상 사용하지 않을 때 실행합니다.
+
+```text
 codex plugin marketplace remove yjj3019-chatgpt
 ```
 
-삭제 대상은 이 플러그인의 설정·캐시입니다. 기존 Python 설치기로 복사한 스킬과 Git 클론은 별도로 관리합니다. 두 설치 방식을 동시에 사용하면 지침이 중복 검색될 수 있으므로 하나를 선택합니다. 앱의 실제 표시와 호환성은 설치된 버전에서 확인하세요. [공식 패키징 안내](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [공식 관리 명령](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (확인일 2026-10-15).
+### 확인한 범위
 
-검증 범위: Windows의 Codex CLI `0.162.0-alpha.17.2`, 별도 임시 설정·캐시에서 로컬 시험용 버전·문서 내용 갱신과 실제 GitHub URL의 등록·설치·재설치 갱신·삭제를 확인했습니다. 실제 앱 화면 표시와 모델의 지침 준수는 별도 검증 대상입니다.
+Windows의 Codex CLI `0.162.0-alpha.17.2`, 별도 임시 설정·캐시에서 실제 GitHub URL의 등록·설치·재설치 갱신·삭제와 로컬 시험용 버전·문서 내용 갱신을 확인했습니다. 설치 상태로 marketplace를 갱신할 때는 기존 캐시 교체가 액세스 거부로 실패했고, 위 재설치 순서는 성공했습니다. 실제 앱 화면 표시와 모델 행동은 별도 검증 대상입니다.
 
-## AI 에이전트용 (저장소 URL만 있을 때)
+[공식 패키징 안내](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [공식 관리 명령](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (확인일 2026-10-15).
+
+## ChatGPT Project에서 사용
+
+1. 저장소의 `CHATGPT.md`를 Project Instructions에 넣습니다.
+2. 작업에 필요한 `docs/` 파일만 프로젝트 지식으로 제공합니다.
+3. 선택한 가이드에 실제로 접근할 수 있는지 확인합니다.
+
+전체 transfer 가이드와 all-in-one은 대체 진입점입니다. 일반 사용에서 함께 쌓아 읽지 않습니다. 붙여넣기 절차가 필요하면 로컬 클론에서 `python3 scripts/install_pack.py --print-chatgpt`를 실행합니다.
+
+## 기존 Python 설치 방식 — 다른 스킬형 호스트용
+
+Claude / Grok / Cursor / AGENTS 호환 호스트 등에 팩을 파일로 복사할 때 사용합니다. Codex CLI도 감지 대상에 포함되지만, Codex 앱의 기본 설치는 위 marketplace 방식입니다.
 
 ```bash
 git clone https://github.com/yjj3019/ChatGPT.git
 cd ChatGPT
 python3 scripts/install_pack.py --auto
-# 다음: Codex → 이 저장소를 워크스페이스로 연다 (AGENTS.md 적용 여부 확인)
-# ChatGPT → CHATGPT.md를 Project Instructions에 붙여넣기; 필요 시 docs/ 첨부
 ```
 
-- `python3 scripts/install_pack.py --auto` — Claude / Codex / Grok / Cursor / AGENTS 호스트를 감지해 각 스킬 루트에 `chatgpt-transfer/`로 복사
-- `python3 scripts/install_pack.py --print-chatgpt` — ChatGPT Project Instructions 붙여넣기 절차 (웹은 완전 자동화 불가)
-- `python3 scripts/install_pack.py --check` — 설치 파일 확인 + `validate_framework.py` 실행
-- `python3 scripts/install_pack.py --help` — `--dest`, `--with-tests`, `--dry-run` 등
+- `--dest` — 설치할 스킬 루트 직접 지정
+- `--with-tests` — 평가 기준·테스트 파일도 포함
+- `--dry-run` — 쓰기 없이 대상과 충돌 확인
+- `--check` — Python 설치본의 파일 무결성 확인; 테스트 파일이 있으면 구조 검증도 실행
+- `--force` — 기존 팩 전체 교체; 사용자 추가 파일까지 교체하므로 먼저 백업
 
-동일한 설치는 건너뛰며 사용자 파일을 보존합니다. 변경·누락되었거나 구형인 설치는 덮어쓰지 않습니다. `--force`는 사용자 추가 파일까지 전체 교체하므로 먼저 백업하세요. `--dry-run`은 쓰기 없이 충돌을 검사하고, `--check`는 로컬 콘텐츠 매니페스트의 무결성을 확인합니다(배포자 인증은 아님). 같은 대상에 설치를 동시에 실행하지 마세요.
+동일한 설치는 건너뛰고 사용자 파일을 보존합니다. 변경·누락·구형 설치는 기본적으로 덮어쓰지 않습니다. 같은 대상에 동시에 설치하지 마세요. 이 설치기의 `--check`는 marketplace 설치 상태나 배포자 인증을 검증하지 않습니다.
 
-소스 ZIP은 `python scripts/validate_framework.py`로 검사하세요. 원본에서 `install_pack.py --check`를 쓰려면 Git 체크아웃이 필요합니다. ZIP 소스도 설치할 수 있습니다.
+Python 방식에서 marketplace로 전환할 때는 기존 설치 대상과 사용자 추가 파일을 확인·백업한 뒤, 이전 `chatgpt-transfer/` 팩만 별도로 정리합니다. marketplace 명령은 이전 Python 설치본을 자동으로 제거하지 않습니다.
 
-Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `AGENTS.md` 적용 여부를 확인합니다. 스킬 복사는 `~/.agents/skills` 등에서 팩을 찾는 호스트용입니다. 이미 있는 더 높은 우선순위 워크스페이스 규칙은 유지하세요.
-
-## 이 팩이 하는 일 / 하지 않는 일
-
-| 하는 일 | 하지 않는 일 |
-|---|---|
-| 선택 로딩이 있는 얇은 ChatGPT·Codex 진입점 | 파인튜닝·가중치 학습·CoT 증류 |
-| 모델 공통 Context Budget + Model-Invariant Floor | 모든 모델이 동일 성능을 낸다는 보장 |
-| sync / validate / measure / 골든 테스트 유지보수 도구 | 자동 교차 세션 기억·비밀 저장 |
-| 증거 기반 모델·추론 노력 수준 선택 | 호스트 모델 가용성 확인의 대체 |
-
-## 진입점 하나 고르기
-
-| 용도 | 진입 |
-|---|---|
-| ChatGPT Project | `CHATGPT.md`를 Project Instructions에 넣고, 관련 `docs/`를 프로젝트 지식으로 제공 |
-| Codex | **이 저장소에서** Codex를 시작하고 `AGENTS.md` 적용 확인 |
-| 원샷 복사/붙여넣기 | 저장소를 붙일 수 없을 때 `docs/chatgpt-5.5-all-in-one-instructions.md` (Core + 코딩/제안/블로그) |
-| 스킬형 호스트 | `--auto` 후 설치된 `chatgpt-transfer/` (`SKILL.md` + `AGENTS.md`) |
-
-세션 시작 시 선택한 진입을 읽습니다. 진입점은 작업을 **가장 작은** 관련 가이드로 보냅니다. 단순 작업은 Core만 사용합니다. 전체·단독 가이드는 대안이며 매 작업에 쌓는 층이 아닙니다.
+소스 ZIP은 `python scripts/validate_framework.py`로 검사합니다. 원본에서 `install_pack.py --check`의 소스 검사 모드를 쓰려면 Git 체크아웃이 필요합니다. ZIP 소스도 Python 방식으로 설치할 수 있습니다.
 
 ## 설치 후 실제 호스트 확인
 
@@ -125,6 +148,8 @@ Codex 권장 경로: **이 클론을 워크스페이스로 열어** 루트의 `A
 
 ## 유지보수와 검증
 
+플러그인 배포 내용을 바꾸면 루트 `plugin.json`의 버전도 올립니다.
+
 Sol 메인·Luna 탐색/검증·Astra 조건부 검토 구성을 원하는 경우 [선택적 3모델 설정 가이드](docs/codex-three-model-setup.md)의 역할 TOML과 위임 지침 예시를 사용하세요. 공식 권한 상속 제약, 지원·충돌 확인, 새 세션 검증, 복구 절차를 포함합니다. 팩 설치는 이 예시를 활성화하지 않으며 기본 모델 비의존 정책을 유지합니다.
 
 Codex Memories 설정·모델 업데이트 시 [Memories 유지보수 가이드](docs/codex-memories-maintenance.md)를 선택적으로 읽으세요. 기본 예시는 모델명을 생략하며, 필요한 override만 설치 버전·지원 키·메모리 역할별 접근을 확인한 뒤 적용합니다. 미지원 override의 제거·기본값 재검증, 오류별 중단, 설정 복원과 메모리 상태 복원의 차이를 설명합니다. 팩 설치는 실제 사용자 설정이나 메모리를 변경하지 않습니다. 정적 검사와 실제 호스트 시험은 별도로 보고합니다.
@@ -153,3 +178,7 @@ GitHub Actions는 Windows·Linux에서 Python 3.11·3.12로 검사합니다. `me
 - 행동 평가 루브릭: `tests/Scorecard.md`, `tests/GoldenTest-015.md` … `tests/GoldenTest-040.md`
 
 구조 검사는 실제 ChatGPT/Codex 행동 시험을 실행하지 않습니다. 라우팅에 참고한 공식 원칙(속도·정확도 이득의 증명은 아님): [AGENTS.md 발견](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [선택적 스킬 로딩](https://learn.chatgpt.com/docs/build-skills), [지침 명확성](https://developers.openai.com/api/docs/guides/latest-model) (확인일 2026-09-06).
+
+## 라이선스
+
+[MIT License](LICENSE).
