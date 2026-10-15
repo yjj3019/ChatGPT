@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import warnings
 from pathlib import Path
 from contextlib import redirect_stdout, redirect_stderr
 from types import SimpleNamespace
@@ -533,6 +534,12 @@ class SafeInstallTests(unittest.TestCase):
                 with patch.object(install_pack, "_hash") as hash_file:
                     self.assertTrue(install_pack.verify_install(self.pack))
                 hash_file.assert_not_called()
+
+    def test_install_and_verify_do_not_use_deprecated_path_apis(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", DeprecationWarning)
+            self.install()
+            self.assertEqual(install_pack.verify_install(self.pack), [])
 
     def test_manifest_rejects_invalid_checksums_and_missing_required_entries(self):
         self.install()

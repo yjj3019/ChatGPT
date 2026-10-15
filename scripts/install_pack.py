@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import ntpath
 import os
 import shutil
 import stat
@@ -28,6 +29,8 @@ REQUIRED_DIRS = ("docs", "prompts", "scripts")
 OPTIONAL_DIRS = ("tests",)
 MANIFEST_FILE = ".chatgpt-transfer-manifest.json"
 GENERATED_FILES = ("SKILL.md", "INSTALL_NOTE.md")
+# Use Windows rules on every host; Python 3.11/3.12 need the pathlib fallback.
+WINDOWS_IS_RESERVED = getattr(ntpath, "isreserved", lambda name: PureWindowsPath(name).is_reserved())
 
 # (label, home marker dir, skills/packs root relative to home)
 HOSTS: list[tuple[str, str, str]] = [
@@ -237,7 +240,7 @@ def _read_manifest(pack: Path) -> dict:
         if (not isinstance(name, str) or not name or "\\" in name or ":" in name
                 or "\x00" in name or PurePosixPath(name).is_absolute()
                 or any(part in {"", ".", ".."} or part.endswith((".", " "))
-                       or PureWindowsPath(part).is_reserved() for part in name.split("/"))
+                       or WINDOWS_IS_RESERVED(part) for part in name.split("/"))
                 or any(ord(c) < 32 for c in name)
                 or name == MANIFEST_FILE or not isinstance(checksum, str)
                 or len(checksum) != 64 or any(c not in "0123456789abcdef" for c in checksum)):

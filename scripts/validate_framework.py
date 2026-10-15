@@ -65,9 +65,9 @@ CORE_META_PHRASES = (
     "maintainer only",
 )
 
-# Structural invariants: each must appear in Core and/or CHATGPT; AGENTS may pointer-satisfy.
+# Structural invariants: check ChatGPT and Codex entries independently.
 # Format: (id, needles_any, agents_pointer_needles_any)
-# Satisfied if any needle is in core_block or CHATGPT.md; if not, AGENTS may contain a pointer needle.
+# AGENTS may satisfy its own check with an explicit guide pointer.
 CORE_INVARIANTS: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = [
     ("context_budget", ("## Context Budget",), ("## Context Budget",)),
     ("autoload_protocol", ("## Autoload Protocol",), ("Load Only When Relevant", "Context Budget")),
@@ -79,7 +79,7 @@ CORE_INVARIANTS: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = [
     ("no_secrets", ("Never store or echo secrets", "Never store secrets"),
      ("Do not store secrets", "Never store secrets")),
     ("completion_evidence", ("without observable evidence", "without evidence"),
-     ("without evidence", "Never claim access")),
+     ("without observable evidence", "without evidence")),
     ("authorization_high_impact", ("Require explicit authorization for force push",),
      ("Require explicit authorization for force push",)),
     ("smallest_complete_change", ("smallest complete change",),
@@ -224,11 +224,10 @@ def validate_invariants(documents: dict[Path, str], errors: list[str]) -> None:
     model_ids = {"model_invariant_floor", "escalate_not_expand"}
     for inv_id, needles, agent_pointers in CORE_INVARIANTS:
         corpus = f"{primary}\n{routing}" if inv_id in model_ids else primary
-        if any(needle in corpus for needle in needles):
-            continue
-        if any(pointer in agents for pointer in agent_pointers):
-            continue
-        errors.append(f"invariant coverage failed: {inv_id}")
+        if not any(needle.casefold() in corpus.casefold() for needle in needles):
+            errors.append(f"invariant coverage failed: {inv_id} (CHATGPT.md)")
+        if not any(pointer in agents for pointer in agent_pointers):
+            errors.append(f"invariant coverage failed: {inv_id} (AGENTS.md)")
 
 
 def validate_golden_tests(documents: dict[Path, str], errors: list[str]) -> None:
@@ -260,8 +259,8 @@ def main() -> int:
         if not (ROOT / relative).is_file():
             errors.append(f"missing required file: {relative}")
 
-    sources = sorted([*ROOT.glob("*.md"), *(ROOT / "docs").glob("*.md"),
-                      *(ROOT / "prompts").glob("*.md"), *(ROOT / "tests").glob("*.md")])
+    sources = sorted([*ROOT.glob("*.md"), *(ROOT / "docs").rglob("*.md"),
+                      *(ROOT / "prompts").rglob("*.md"), *(ROOT / "tests").rglob("*.md")])
     documents = {path: read_document(path, errors) for path in sources}
     runtime = documents.get(ENTRY, "")
     validate_inlined_runtime(errors)
