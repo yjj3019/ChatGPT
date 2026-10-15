@@ -24,7 +24,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACK_NAME = "chatgpt-transfer"
-REQUIRED_FILES = ("CHATGPT.md", "AGENTS.md", "README.md", "README.en.md")
+REQUIRED_FILES = ("CHATGPT.md", "AGENTS.md", "README.md", "README.en.md", "LICENSE")
 REQUIRED_DIRS = ("docs", "prompts", "scripts")
 OPTIONAL_DIRS = ("tests",)
 MANIFEST_FILE = ".chatgpt-transfer-manifest.json"

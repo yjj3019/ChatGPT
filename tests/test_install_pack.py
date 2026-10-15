@@ -267,6 +267,18 @@ class InstallPackTests(unittest.TestCase):
         self.assertIn("CHATGPT.md", proc.stdout)
         self.assertIn("Project Instructions", proc.stdout)
 
+    def test_license_is_distributed_and_integrity_checked(self):
+        dest = self.home / "skills"
+        proc = self._run("--dest", str(dest))
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        pack = dest / "chatgpt-transfer"
+        license_file = pack / "LICENSE"
+        self.assertEqual(license_file.read_bytes(), (ROOT / "LICENSE").read_bytes())
+        self.assertIn("MIT License", license_file.read_text(encoding="utf-8"))
+        self.assertEqual(install_pack.verify_install(pack), [])
+        license_file.unlink()
+        self.assertTrue(install_pack.verify_install(pack))
+
     def test_check_source_tree(self):
         proc = self._run("--check")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
