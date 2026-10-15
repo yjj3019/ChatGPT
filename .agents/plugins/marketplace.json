@@ -1,0 +1,20 @@
+{
+  "name": "yjj3019-chatgpt",
+  "interface": {
+    "displayName": "yjj3019 ChatGPT Packs"
+  },
+  "plugins": [
+    {
+      "name": "chatgpt-transfer",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

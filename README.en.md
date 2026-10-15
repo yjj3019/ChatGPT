@@ -6,6 +6,40 @@ The baseline **preserves the recipient's model, reasoning effort, permissions, a
 
 **Language:** [한국어](README.md) | English
 
+## Codex app marketplace install, remove, and update
+
+Check that `codex plugin --help` and `codex plugin marketplace --help` support the commands below. This repository exposes one `chatgpt-transfer` plugin through the `yjj3019-chatgpt` marketplace. This does not mean it has been reviewed or listed in the universal public plugin directory.
+
+Register the repository marketplace and install the plugin:
+
+```text
+codex plugin marketplace add yjj3019/ChatGPT --ref main
+codex plugin add chatgpt-transfer@yjj3019-chatgpt
+```
+
+Restart the Codex app, check installation in Plugins, and start a new chat. For example: “Apply the chatgpt-transfer pack to review this code.” Installation and observed skill selection/compliance are separate checks. The pack does not change model, permission, or memory settings.
+
+To update, refresh the marketplace's Git snapshot, then add the plugin again to refresh the installed copy:
+
+```text
+codex plugin marketplace upgrade yjj3019-chatgpt
+codex plugin add chatgpt-transfer@yjj3019-chatgpt
+codex plugin list --marketplace yjj3019-chatgpt --json
+```
+
+Restart the app and verify in a new chat after updating. Publishers also bump the version in root `plugin.json` when plugin content changes. Refreshing the marketplace and refreshing the installed copy are separate steps.
+
+To uninstall, remove the plugin. Run the second command only if you also want to unregister its marketplace:
+
+```text
+codex plugin remove chatgpt-transfer@yjj3019-chatgpt
+codex plugin marketplace remove yjj3019-chatgpt
+```
+
+Removal targets this plugin's configuration/cache. Skills copied by the existing Python installer and Git clones are managed separately. Choose one installation method to avoid duplicate discovery. Confirm actual app presentation and compatibility in the installed version. [Official packaging guide](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [official management commands](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (checked 2026-10-15).
+
+Local validation scope: Codex CLI `0.162.0-alpha.17.2` on Windows, with separate temporary configuration/cache. Installation, fixture version/document updates, and removal were verified. Actual app presentation and model compliance require separate validation.
+
 ## For AI agents (repo URL only)
 
 ```bash

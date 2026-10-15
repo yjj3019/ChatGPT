@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "chatgpt-transfer",
+  "version": "1.0.0",
+  "description": "Model-independent ChatGPT/Codex guidance with task-scoped loading and evidence-backed completion.",
+  "author": {
+    "name": "yjj3019",
+    "url": "https://github.com/yjj3019"
+  },
+  "homepage": "https://github.com/yjj3019/ChatGPT",
+  "repository": "https://github.com/yjj3019/ChatGPT",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "ChatGPT / Codex Transfer Pack",
+        "shortDescription": "Task-scoped engineering and writing guidance",
+        "developerName": "yjj3019",
+        "category": "Productivity",
+        "capabilities": ["Instructions"],
+        "websiteURL": "https://github.com/yjj3019/ChatGPT",
+        "defaultPrompt": ["Apply the chatgpt-transfer pack to this task."]
+      }
+    }
+  }
+}
