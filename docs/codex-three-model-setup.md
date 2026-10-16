@@ -108,17 +108,37 @@ When the main delegates, send a narrow packet. Do not forward the full conversat
 - Items not confirmed and why
 - Suggested next action for the main (no implementation)
 
-Keep both directions short. The child does not re-delegate and does not edit source unless it is the Runner executing a specified non-mutating check.
+### Size limit
+Keep the packet under roughly 20% of the current context window or a short summary if it would exceed that. Prefer a condensed packet over a large paste. The child does not re-delegate and does not edit source unless it is the Runner executing a specified non-mutating check.
 
 ## Role Discovery Failure Wording
 
 When a required role is not discovered or cannot be used, tell the user plainly and continue with the main. Do not invent a substitute role or model.
 
-Standard phrasing examples:
-- "luna_explorer 역할을 찾을 수 없어 메인에서 직접 처리합니다."
-- "astra_reviewer is not available in this session; the main will handle the review decision."
+Standard phrasing (use the language matching the conversation):
+- Korean: "luna_explorer 역할을 찾을 수 없어 메인에서 직접 처리합니다."
+- English: "luna_explorer is not available in this session; the main will handle the work."
 
 Record the gap as a Validation Gap in any host trial notes. Do not claim the role ran.
+
+## Retry Policy
+
+Distinguish temporary and permanent failures before falling back to the main.
+
+| Failure type | Examples | Action |
+|---|---|---|
+| Temporary | Timeout, transient model unavailability, brief discovery delay | Retry once. If it fails again, fall back to the main and report. |
+| Permanent | Role not registered, model ID not callable, permission denied | Do not retry. Fall back immediately and report as Validation Gap. |
+
+Do not loop retries. One attempt is the maximum for temporary failures.
+
+## Cost and Latency Notice
+
+When the main decides to delegate and the expected delay or cost is material, tell the user in one line before proceeding.
+
+Example: "Delegating to luna_explorer; this may add a short delay."
+
+Skip the notice for trivial or already-approved delegations. Do not claim measured savings without matched-task evidence.
 
 ## Model Availability Checklist
 
@@ -132,6 +152,20 @@ Before registering or relying on a fixed model ID, distinguish these evidence le
 | Authoritative runtime metadata | The host recorded the actual model and effort | Quality or cost outcome |
 
 Use a fixed ID only after a successful call is confirmed in the target account. If only catalog evidence exists, prefer a model-inheriting role or let the main handle the work.
+
+## Recipient Verification Template
+
+Use this checklist when validating a new host. Record results privately; do not publish raw logs or credentials.
+
+- [ ] Host and CLI version recorded
+- [ ] Model IDs confirmed callable (not only catalog-visible)
+- [ ] Role discovery succeeded in a fresh process
+- [ ] Context packet delivered and returned in the standard format
+- [ ] Runtime model/effort metadata observed
+- [ ] Protected files unchanged
+- [ ] Any gap recorded as Validation Gap
+
+A completed checklist is evidence for that environment only.
 
 ## Configure Host Roles Safely
 
