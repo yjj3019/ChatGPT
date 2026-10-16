@@ -44,6 +44,30 @@ These exact IDs define TaskForge's default native session preset for environment
 
 Official subagent guidance suggests explicit model-compatible efforts; these are starting values. Reassess report quality and actual usage before increasing effort or claiming savings. Do not change the memory extraction/consolidation models as part of this preset; see the separate [Memories guide](codex-memories-maintenance.md).
 
+## Model ID Inheritance Priority
+
+When resolving a model and effort for a role, apply the following order. Use the first matching rule; do not fall through.
+
+| Priority | Condition | Model / effort applied | Notes |
+|---|---|---|---|
+| 1 | User explicitly selected a model for this conversation, or requested "use this model only" | The user-selected model and effort | SUSPENDED. Fixed-ID role files must not override this. |
+| 2 | Role TOML omits both `model` and `model_reasoning_effort` | Host inheritance rules (parent session or host default) | Recommended default. See `docs/examples/codex-standard-agents/`. |
+| 3 | Role TOML specifies a model ID that is **actually usable** in the current account | The ID and effort from the TOML | Catalog visibility alone is not enough; a successful call is required. |
+| 4 | Specified ID is unavailable, or the role is not registered | Inherit the current main model (or host default) | Stop that delegation; main handles the work. Report as Validation Gap. |
+| 5 | None of the above | Do not delegate | Main handles the work directly. |
+
+### Rules
+- Prefer inheritance. Fixed IDs such as `gpt-6.1-sol` are optional presets verified in specific environments, not distribution defaults.
+- If a role file contains a model ID, the recipient must confirm that ID is callable in their own host before use.
+- Do not silently substitute another model when the specified ID is unavailable. Hand the work to the main and report the gap.
+- Effort follows the same priority. If a specified effort is unsupported, use the host default or the parent session's effort.
+- This order is evaluated per conversation. A new conversation restarts evaluation from priority 1.
+
+### Recipient guidance
+1. Prefer role files that omit `model` and `model_reasoning_effort` when possible.
+2. Use a fixed ID only after confirming a successful call in the target host (for example via `codex debug models` when available).
+3. Do not register a role with an unverified ID.
+
 ## Configure Host Roles Safely
 
 1. Inspect the effective user config, global `AGENTS.md`, existing custom roles, project overrides, and managed requirements. Record actual app and CLI versions separately. Check `codex --version` and `codex --help` where the CLI is installed. Respect `CODEX_HOME` and host-specific config precedence.
