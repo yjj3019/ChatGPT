@@ -33,7 +33,7 @@ Checked 2026-10-15 against [Subagents](https://learn.chatgpt.com/docs/agent-conf
 
 ## Selected Preset
 
-These exact IDs define TaskForge's default native session preset, not a universal roster or an automatic latest-model policy. Manual session overrides take precedence.
+These exact IDs define TaskForge's default native session preset for environments where they have been verified. They are not a universal roster or an automatic latest-model policy. Recipients must confirm model availability and role registration in their own host before use. If the IDs are unavailable, use model-inheriting roles or let the main agent handle authorized work. Manual session overrides take precedence.
 
 | Role | Model | Initial reasoning | Responsibility |
 |---|---|---|---|
