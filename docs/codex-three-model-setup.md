@@ -68,6 +68,29 @@ When resolving a model and effort for a role, apply the following order. Use the
 2. Use a fixed ID only after confirming a successful call in the target host (for example via `codex debug models` when available).
 3. Do not register a role with an unverified ID.
 
+## When Not to Delegate
+
+Keep the work with the main agent when any of the following apply. Do not spawn Luna or Astra in these cases.
+
+- The change touches one file or fewer and is limited to a rename, comment, whitespace, or trivial local edit.
+- The expected effort is under roughly one minute of main-agent work and does not require external evidence gathering.
+- The task is a pure lookup or single-fact question with no code or document modification.
+- The user explicitly said to handle it alone or not to use subagents.
+- Role discovery failed or the required model/effort is unavailable (see inheritance priority 4–5).
+
+When in doubt and the task is small, prefer the main. Report the decision only if the user asked about routing.
+
+## Astra Review Triggers
+
+Call Astra only in the following cases. Do not call it for routine progress updates or minor edits.
+
+| Trigger | Examples |
+|---|---|
+| Before finalizing an important direction | Architecture or public API contract change; security-sensitive modification; change that affects three or more files or crosses a service boundary; irreversible data or configuration migration |
+| After two failed fix/retest cycles | The same error or acceptance criterion fails twice in a row after attempted fixes; main has already applied one corrective change and retested |
+
+Astra receives a narrow packet: the proposed direction or the failing evidence, the acceptance criteria, and the relevant file paths. It does not implement fixes. After Astra reports, the main decides whether to proceed, revise, or stop.
+
 ## Configure Host Roles Safely
 
 1. Inspect the effective user config, global `AGENTS.md`, existing custom roles, project overrides, and managed requirements. Record actual app and CLI versions separately. Check `codex --version` and `codex --help` where the CLI is installed. Respect `CODEX_HOME` and host-specific config precedence.
@@ -81,6 +104,15 @@ When resolving a model and effort for a role, apply the following order. Use the
 ## Automatic Policy for Every New Session
 
 After a one-time authorized setup, the policy can load in every new conversation for that Codex home without manually invoking TaskForge. Use the [automatic snippet](examples/codex-three-models/AGENTS.auto.snippet.md) instead of the skill-scoped [original snippet](examples/codex-three-models/AGENTS.snippet.md). Choose one; do not append both.
+
+### Approval steps before applying the automatic snippet
+1. Show the exact diff that will be written to the effective global `AGENTS.md` (or its resolved target if it is a symlink).
+2. Record the pre-change hash of the target file.
+3. Obtain explicit user approval for that specific diff. Do not apply on implied consent.
+4. After writing, re-hash the file and confirm only the intended block changed.
+5. Keep a private backup of the prior file outside the public repository.
+
+The markers in the snippet identify the block for later removal. Removing only that marked block restores the prior guidance without touching unrelated content. A full-file restore is required only if later user edits would otherwise be lost.
 
 Inspect and privately back up the effective home's config.toml, selected role files and global AGENTS.md. Keep correct settings. If authorized changes are needed, merge the main defaults below into existing root keys rather than replacing the file or creating duplicate tables:
 
