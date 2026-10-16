@@ -132,6 +132,8 @@ These are checks for the user to perform in that host. Static repository checks 
 
 After a one-time authorized host setup, new conversations can request the Sol/Luna/Astra policy without manually invoking TaskForge. Follow the [automatic setup procedure](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session), checking the actual homes and roles for default Codex and each selected Orca account. Plugin installation/update alone does not modify personal settings.
 
+Model IDs are optional presets verified in specific environments. Inheritance priority, fallback, non-delegation criteria, Astra triggers, context packet rules, retry policy, cost/latency notice, and the recipient verification template are defined in the [session-based three-model guide](docs/codex-three-model-setup.md). Do not preload that guide.
+
 | Role | Settings | Scope |
 |---|---|---|
 | Sol main | `gpt-6.1-sol` / medium | Design, implementation, integration and final judgment |
