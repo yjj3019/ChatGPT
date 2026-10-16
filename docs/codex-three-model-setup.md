@@ -33,7 +33,7 @@ Checked 2026-10-15 against [Subagents](https://learn.chatgpt.com/docs/agent-conf
 
 ## Selected Preset
 
-These exact IDs define TaskForge's default native session preset for environments where they have been verified. They are not a universal roster or an automatic latest-model policy. Recipients must confirm model availability and role registration in their own host before use. If the IDs are unavailable, use model-inheriting roles or let the main agent handle authorized work. Manual session overrides take precedence.
+The table below lists model IDs that have been verified in one environment. They are **optional examples**, not a distribution default or a universal roster. Follow the [Model ID Inheritance Priority](#model-id-inheritance-priority) first. Use a fixed ID only after confirming it is callable in the recipient's own host. If the IDs are unavailable, use model-inheriting roles or let the main agent handle authorized work. Manual session overrides take precedence.
 
 | Role | Model | Initial reasoning | Responsibility |
 |---|---|---|---|
@@ -165,7 +165,7 @@ Use this checklist when validating a new host. Record results privately; do not 
 - [ ] Protected files unchanged
 - [ ] Any gap recorded as Validation Gap
 
-A completed checklist is evidence for that environment only.
+A completed checklist is evidence for that environment only. Recent rules (packet size, retry, cost notice) have static coverage; live host trials for them remain a Validation Gap unless separately recorded.
 
 ## Configure Host Roles Safely
 
