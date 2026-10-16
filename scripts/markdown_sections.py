@@ -6,7 +6,7 @@ import re
 from typing import Iterator
 
 HEADING_RE = re.compile(r"(?m)^(#{2})\s+(.+?)\s*$")
-FENCE_RE = re.compile(r"(?m)^(`{3,}|~{3,})")
+FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 
 
 def _masked_for_headings(text: str) -> str:
@@ -24,7 +24,7 @@ def _masked_for_headings(text: str) -> str:
             line_end = n
         line = text[i:line_end]
         fence = FENCE_RE.match(line)
-        if fence:
+        if fence and not (fence.group(1)[0] == "`" and "`" in fence.group(2)):
             marker = fence.group(1)[0]
             fence_len = len(fence.group(1))
             j = line_end + 1
@@ -34,7 +34,8 @@ def _masked_for_headings(text: str) -> str:
                     next_end = n
                 next_line = text[j:next_end]
                 close = FENCE_RE.match(next_line)
-                if close and close.group(1)[0] == marker and len(close.group(1)) >= fence_len:
+                if (close and close.group(1)[0] == marker
+                        and len(close.group(1)) >= fence_len and not close.group(2).strip(" \t\r")):
                     j = next_end + 1 if next_end < n else n
                     break
                 # Blank interior but preserve newlines so line offsets stay aligned.

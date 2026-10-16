@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import warnings
 from pathlib import Path
 from contextlib import redirect_stdout, redirect_stderr
 from types import SimpleNamespace
@@ -42,6 +43,13 @@ class SkillMetadataTests(unittest.TestCase):
         self.assertIn("Not for unrelated", json.loads(metadata["description"]))
         self.assertIn("explicit skill invocation", content)
         self.assertLess(len(content.encode("utf-8")), 1300)
+
+    def test_native_name_validation_preserves_legacy_defaults(self):
+        self.assertEqual(install_pack.PACK_NAME, "chatgpt-transfer")
+        renamed = install_pack.skill_hint().replace('name: "chatgpt-transfer"', 'name: "taskforge"')
+        install_pack.validate_skill_metadata(renamed, expected_name="taskforge")
+        with self.assertRaises(ValueError):
+            install_pack.validate_skill_metadata(renamed)
 
     def test_invalid_generated_metadata_is_rejected(self):
         valid = install_pack.skill_hint()
@@ -213,10 +221,15 @@ class InstallPackTests(unittest.TestCase):
                          (ROOT / "docs/codex-memories-maintenance.md").read_bytes())
         self.assertFalse((pack / "config.toml").exists())
         self.assertFalse((pack / "memories").exists())
-        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml", "AGENTS.snippet.md"):
+        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml", "AGENTS.snippet.md",
+                         "AGENTS.auto.snippet.md", "notion-recorder.toml"):
             relative = Path("docs/examples/codex-three-models") / filename
             self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
         self.assertFalse((pack / ".codex").exists())
+        self.assertFalse((codex / "agents/notion-recorder.toml").exists())
+        for filename in ("codex-notion-recording.md", "host-verification-2026-10-16.md"):
+            relative = Path("docs") / filename
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
         for filename in ("pack-explorer.toml", "pack-runner.toml", "pack-reviewer.toml", "AGENTS.snippet.md"):
             relative = Path("docs/examples/codex-standard-agents") / filename
             self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
@@ -227,6 +240,12 @@ class InstallPackTests(unittest.TestCase):
         proc = self._run("--dest", str(dest), "--with-tests")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertTrue((dest / "chatgpt-transfer" / "tests" / "Scorecard.md").is_file())
+        pack = dest / "chatgpt-transfer"
+        manifest = json.loads((pack / install_pack.MANIFEST_FILE).read_text(encoding="utf-8"))
+        for name in ("README.md", "skill-invocation-cases.json"):
+            relative = Path("tests/evals") / name
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
+            self.assertIn(relative.as_posix(), manifest["files"])
 
     def test_identical_install_preserves_user_files(self):
         dest = self.home / "skills"
@@ -259,6 +278,18 @@ class InstallPackTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("CHATGPT.md", proc.stdout)
         self.assertIn("Project Instructions", proc.stdout)
+
+    def test_license_is_distributed_and_integrity_checked(self):
+        dest = self.home / "skills"
+        proc = self._run("--dest", str(dest))
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        pack = dest / "chatgpt-transfer"
+        license_file = pack / "LICENSE"
+        self.assertEqual(license_file.read_bytes(), (ROOT / "LICENSE").read_bytes())
+        self.assertIn("MIT License", license_file.read_text(encoding="utf-8"))
+        self.assertEqual(install_pack.verify_install(pack), [])
+        license_file.unlink()
+        self.assertTrue(install_pack.verify_install(pack))
 
     def test_check_source_tree(self):
         proc = self._run("--check")
@@ -527,6 +558,12 @@ class SafeInstallTests(unittest.TestCase):
                 with patch.object(install_pack, "_hash") as hash_file:
                     self.assertTrue(install_pack.verify_install(self.pack))
                 hash_file.assert_not_called()
+
+    def test_install_and_verify_do_not_use_deprecated_path_apis(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", DeprecationWarning)
+            self.install()
+            self.assertEqual(install_pack.verify_install(self.pack), [])
 
     def test_manifest_rejects_invalid_checksums_and_missing_required_entries(self):
         self.install()

@@ -1,0 +1,20 @@
+{
+  "name": "yjj3019",
+  "interface": {
+    "displayName": "yjj3019 Plugins"
+  },
+  "plugins": [
+    {
+      "name": "taskforge",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "taskforge",
+  "version": "2.2.1",
+  "description": "Task-scoped guidance with a native Sol/Luna/Astra policy and opt-in host-wide routing and Notion recorder examples.",
+  "author": {
+    "name": "yjj3019",
+    "url": "https://github.com/yjj3019"
+  },
+  "homepage": "https://github.com/yjj3019/ChatGPT",
+  "repository": "https://github.com/yjj3019/ChatGPT",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "TaskForge",
+        "shortDescription": "Task-scoped engineering and writing guidance",
+        "developerName": "yjj3019",
+        "category": "Productivity",
+        "capabilities": ["Instructions"],
+        "websiteURL": "https://github.com/yjj3019/ChatGPT",
+        "defaultPrompt": ["Apply TaskForge to this task."]
+      }
+    }
+  }
+}

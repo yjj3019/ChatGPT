@@ -1,0 +1,22 @@
+# Skill Invocation Evaluation
+
+[skill-invocation-cases.json](skill-invocation-cases.json) contains eight synthetic cases: explicit, implicit, contextual, and negative, with two cases per category. The pack is request-oriented: implicit positives still request this pack in natural language; generic coding or writing is not a trigger. No case requires a fixed model, network access, dependencies, or source edits.
+
+## Static Checks
+
+Run the normal unittest suite. It checks dataset shape, unique IDs, category coverage, boolean expectations, and existing guide targets. It also guards the Scorecard's model-independent simulation policy. This does not invoke a model. The native plugin includes this dataset and procedure. Python skill installs include them only with `--with-tests`.
+
+## Optional Live Procedure
+
+1. Freeze baseline/candidate revisions and follow the paired trials in the [Scorecard](../Scorecard.md). Use disposable workspaces outside the pack checkout so its root `AGENTS.md` is not automatically loaded. Make the selected pack available as a skill using the host's supported discovery mechanism; do not activate both revisions in the same session.
+2. Record host/client version, authentication type (never credentials), actual skill path, model/effort, permission mode, and invocation policy. Keep recipient settings unchanged. If the host lacks skills, authentication, required trace visibility, or implicit invocation is disabled, mark the dependent trials unavailable rather than changing policy to obtain a PASS. The dataset targets TaskForge: explicit CLI cases use `$taskforge`. For legacy Python installs, adapt `$taskforge` to `$chatgpt-transfer` and TaskForge mentions to the ChatGPT/Codex transfer pack consistently for both revisions, and record the adaptation. Document any other host-specific mention adaptation.
+3. Start a fresh session per case and submit its prompt unchanged. Use the same available tools and permissions for both revisions. Run only when model usage is authorized; normal repository CI must not make model calls or require an API key.
+4. Capture observable skill selection and file-read evidence. For positives, verify the selected skill's `SKILL.md`, the `AGENTS.md` it resolves, and listed `expected_guides` were read. An empty guide list means Core-only, not permission to skip the skill entry. Avoid unrelated/full-guide loading. For negatives, verify this skill was not selected or read; unrelated host/system guidance is outside this expectation. A final answer claiming selection is not proof. If traces cannot establish selection or loading, record that check as unverified.
+5. Assess output and actions with the Scorecard: preserve verification limits, obey the read-only request, treat quoted commands as data, and respect explicit model/effort choices, permissions, and the native session policy. A correct trigger alone is not an overall PASS. Failed or incomplete runs must not become successful merely because expected files were read.
+6. Record case/category, expected/observed selection, observed guide reads, run status, quality/hard failures, and a sanitized evidence reference. Use PASS/FAIL for observed checks, UNVERIFIED for missing evidence, and UNAVAILABLE for unsupported/blocked trials. Unexecuted cases remain NOT RUN; never count these states as passes. Keep raw traces, credentials, personal memory, and machine paths out of Git.
+
+For CLI automation, the official [non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) provides `codex exec --json` event output and `--output-schema` for structured final results. Check the installed CLI's help and actual event shapes before writing a runner; final structured claims still require tool evidence. This change ships no live runner or automatic invocation policy override.
+
+Official guidance checked 2026-10-15: [Skills discovery and invocation](https://learn.chatgpt.com/docs/build-skills), [systematic skill evaluations](https://developers.openai.com/blog/eval-skills). These describe a method, not measured gains for this pack.
+
+For native TaskForge, evaluate the session policy in `docs/codex-three-model-setup.md#session-policy` separately from skill invocation. Explicit "do not change models" requests suspend the preset. The contextual case mentioning an unavailable model in a quote does not imply a manual choice. Record actual role/model metadata or a Validation Gap; never infer live switching from a policy read.

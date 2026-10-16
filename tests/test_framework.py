@@ -377,7 +377,8 @@ class FrameworkCommandsTest(unittest.TestCase):
         before = [entry.read_bytes() for entry in entries]
         for relative in ("docs/chatgpt-codex-model-routing.md", "docs/codex-operations-rules.md",
                          "docs/codex-memories-maintenance.md", "docs/codex-three-model-setup.md",
-                         "docs/distribution-standard.md"):
+                         "docs/distribution-standard.md", "docs/codex-notion-recording.md",
+                         "docs/host-verification-2026-10-16.md"):
             path = self.root / relative
             path.write_text(path.read_text(encoding="utf-8") + "\nOptional host-check sentinel.\n",
                             encoding="utf-8")
@@ -452,6 +453,57 @@ class FrameworkCommandsTest(unittest.TestCase):
         poisoned = text.replace(begin, begin + "\nsync_runtime maintainer note\n", 1)
         entry.write_text(poisoned, encoding="utf-8")
         self.assert_failure(self.run_script("validate_framework.py"), "maintainer/meta phrase inside inlined Core")
+
+    def test_fences_handle_indentation_and_require_valid_closing_lines(self):
+        ms = self._load_markdown_sections()
+        cases = (
+            "   ```text\n## Fake\n   ```\n",
+            "  ~~~text\n## Fake\n  ~~~~ \t\n",
+            "```text\n```not-a-close\n## Fake\n```\n",
+            "~~~~\n~~~\n## Fake\n~~~~\n",
+            "```text\n~~~\n## Fake\n```\n",
+        )
+        for block in cases:
+            with self.subTest(block=block):
+                sample = "## First\n" + block + "## Last\nbody\n"
+                self.assertEqual(list(ms.parse_sections(sample)), ["__intro__", "First", "Last"])
+                self.assertIn("## Fake", ms.section_body(sample, "First"))
+
+    def test_backticks_in_info_string_do_not_open_a_fence(self):
+        ms = self._load_markdown_sections()
+        sample = "## First\n```invalid`info\n## Last\nbody\n"
+        self.assertEqual(list(ms.parse_sections(sample)), ["__intro__", "First", "Last"])
+
+    def test_nested_document_references_are_checked(self):
+        for relative in ("docs/examples/codex-standard-agents/AGENTS.snippet.md",
+                         "tests/evals/README.md"):
+            with self.subTest(relative=relative):
+                path = self.root / relative
+                original = path.read_text(encoding="utf-8")
+                path.write_text(original + "\n[broken](missing-audit-fixture.md)\n", encoding="utf-8")
+                self.assert_failure(self.run_script("validate_framework.py"),
+                                    "references missing file: missing-audit-fixture.md")
+                path.write_text(original, encoding="utf-8")
+
+    def test_agents_invariants_cannot_be_satisfied_by_chatgpt(self):
+        path = self.root / "AGENTS.md"
+        original = path.read_text(encoding="utf-8")
+        for phrase, invariant in (
+            ("Do not store secrets", "no_secrets"),
+            ("without evidence", "completion_evidence"),
+            ("Require explicit authorization for force push", "authorization_high_impact"),
+            ("[unverified]", "unverified_marker"),
+        ):
+            with self.subTest(invariant=invariant):
+                path.write_text(original.replace(phrase, "removed-rule"), encoding="utf-8")
+                result = self.run_script("validate_framework.py")
+                self.assert_failure(result, f"invariant coverage failed: {invariant} (AGENTS.md)")
+
+    def test_chatgpt_invariants_cannot_be_satisfied_by_agents(self):
+        self.rewrite("docs/chatgpt-operational-integrity-rules.md", "[unverified]", "[removed-marker]")
+        self.assertEqual(self.run_script("sync_runtime.py").returncode, 0)
+        self.assert_failure(self.run_script("validate_framework.py"),
+                            "invariant coverage failed: unverified_marker (CHATGPT.md)")
 
     def test_invariant_coverage_detects_missing_unverified_marker(self):
         # Strip the invariant needle from Core sources and AGENTS without removing required headings.
