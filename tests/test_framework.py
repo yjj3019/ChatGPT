@@ -377,7 +377,8 @@ class FrameworkCommandsTest(unittest.TestCase):
         before = [entry.read_bytes() for entry in entries]
         for relative in ("docs/chatgpt-codex-model-routing.md", "docs/codex-operations-rules.md",
                          "docs/codex-memories-maintenance.md", "docs/codex-three-model-setup.md",
-                         "docs/distribution-standard.md"):
+                         "docs/distribution-standard.md", "docs/codex-notion-recording.md",
+                         "docs/host-verification-2026-10-16.md"):
             path = self.root / relative
             path.write_text(path.read_text(encoding="utf-8") + "\nOptional host-check sentinel.\n",
                             encoding="utf-8")

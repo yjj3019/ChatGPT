@@ -128,6 +128,21 @@ A file's presence does not prove its instructions were loaded. A ChatGPT Project
 
 These are checks for the user to perform in that host. Static repository checks do not replace actual host/model smoke tests. Before model selection, verify the exposed models, effort settings, tools, and permissions in the [model guide](docs/chatgpt-codex-model-routing.md#verify-the-product-surface).
 
+## Automatic New-Session Delegation and Notion Recording
+
+After a one-time authorized host setup, new conversations can request the Sol/Luna/Astra policy without manually invoking TaskForge. Follow the [automatic setup procedure](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session), checking the actual homes and roles for default Codex and each selected Orca account. Plugin installation/update alone does not modify personal settings.
+
+| Role | Settings | Scope |
+|---|---|---|
+| Sol main | `gpt-6.1-sol` / medium | Design, implementation, integration and final judgment |
+| Luna Explorer / Runner | `gpt-6-luna` / high / low | Exploration / specified verification |
+| Astra Reviewer | `gpt-6-astra` / low | Before important directions are finalized or after two failed fix/retest attempts |
+| Optional Notion Recorder | `gpt-6-luna` / low | Approved-page recording and readback |
+
+The [Notion guide](docs/codex-notion-recording.md) separates confirmed content from recording. Its distributable example takes an approved page_url and six record fields, with no private project destination. Do not automatically replace an existing project-specific role.
+
+The [2026-10-16 verification record](docs/host-verification-2026-10-16.md) separates actual model/command trials, one private-role Notion write, Windows execution errors and Hook limitations. UI model-picker detection, success on other hosts and cost savings are not guaranteed. An explicit single-model choice suspends pinned routing for that conversation.
+
 ## Context Budget + Model-Invariant Floor
 
 **Context Budget (normal use):** Core + 1–2 mapped guides, or one task section + one domain section. Do **not** preload the full transfer guide, all-in-one fallback, pattern bank, or every `docs/codex-*.md`.

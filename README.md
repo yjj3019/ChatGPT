@@ -128,6 +128,21 @@ Python 방식에서 marketplace로 전환할 때는 기존 설치 대상과 사�
 
 이는 사용자가 해당 호스트에서 수행할 확인 절차입니다. 저장소 정적 검사는 실제 호스트·모델 스모크 테스트를 대신하지 않습니다. 모델 선택 전에는 [모델 가이드](docs/chatgpt-codex-model-routing.md#verify-the-product-surface)의 가용 모델·노력 수준·도구·권한을 확인하세요.
 
+## 새 세션 자동 위임과 노션 기록
+
+한 번 승인해 호스트를 설정하면 TaskForge를 수동 호출하지 않아도 새 대화에서 Sol·Luna·Astra 위임 정책을 기본 적용할 수 있습니다. [자동 설정 절차](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session)에 따라 기본 Codex와 사용할 Orca 계정의 실제 홈·역할을 확인하고 전역 지침을 병합합니다. 플러그인 설치·업데이트만으로 개인 설정이 변경되지는 않습니다.
+
+| 역할 | 설정 | 범위 |
+|---|---|---|
+| Sol 메인 | `gpt-6.1-sol` / medium | 설계·구현·통합·최종 판단 |
+| Luna Explorer / Runner | `gpt-6-luna` / high·low | 탐색 / 지정 검증 |
+| Astra Reviewer | `gpt-6-astra` / low | 중요한 방향 확정 전 또는 같은 수정·재검증 두 차례 실패 시 |
+| 선택형 Notion Recorder | `gpt-6-luna` / low | 승인된 페이지에 확정 내용 기록·재조회 |
+
+[노션 기록 가이드](docs/codex-notion-recording.md)는 메인의 확정 내용과 기록 역할을 분리합니다. 배포 예제는 승인된 `page_url`과 6개 기록 필드를 받으며 개인 프로젝트 페이지를 포함하지 않습니다. 기존 프로젝트 고정 역할을 자동 교체하지 마세요.
+
+[2026-10-16 검증 기록](docs/host-verification-2026-10-16.md)에 새 세션의 실제 모델·명령 결과, 개인 역할의 노션 저장 한 건, Windows 실행 오류와 Hook 검증 한계를 구분해 정리했습니다. UI 모델 선택 자동 감지·다른 환경의 성공·비용 절감은 보장하지 않습니다. 사용자가 단일 모델을 명시하면 해당 대화의 고정 모델 위임은 중단됩니다.
+
 ## Context Budget + Model-Invariant Floor
 
 **Context Budget (일반 사용):** Core + 매핑된 가이드 1–2개, 또는 작업 섹션 1개 + 도메인 섹션 1개. 전체 transfer 가이드·all-in-one·패턴 뱅크·모든 `docs/codex-*.md`를 **미리 로드하지 마세요**.

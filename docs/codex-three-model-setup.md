@@ -54,6 +54,25 @@ Official subagent guidance suggests explicit model-compatible efforts; these are
 6. Append or reconcile the [optional delegation snippet](examples/codex-three-models/AGENTS.snippet.md) with existing global guidance. Preserve original instructions and higher-priority rules. Do not append a duplicate marked block or treat the snippet as permission to ignore project constraints.
 7. Start a new chat/process so role discovery can refresh. An existing chat may still expose only its original role list. Do not silently substitute another role or model when a name is unavailable.
 
+## Automatic Policy for Every New Session
+
+After a one-time authorized setup, the policy can load in every new conversation for that Codex home without manually invoking TaskForge. Use the [automatic snippet](examples/codex-three-models/AGENTS.auto.snippet.md) instead of the skill-scoped [original snippet](examples/codex-three-models/AGENTS.snippet.md). Choose one; do not append both.
+
+Inspect and privately back up the effective home's config.toml, selected role files and global AGENTS.md. Keep correct settings. If authorized changes are needed, merge the main defaults below into existing root keys rather than replacing the file or creating duplicate tables:
+
+```toml
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+```
+
+Register the three role examples using the earlier support/conflict checks. Reconcile the automatic snippet into that home's global AGENTS.md. When migrating from the original snippet, replace only its reviewed marked block, preserving unrelated instructions and later user edits. The marker pairs identify the blocks; they are not activation flags.
+
+Check default Codex and each explicitly selected Orca account separately: an Orca account may use a different CODEX_HOME. Do not infer account paths, copy authentication, enumerate/change every account, or copy a real profile into the public pack. If global AGENTS.md is already a symbolic link to the default home, back up and edit its resolved target once, preserving the link. Start a new session and verify role discovery, native model/effort records and actual task outcomes without passing explicit model/effort to role calls.
+
+The automatic snippet changes when the policy is requested, not the suspension rules. Explicit single-model choices still win for that conversation; reloading the skill, resuming, compaction or restarting the app does not reset that choice. Instructions cannot detect unexposed UI selections or change an already-running main model. Higher-priority/project restrictions still apply. Marketplace installation/update never performs this host setup or grants permissions.
+
+An optional [Luna/low Notion recorder](codex-notion-recording.md) handles approved writes separately from the verification-only Runner. It is not part of the three required roles. See the [sanitized host verification](host-verification-2026-10-16.md) for observed successes and remaining gaps.
+
 ## Verification and Rollback
 
 Run repository checks from the README. TOML parsing validates examples, and [Golden Test 039](../tests/GoldenTest-039.md) defines behavior acceptance; neither executes real models or proves sandbox enforcement.

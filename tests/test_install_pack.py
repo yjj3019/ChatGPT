@@ -221,10 +221,15 @@ class InstallPackTests(unittest.TestCase):
                          (ROOT / "docs/codex-memories-maintenance.md").read_bytes())
         self.assertFalse((pack / "config.toml").exists())
         self.assertFalse((pack / "memories").exists())
-        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml", "AGENTS.snippet.md"):
+        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml", "AGENTS.snippet.md",
+                         "AGENTS.auto.snippet.md", "notion-recorder.toml"):
             relative = Path("docs/examples/codex-three-models") / filename
             self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
         self.assertFalse((pack / ".codex").exists())
+        self.assertFalse((codex / "agents/notion-recorder.toml").exists())
+        for filename in ("codex-notion-recording.md", "host-verification-2026-10-16.md"):
+            relative = Path("docs") / filename
+            self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
         for filename in ("pack-explorer.toml", "pack-runner.toml", "pack-reviewer.toml", "AGENTS.snippet.md"):
             relative = Path("docs/examples/codex-standard-agents") / filename
             self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
