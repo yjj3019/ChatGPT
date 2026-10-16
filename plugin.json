@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "taskforge",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Task-scoped guidance with a native Sol/Luna/Astra policy and opt-in host-wide routing and Notion recorder examples.",
   "author": {
     "name": "yjj3019",
