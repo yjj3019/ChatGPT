@@ -1,5 +1,7 @@
 # Simulation-10 Report (2026-09-06)
 
+> Historical evidence only. Model recommendations, counts, and results below apply to the recorded revisions, not the current release. Use the [distribution baseline](distribution-standard.md) and [README](../README.en.md) for current policy and checks.
+
 Structural/routing/load simulations on commit baseline `0411e55` (main), then fixes on branch `fix/sim-10-findings`.
 
 **Method:** mechanical checks only (`Task Loading Map`, `measure_load.py`, fence-aware section parse, `sync_runtime.py --check`, `validate_framework.py`). This is a **simulation rubric** for repository structure — not a host-model quality score. No invented /100 behavioral scores.
