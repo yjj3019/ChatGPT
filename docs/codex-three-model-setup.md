@@ -91,6 +91,48 @@ Call Astra only in the following cases. Do not call it for routine progress upda
 
 Astra receives a narrow packet: the proposed direction or the failing evidence, the acceptance criteria, and the relevant file paths. It does not implement fixes. After Astra reports, the main decides whether to proceed, revise, or stop.
 
+## Context Packet Standard
+
+When the main delegates, send a narrow packet. Do not forward the full conversation or unrelated files.
+
+### Main → child (minimum fields)
+- Goal of this delegation
+- Constraints that must not be violated
+- Relevant file paths (and line ranges when known)
+- Acceptance criteria for this subtask
+- Evidence already confirmed (so the child does not re-search the same items)
+
+### Child → main (standard return)
+- Conclusion (one or two sentences)
+- Evidence with file:line citations
+- Items not confirmed and why
+- Suggested next action for the main (no implementation)
+
+Keep both directions short. The child does not re-delegate and does not edit source unless it is the Runner executing a specified non-mutating check.
+
+## Role Discovery Failure Wording
+
+When a required role is not discovered or cannot be used, tell the user plainly and continue with the main. Do not invent a substitute role or model.
+
+Standard phrasing examples:
+- "luna_explorer 역할을 찾을 수 없어 메인에서 직접 처리합니다."
+- "astra_reviewer is not available in this session; the main will handle the review decision."
+
+Record the gap as a Validation Gap in any host trial notes. Do not claim the role ran.
+
+## Model Availability Checklist
+
+Before registering or relying on a fixed model ID, distinguish these evidence levels. A higher level does not imply a lower one.
+
+| Level | What it proves | What it does not prove |
+|---|---|---|
+| Catalog / `codex debug models` | The ID appears in the host catalog | Account access or a successful call |
+| Role file accepted | Syntax and name registration succeeded | The model can be invoked |
+| Successful role-name call | The host spawned the role | Runtime model/effort matched the file |
+| Authoritative runtime metadata | The host recorded the actual model and effort | Quality or cost outcome |
+
+Use a fixed ID only after a successful call is confirmed in the target account. If only catalog evidence exists, prefer a model-inheriting role or let the main handle the work.
+
 ## Configure Host Roles Safely
 
 1. Inspect the effective user config, global `AGENTS.md`, existing custom roles, project overrides, and managed requirements. Record actual app and CLI versions separately. Check `codex --version` and `codex --help` where the CLI is installed. Respect `CODEX_HOME` and host-specific config precedence.
