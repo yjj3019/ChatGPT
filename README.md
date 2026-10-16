@@ -132,7 +132,7 @@ Python 방식에서 marketplace로 전환할 때는 기존 설치 대상과 사�
 
 한 번 승인해 호스트를 설정하면 TaskForge를 수동 호출하지 않아도 새 대화에서 Sol·Luna·Astra 위임 정책을 기본 적용할 수 있습니다. [자동 설정 절차](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session)에 따라 기본 Codex와 사용할 Orca 계정의 실제 홈·역할을 확인하고 전역 지침을 병합합니다. 플러그인 설치·업데이트만으로 개인 설정이 변경되지는 않습니다.
 
-모델 ID는 검증된 환경의 선택적 preset입니다. 상속 우선과 폴백, 위임하지 않는 기준, Astra 호출 조건, 자동 정책 적용 시 승인 절차는 [세션 기준 3모델 설정 가이드](docs/codex-three-model-setup.md)를 따릅니다.
+모델 ID는 검증된 환경의 선택적 preset입니다. 상속 우선, 폴백, 위임하지 않는 기준, Astra 호출 조건, 콘텍스트 패킷 규격, 재시도 정책, 비용/지연 안내, 수신자 검증 템플릿은 [세션 기준 3모델 설정 가이드](docs/codex-three-model-setup.md)를 따릅니다. 이 가이드를 미리 로드하지 마세요.
 
 | 역할 | 설정 | 범위 |
 |---|---|---|
