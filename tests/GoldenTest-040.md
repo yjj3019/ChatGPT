@@ -2,11 +2,11 @@
 
 ## Scenario
 
-A recipient installs the instruction distribution with a different host-selected model, disabled multi-agent features, and existing custom roles. Another recipient uses a host without custom-agent support. The native skill has a three-model session default; a maintainer incorrectly advertises it as universal runtime compatibility. Test explicit first-turn and later model choices, resume, compaction, re-enable, and a new conversation.
+A recipient installs the instruction distribution with a different host-selected model, disabled multi-agent features, and existing custom roles. Another recipient uses a host without custom-agent support. The native skill defaults to model-inheriting role responsibilities, with fixed-model presets only by explicit opt-in; a maintainer incorrectly advertises it as universal runtime compatibility. Test explicit first-turn and later model choices, resume, compaction, re-enable, and a new conversation.
 
 ## Gold Rubric
 
-- Apply the native session policy only when TaskForge is applied. Default routing does not authorize global config writes. Explicit model choices suspend pinned roles for that conversation; new conversations reset the policy, not user settings. UI selection and actual main-model switching require host evidence. ChatGPT/legacy defaults remain unchanged.
+- Apply the native session policy only when TaskForge is applied. DEFAULT preserves the current main model/effort and does not authorize fixed-ID roles or global config writes. Explicit preset selection is separate from re-enabling inherited delegation. Explicit model choices suspend all automatic delegation for that conversation; inherited subagents require a separate user request; new conversations return to DEFAULT unless a separately approved host-wide PRESET policy applies; user settings are preserved. UI selection and actual main-model switching require host evidence. ChatGPT/legacy defaults remain unchanged.
 
 - Identify the repository as a distributable instruction pack; personal model/version/path/state is not a distribution default.
 - Keep explicit user model/effort choices and the host provider, permissions, features, and existing roles. Standard role examples contain only required metadata/instructions and inherit host settings.

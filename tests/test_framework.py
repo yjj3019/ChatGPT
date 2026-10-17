@@ -521,5 +521,52 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.assertIn("Outline", sizes)
         self.assertNotIn("Why this matters now", sizes)
 
+    def test_missing_or_duplicate_delegation_sections_fail(self):
+        guide = self.root / "docs/codex-three-model-setup.md"
+        original = guide.read_text(encoding="utf-8")
+        ms = self._load_markdown_sections()
+        headings = ("Session Policy", "Model ID Inheritance Priority", "When Not to Delegate",
+                    "Astra Review Triggers", "Context Packet Standard",
+                    "Role Discovery Failure Wording", "Retry Policy", "Cost and Latency Notice")
+        for heading in headings:
+            span = next((start, end) for title, start, end in ms.iter_h2_spans(original)
+                        if title == heading)
+            for changed in (original[:span[0]] + original[span[1]:],
+                            original + f"\n## {heading}\nDuplicate\n"):
+                with self.subTest(heading=heading, duplicate=changed.endswith("Duplicate\n")):
+                    guide.write_text(changed, encoding="utf-8")
+                    self.assert_failure(self.run_script("validate_framework.py"),
+                                        f"expected one delegation section: {heading}")
+
+    def test_delegation_contract_cannot_be_satisfied_by_other_sections(self):
+        guide = self.root / "docs/codex-three-model-setup.md"
+        original = guide.read_text(encoding="utf-8")
+        for phrase in ("DEFAULT preserves the current main model and reasoning effort",
+                       "Retry once", "Do not retry", "do not launch a duplicate", "20%",
+                       "expected delay or cost is material"):
+            with self.subTest(phrase=phrase):
+                guide.write_text(original.replace(phrase, "removed-contract")
+                                 + f"\n## Unrelated\n{phrase}\n", encoding="utf-8")
+                self.assert_failure(self.run_script("validate_framework.py"),
+                                    "delegation contract missing")
+
+    def test_skill_must_preserve_approved_host_wide_preset(self):
+        self.rewrite("skills/taskforge/SKILL.md",
+                     "unless a separately approved host-wide PRESET policy applies",
+                     "without any host-wide exception")
+        self.assert_failure(self.run_script("validate_framework.py"),
+                            "missing approved host-wide PRESET exception")
+
+    def test_skill_must_link_every_required_operational_section(self):
+        skill = self.root / "skills/taskforge/SKILL.md"
+        original = skill.read_text(encoding="utf-8")
+        for anchor in ("session-policy", "model-id-inheritance-priority", "when-not-to-delegate",
+                       "astra-review-triggers", "context-packet-standard",
+                       "role-discovery-failure-wording", "retry-policy", "cost-and-latency-notice"):
+            with self.subTest(anchor=anchor):
+                skill.write_text(original.replace(f".md#{anchor})", ".md#removed)"), encoding="utf-8")
+                self.assert_failure(self.run_script("validate_framework.py"),
+                                    "missing operational link")
+
 if __name__ == "__main__":
     unittest.main()

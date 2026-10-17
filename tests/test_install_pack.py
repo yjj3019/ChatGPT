@@ -70,6 +70,26 @@ class SkillMetadataTests(unittest.TestCase):
                 install_pack.validate_skill_metadata("\n".join(lines))
 
 
+class DestinationArgumentTests(unittest.TestCase):
+    def test_auto_and_dest_conflict_before_any_target_access(self):
+        for mode in ([], ["--check"], ["--dry-run"], ["--force"]):
+            for targets in (["--auto", "--dest", "unused"], ["--dest", "unused", "--auto"]):
+                with self.subTest(mode=mode, targets=targets), \
+                        patch.object(install_pack, "detect_targets") as detect, \
+                        patch.object(install_pack, "destination_root") as destination, \
+                        patch.object(install_pack, "install_pack") as install, \
+                        patch.object(install_pack, "verify_install") as verify, \
+                        redirect_stderr(io.StringIO()) as error:
+                    with self.assertRaises(SystemExit) as raised:
+                        install_pack.main(targets + mode)
+                    self.assertEqual(raised.exception.code, 2)
+                    self.assertIn("not allowed with argument", error.getvalue())
+                    detect.assert_not_called()
+                    destination.assert_not_called()
+                    install.assert_not_called()
+                    verify.assert_not_called()
+
+
 class DetectTargetsTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()

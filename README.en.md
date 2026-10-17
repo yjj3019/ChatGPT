@@ -2,9 +2,21 @@
 
 An **instruction pack** for engineering, writing, and evidence-backed completion. Install it as a GitHub marketplace plugin in the Codex app, or use Project Instructions in ChatGPT. It does not train or copy model weights or hidden reasoning, or create automatic cross-session memory.
 
-New conversations applying the native Codex TaskForge skill default to Sol main / Luna exploration-verification / conditional Astra review. An explicit user model choice suspends three-model routing for that conversation and preserves the chosen model/effort. A new conversation applying TaskForge returns to the default; resuming a conversation or restarting the app alone does not reset it. Installation does not modify user settings, roles, or memories. See the [distribution standard](docs/distribution-standard.md).
+New conversations applying the native Codex TaskForge skill preserve the current model/effort and use registered model-inheriting roles for exploration, verification, and conditional review. Fixed Sol/Luna/Astra models require an explicitly selected PRESET. An explicit user model choice suspends automatic delegation for that conversation and preserves the chosen model/effort. A new conversation applying TaskForge returns to DEFAULT unless a separately approved host-wide PRESET policy applies; resuming a conversation or restarting the app alone does not reset it. Installation does not modify user settings, roles, or memories. See the [distribution standard](docs/distribution-standard.md).
 
 **Language:** [한국어](README.md) | English
+
+## 2.3.0 changes
+
+| Improvement | Current behavior |
+|---|---|
+| Model defaults | Preserve the current model/effort and prefer registered model-inheriting roles. Fixed models require explicit PRESET selection |
+| Operational loading | Read only the required operational sections linked by the skill; do not preload the full setup guide |
+| Installer options | Reject simultaneous `--auto` and `--dest` before installation or checking |
+| Regression checks | Detect missing or duplicate operational sections, missing core rules, and missing skill-loading links |
+| Release version | Require a higher version for payload changes, compared with the PR or push base commit |
+
+This summary describes the source version. Update an installed copy separately and check its version. Historical host trials are evidence for their recorded date/environment, not live app/model validation of these changes.
 
 ## Choose an installation method
 
@@ -106,7 +118,7 @@ cd ChatGPT
 python3 scripts/install_pack.py --auto
 ```
 
-- `--dest` — choose the destination skills root
+- `--dest` — choose the destination skills root; mutually exclusive with `--auto`
 - `--with-tests` — also include evaluation/test files
 - `--dry-run` — inspect destinations and conflicts without writing
 - `--check` — check a Python install's file integrity; also run structural validation when test files exist
@@ -130,9 +142,30 @@ These are checks for the user to perform in that host. Static repository checks 
 
 ## Automatic New-Session Delegation and Notion Recording
 
-After a one-time authorized host setup, new conversations can request the Sol/Luna/Astra policy without manually invoking TaskForge. Follow the [automatic setup procedure](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session), checking the actual homes and roles for default Codex and each selected Orca account. Plugin installation/update alone does not modify personal settings.
+### Default roles and conversation state
 
-Model IDs are optional presets verified in specific environments. Inheritance priority, fallback, non-delegation criteria, Astra triggers, context packet rules, retry policy, cost/latency notice, and the recipient verification template are defined in the [session-based three-model guide](docs/codex-three-model-setup.md). Do not preload that guide.
+DEFAULT uses `pack_explorer`, `pack_runner`, and `pack_reviewer`, inheriting model/effort under host rules. Roles must already be registered; small tasks stay with the main. If a role is unavailable, report the affected delegation gap and continue authorized work with the main. Installation alone does not activate roles or features.
+
+| State | When it applies | Model and delegation behavior |
+|---|---|---|
+| `DEFAULT` | A new conversation applying TaskForge | Preserve the current main model/effort and delegate only useful work to registered model-inheriting roles |
+| `PRESET` | Explicit selection or re-enabling of fixed models after support/access checks | Use the optional fixed-model examples below. Instructions alone do not switch the running main model |
+| `SUSPENDED` | An explicit model choice or a request to use only one model | Stop all automatic delegation for that conversation. Inherited subagents require a separate user request |
+
+Resuming, compacting, or restarting the app with the same conversation does not reset its state. New conversations start in DEFAULT unless a separately approved host-wide PRESET policy applies. Re-enabling inherited delegation and re-enabling a fixed PRESET are distinct requests. See the [session policy](docs/codex-three-model-setup.md#session-policy).
+
+### Operational rules for ordinary delegation
+
+Read only the operational sections linked by the skill; do not preload the full setup guide.
+
+- Limit the packet to the goal, constraints, relevant paths, acceptance criteria, and confirmed evidence. Do not forward the full conversation or unrelated logs. Children do not re-delegate.
+- Retry a temporary failure at most once, only after confirming the prior call never started or has ended. For a timeout or lost response, inspect the existing task status first; do not duplicate a running or unknown call.
+- Do not retry unregistered roles, unavailable model access, or permission denials. Continue permitted work with the main, report the `Validation Gap`, and do not expand permissions.
+- Give advance notice when expected cost/latency is material. Do not claim unmeasured cost savings or quality gains.
+
+### Optional fixed models and automatic setup
+
+The table below and host-wide automatic setup are explicitly selected PRESET examples. After a one-time authorized setup, new conversations can request the fixed configuration without manually invoking TaskForge. Follow the [automatic setup procedure](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session): check the actual homes/roles and differences from existing settings, then merge only approved changes. Plugin installation/update alone does not modify personal settings.
 
 | Role | Settings | Scope |
 |---|---|---|
@@ -141,9 +174,11 @@ Model IDs are optional presets verified in specific environments. Inheritance pr
 | Astra Reviewer | `gpt-6-astra` / low | Before important directions are finalized or after two failed fix/retest attempts |
 | Optional Notion Recorder | `gpt-6-luna` / low | Approved-page recording and readback |
 
-The [Notion guide](docs/codex-notion-recording.md) separates confirmed content from recording. Its distributable example takes an approved page_url and six record fields, with no private project destination. Do not automatically replace an existing project-specific role.
+### Optional Notion recording
 
-The [2026-10-16 verification record](docs/host-verification-2026-10-16.md) separates actual model/command trials, one private-role Notion write, Windows execution errors and Hook limitations. UI model-picker detection, success on other hosts and cost savings are not guaranteed. An explicit single-model choice suspends pinned routing for that conversation.
+The [Notion guide](docs/codex-notion-recording.md) separates confirmed content from recording. Its distributable example takes an approved `page_url` and six record fields, with no private project destination. Do not automatically replace an existing project-specific role.
+
+The [2026-10-16 verification record](docs/host-verification-2026-10-16.md) separates actual model/command trials, one private-role Notion write, Windows execution errors and Hook limitations. For Windows and Orca checks, see [host troubleshooting](docs/host-troubleshooting.md). UI model-picker detection, success on other hosts and cost savings are not guaranteed. An explicit single-model choice suspends all automatic delegation for that conversation; inherited subagents require a separate user request.
 
 ## Context Budget + Model-Invariant Floor
 
@@ -178,9 +213,15 @@ Historical filenames containing `5.5` are retained for compatibility; they do no
 
 ## Maintain and verify
 
-Bump the version in root `plugin.json` when changing distributed plugin content.
+Bump the version in root `plugin.json` when changing distributed plugin content. Record the version, exact commit, CI run link, and validation gaps together. CI compares PRs with the base-branch commit and pushes to existing branches with the previous commit, requiring a version increase for payload changes. Locally, replace `BASE_COMMIT` below with the actual base commit. The check is read-only and includes staged, unstaged, and untracked files. Changes limited to `.github/` and `.gitignore` are excluded.
 
-Use the [session-based three-model guide](docs/codex-three-model-setup.md) for the native Codex default. Actual execution requires model access and host role registration. Instructions cannot switch the running main model or reliably detect every UI model choice. If the host does not expose your selection, say **"use this model only"**; to restore the preset, explicitly request **"re-enable the TaskForge three-model preset"**. Settings changes require separate authorization and verification. ChatGPT and legacy Python entry points retain the current-model default.
+```text
+python scripts/check_release.py --base BASE_COMMIT
+```
+
+A new branch's first push compares with the fetched default-branch tip. For a newly created default branch itself, only a parentless root commit is an initial distribution; existing history without an explicit comparison base fails the check. This checks version traceability; it neither publishes a release nor substitutes for live host validation.
+
+Use the [session-based three-model guide](docs/codex-three-model-setup.md) for the native Codex default. Actual execution requires model access and host role registration. Instructions cannot switch the running main model or reliably detect every UI model choice. If the host does not expose your selection, say **"use this model only"**; to restore inherited delegation, request **"re-enable TaskForge model-inheriting delegation"**. To opt into fixed models for this conversation, explicitly request **"re-enable the TaskForge three-model preset"**, subject to support/access checks. Settings changes require separate authorization and verification. ChatGPT and legacy Python entry points retain the current-model default.
 
 For Codex Memories setup or model updates, optionally read the [Memories maintenance guide](docs/codex-memories-maintenance.md). Its default example omits model IDs; apply only justified overrides after checking the installed version, supported keys, and access for each memory role. It covers unsupported-pin removal and default revalidation, error-specific stop conditions, and the difference between config and memory-state rollback. Installing the pack does not change user settings or memories. Report static checks separately from live host trials.
 
@@ -195,11 +236,21 @@ python scripts/measure_load.py
 python scripts/install_pack.py --check
 ```
 
-Edit canonical source documents, then regenerate the three distribution documents with `sync_runtime.py`. The sync `--check` never writes files. Validation checks generated-document parity, routing targets, local file references, required Golden Test contracts, fence-aware section parsing, Core invariants, and repository character budgets (`CHATGPT.md` ≤ 8000, `AGENTS.md` ≤ 4000). Regression tests use disposable sibling copies, so the repository parent must be writable.
+Edit canonical source documents, then regenerate the three distribution documents with `sync_runtime.py`. The sync `--check` never writes files. Validation checks generated-document parity, routing targets, local file references, required Golden Test contracts, fence-aware section parsing, Core invariants, and repository character budgets (`CHATGPT.md` ≤ 8000, `AGENTS.md` ≤ 4000).
+
+| Check | What it verifies |
+|---|---|
+| Synchronization | Generated documents match canonical sources |
+| Structure | Required native operational sections, core rules, and skill-loading links exist; operational sections are not duplicated |
+| Regression tests | Installation preservation/rollback, conflicting options, missing rules/links, and release-version edge cases |
+| Release version | Payload changes and a higher version against the base commit; new-branch pushes versus root commits |
+| Live host trials | Actual instruction selection, section reads, role calls, model/effort, and command outcomes; run separately from repository checks |
+
+Structural checks do not prove model understanding or compliance. Regression tests use disposable sibling copies and temporary folders, so both the repository parent and temporary location must be writable. Record why unsupported checks, such as link/junction creation, were skipped; never count them as passes.
 
 Parallel review stays read-only. Give reviewers the scope and acceptance criteria, the exact revision or diff and relevant files, and each verification command with its working directory, exit status, and success or failure evidence. State why any check was not run. Report missing, stale, or insufficient validation as `Validation Gap`; an observed failed check is FAIL. The parent owns fixes and focused retests, then reconciles findings against fresh evidence without recursive review. See `docs/codex-subagent-rules.md` and `docs/codex-team-agent-rules.md`.
 
-GitHub Actions runs these checks on Windows and Linux with Python 3.11 and 3.12. `measure_load.py` reports normalized UTF-8 bytes; its bytes/4 heuristic is **not** actual token usage and excludes host/tool overhead.
+The GitHub Actions workflow is configured to run regression, synchronization, structure, and release-version checks on Windows/Linux × Python 3.11/3.12. Verify the outcome in the run for the exact revision. `measure_load.py` reports normalized UTF-8 bytes; its bytes/4 heuristic is **not** actual token usage and excludes host/tool overhead.
 
 ## Evidence and simulation pointers
 

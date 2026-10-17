@@ -22,9 +22,27 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -X utf8 -m unittest discover -s tests -p "test_*.py"
       - run: python -X utf8 scripts/sync_runtime.py --check
       - run: python -X utf8 scripts/validate_framework.py
+      - name: Require a version bump for distributed changes
+        env:
+          RELEASE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          RELEASE_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          RELEASE_REF: ${{ github.ref }}
+        shell: python
+        run: |
+          import os
+          import subprocess
+          import sys
+
+          base = os.environ["RELEASE_BASE"]
+          default_branch = os.environ["RELEASE_DEFAULT_BRANCH"]
+          if base and set(base) == {"0"} and os.environ["RELEASE_REF"] != f"refs/heads/{default_branch}":
+              base = f"refs/remotes/origin/{default_branch}"
+          subprocess.run([sys.executable, "-X", "utf8", "scripts/check_release.py", "--base", base], check=True)

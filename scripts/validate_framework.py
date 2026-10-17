@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from markdown_sections import section_body
+from markdown_sections import iter_h2_spans, section_body
 from sync_runtime import BEGIN, END, generated_documents
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,6 +49,27 @@ HEAVY_FILES = (
     "docs/chatgpt-5.5-all-in-one-instructions.md",
     "docs/fable5-pattern-bank-for-chatgpt.md",
 )
+
+# Native delegation is section-loaded. Guard both the content and its loading path.
+DELEGATION_SECTIONS = {
+    "Session Policy": ("DEFAULT preserves the current main model and reasoning effort",
+                       "pack_explorer", "pack_runner", "pack_reviewer", "SUSPENDED",
+                       "explicit preset opt-in", "inherit parent permissions",
+                       "children do not re-delegate"),
+    "Model ID Inheritance Priority": ("User explicitly opted into the preset",
+                                      "Recommended default", "Do not silently substitute"),
+    "When Not to Delegate": ("Keep the work with the main", "user explicitly said"),
+    "Astra Review Triggers": ("Before finalizing an important direction",
+                              "After two failed fix/retest cycles"),
+    "Context Packet Standard": ("Goal of this delegation", "Constraints",
+                                "Relevant file paths", "Acceptance criteria",
+                                "Evidence already confirmed", "20%", "Child → main"),
+    "Role Discovery Failure Wording": ("Do not invent", "Validation Gap"),
+    "Retry Policy": ("Retry once", "Do not retry", "task status first",
+                     "do not launch a duplicate", "two total attempts"),
+    "Cost and Latency Notice": ("expected delay or cost is material",
+                                "Do not claim measured savings"),
+}
 
 # Maintainer/meta phrases must not appear inside the inlined Core block (rules-only).
 CORE_META_PHRASES = (
@@ -253,6 +274,28 @@ def validate_golden_tests(documents: dict[Path, str], errors: list[str]) -> None
         errors.append(f"missing required Golden Test {test_id}")
 
 
+def validate_delegation_policy(documents: dict[Path, str], errors: list[str]) -> None:
+    # Legacy Python copies do not ship the native plugin/skill entry.
+    if not (ROOT / "plugin.json").is_file():
+        return
+    relative = "docs/codex-three-model-setup.md"
+    guide = documents.get(ROOT / relative, "")
+    skill = documents.get(ROOT / "skills/taskforge/SKILL.md", "")
+    if "unless a separately approved host-wide PRESET policy applies" not in section(skill, "Session model policy"):
+        errors.append("skills/taskforge/SKILL.md: missing approved host-wide PRESET exception")
+    headings = [title for title, _, _ in iter_h2_spans(guide)]
+    for heading, required in DELEGATION_SECTIONS.items():
+        if headings.count(heading) != 1:
+            errors.append(f"{relative}: expected one delegation section: {heading}")
+        body = section(guide, heading)
+        for phrase in required:
+            if phrase not in body:
+                errors.append(f"{relative}: delegation contract missing in {heading}: {phrase}")
+        target = f"../../{relative}#{heading.lower().replace(' ', '-')}"
+        if target not in LINK_RE.findall(skill):
+            errors.append(f"skills/taskforge/SKILL.md: missing operational link: {heading}")
+
+
 def main() -> int:
     errors = []
     for relative in REQUIRED:
@@ -260,7 +303,8 @@ def main() -> int:
             errors.append(f"missing required file: {relative}")
 
     sources = sorted([*ROOT.glob("*.md"), *(ROOT / "docs").rglob("*.md"),
-                      *(ROOT / "prompts").rglob("*.md"), *(ROOT / "tests").rglob("*.md")])
+                      *(ROOT / "prompts").rglob("*.md"), *(ROOT / "tests").rglob("*.md"),
+                      *(ROOT / "skills").rglob("SKILL.md")])
     documents = {path: read_document(path, errors) for path in sources}
     runtime = documents.get(ENTRY, "")
     validate_inlined_runtime(errors)
@@ -276,6 +320,7 @@ def main() -> int:
     for source, text in documents.items():
         validate_references(source, text, errors)
     validate_golden_tests(documents, errors)
+    validate_delegation_policy(documents, errors)
     for term in ["Fable5 Enhanced", "Fable5 Distilled Patterns"]:
         if term in runtime:
             errors.append(f"prohibited model-specific Runtime term in CHATGPT.md: {term}")

@@ -430,8 +430,9 @@ def main(argv: list[str] | None = None) -> int:
             "  python scripts/install_pack.py --check --dest ~/.agents/skills\n"
         ),
     )
-    parser.add_argument("--dest", help="Parent skills/packs directory (pack lands in <dest>/chatgpt-transfer/)")
-    parser.add_argument(
+    destination = parser.add_mutually_exclusive_group()
+    destination.add_argument("--dest", help="Parent skills/packs directory (pack lands in <dest>/chatgpt-transfer/)")
+    destination.add_argument(
         "--auto",
         action="store_true",
         help="Detect AI hosts and install into each skills directory "
