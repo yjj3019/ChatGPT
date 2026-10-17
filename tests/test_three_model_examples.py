@@ -48,10 +48,15 @@ class ThreeModelExamplesTest(unittest.TestCase):
             "does not change the running main model", "Do not silently install roles",
         ):
             self.assertIn(limitation, section)
-        for filename in ("luna-explorer.toml", "luna-runner.toml", "astra-reviewer.toml"):
-            config = tomllib.loads((EXAMPLES / filename).read_text(encoding="utf-8-sig"))
-            self.assertIn(config["name"], section)
-            self.assertIn(config["model"], section)
+        self.assertIn("DEFAULT preserves the current main model and reasoning effort", section)
+        for role in ("pack_explorer", "pack_runner", "pack_reviewer"):
+            self.assertIn(role, section)
+        self.assertNotRegex(section, r"gpt-[a-zA-Z0-9.-]+")
+        self.assertIn("explicit preset opt-in", section)
+        self.assertIn("Return to DEFAULT; this does not select the fixed-model preset", section)
+        self.assertIn("do not carry suspension or the fixed-model opt-in", section)
+        self.assertIn("unless a separately approved host-wide PRESET policy applies", skill)
+        self.assertIn("A separately approved host-wide preset policy may request PRESET", section)
 
     def test_optional_policy_has_one_ordered_marker_pair(self):
         policy = (EXAMPLES / "AGENTS.snippet.md").read_text(encoding="utf-8-sig")
