@@ -6,7 +6,7 @@ New conversations applying the native Codex TaskForge skill preserve the current
 
 **Language:** [한국어](README.md) | English
 
-## 2.3.0 changes
+## Recent improvements (2.3.1)
 
 | Improvement | Current behavior |
 |---|---|
@@ -15,8 +15,9 @@ New conversations applying the native Codex TaskForge skill preserve the current
 | Installer options | Reject simultaneous `--auto` and `--dest` before installation or checking |
 | Regression checks | Detect missing or duplicate operational sections, missing core rules, and missing skill-loading links |
 | Release version | Require a higher version for payload changes, compared with the PR or push base commit |
+| Host role registration | Add DEFAULT personal-role registration, conflict preservation, fresh-process checks, and observed model-inheritance evidence |
 
-This summary describes the source version. Update an installed copy separately and check its version. Historical host trials are evidence for their recorded date/environment, not live app/model validation of these changes.
+This summary describes the source version. Update an installed copy separately and check its version. The [2026-10-18 live trial](docs/host-verification-2026-10-18.md) verified skill loading, personal role registration, and actual model/effort inheritance using the 2.3.0 skill. Version 2.3.1 documents that procedure and evidence. The observations do not establish success outside the recorded environment or cover every behavior.
 
 ## Choose an installation method
 
@@ -153,6 +154,8 @@ DEFAULT uses `pack_explorer`, `pack_runner`, and `pack_reviewer`, inheriting mod
 | `SUSPENDED` | An explicit model choice or a request to use only one model | Stop all automatic delegation for that conversation. Inherited subagents require a separate user request |
 
 Resuming, compacting, or restarting the app with the same conversation does not reset its state. New conversations start in DEFAULT unless a separately approved host-wide PRESET policy applies. Re-enabling inherited delegation and re-enabling a fixed PRESET are distinct requests. See the [session policy](docs/codex-three-model-setup.md#session-policy).
+
+If a role fails with `unknown agent_type`, follow the [DEFAULT registration procedure](docs/codex-three-model-setup.md#register-default-roles) to check the active Codex home, personal role directory, and conflicts. Skill installation and role registration are separate. In a fresh process, verify role-name calls, actual task success, and parent/child model and effort separately; neither missing names in `debug prompt-input` nor a CLI exit code alone determines acceptance.
 
 ### Operational rules for ordinary delegation
 

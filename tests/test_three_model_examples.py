@@ -90,7 +90,8 @@ class ThreeModelExamplesTest(unittest.TestCase):
         for boundary in ("dry-run", "저장 승인", "재조회", "맹목적으로 재시도하지", "원자성", "blocked"):
             self.assertIn(boundary, instructions)
         for path in (EXAMPLES / "notion-recorder.toml", EXAMPLES / "AGENTS.auto.snippet.md",
-                     ROOT / "docs/codex-notion-recording.md", ROOT / "docs/host-verification-2026-10-16.md"):
+                     ROOT / "docs/codex-notion-recording.md", ROOT / "docs/host-verification-2026-10-16.md",
+                     ROOT / "docs/host-verification-2026-10-18.md"):
             with self.subTest(path=path.name):
                 text = path.read_text(encoding="utf-8")
                 self.assertIsNone(re.search(r"[A-Za-z]:[\\/](?:Users|AI-Codding)[\\/]", text))
