@@ -247,7 +247,8 @@ class InstallPackTests(unittest.TestCase):
             self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
         self.assertFalse((pack / ".codex").exists())
         self.assertFalse((codex / "agents/notion-recorder.toml").exists())
-        for filename in ("codex-notion-recording.md", "host-verification-2026-10-16.md"):
+        for filename in ("codex-notion-recording.md", "host-verification-2026-10-16.md",
+                         "host-verification-2026-10-18.md"):
             relative = Path("docs") / filename
             self.assertEqual((pack / relative).read_bytes(), (ROOT / relative).read_bytes())
         for filename in ("pack-explorer.toml", "pack-runner.toml", "pack-reviewer.toml", "AGENTS.snippet.md"):

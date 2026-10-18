@@ -174,6 +174,18 @@ A completed checklist is evidence for that environment only. Recent rules (packe
 
 For DEFAULT, preserve the main settings and use only the [model-inheriting standard examples](distribution-standard.md#model-inheriting-role-examples). The fixed-ID setup below is only for an explicitly selected PRESET; it is not required by installation or normal skill use.
 
+### Register DEFAULT roles
+
+1. Resolve the active Codex home (`CODEX_HOME` when set, otherwise `~/.codex`) and inspect its `agents/` directory. Check both filenames and TOML `name` values for conflicts. Files shipped under this pack's `docs/examples/` are inactive examples, not registered roles.
+2. After authorization, copy only `pack-explorer.toml`, `pack-runner.toml`, and `pack-reviewer.toml` from `docs/examples/codex-standard-agents/` into that home's `agents/` directory. Preserve existing files; stop on conflicts rather than overwrite them. These examples omit `model`, `model_reasoning_effort`, and permission overrides. No change to the main model, global routing policy, project trust, or security settings is required.
+3. Start a fresh chat/process and invoke the exact TOML role names without model/effort arguments. Ask Explorer to read an existing harmless file using its verified absolute path, Runner to run one specified non-mutating command, and Reviewer to assess an important setup direction only when its trigger applies. Confirm actual task outcomes and native parent/child model and effort records separately.
+4. If a project-local `.codex/agents/` fixture is not discovered, inspect the active project/configuration layers and host support. Do not assume copying examples activated them or weaken project trust to obtain a PASS. An authorized personal registration is an alternative; otherwise report the affected role as unavailable. An unknown role is not a transient failure to retry unchanged.
+5. `codex debug prompt-input` output is not the complete tool role catalog. Missing role names there alone do not prove discovery failure; actual role-name calls, tool outcomes, and runtime records are the acceptance evidence. Completion text or a CLI exit of zero does not turn a failed child command into a PASS.
+
+The [2026-10-18 host trial](host-verification-2026-10-18.md) records this registration fix and actual model inheritance in one environment. It does not establish support on other hosts or select DEFAULT over an existing approved host-wide PRESET policy. To undo an authorized registration, move only the newly added role files outside the discovery directory, preserving later user edits, then refresh discovery in a new process.
+
+### Configure an explicitly selected PRESET
+
 1. Inspect the effective user config, global `AGENTS.md`, existing custom roles, project overrides, and managed requirements. Record actual app and CLI versions separately. Check `codex --version` and `codex --help` where the CLI is installed. Respect `CODEX_HOME` and host-specific config precedence.
 2. Verify each selected ID and effort in the actual authenticated host. On a CLI that exposes it, `codex debug models` provides catalog evidence; confirm that subcommand in local help first. `--bundled`, an old cache, public API documentation, and a model's self-report alone do not establish current account access. Distinguish catalog evidence from a successful model call.
 3. Keep existing settings if already correct. If a different main model or conflicting role/policy must be replaced, show the exact difference and obtain approval first. Back up only the affected files to a private location outside this public repository. Do not copy a real user config, memory store, credentials, or raw logs into the pack.
