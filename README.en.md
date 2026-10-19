@@ -6,7 +6,7 @@ New conversations applying the native Codex TaskForge skill preserve the current
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (2.3.1)
+## Recent improvements (2.3.2)
 
 | Improvement | Current behavior |
 |---|---|
@@ -17,7 +17,7 @@ New conversations applying the native Codex TaskForge skill preserve the current
 | Release version | Require a higher version for payload changes, compared with the PR or push base commit |
 | Host role registration | Add DEFAULT personal-role registration, conflict preservation, fresh-process checks, and observed model-inheritance evidence |
 
-This summary describes the source version. Update an installed copy separately and check its version. The [2026-10-18 live trial](docs/host-verification-2026-10-18.md) verified skill loading, personal role registration, and actual model/effort inheritance using the 2.3.0 skill. Version 2.3.1 documents that procedure and evidence. The observations do not establish success outside the recorded environment or cover every behavior.
+This summary describes the source version. Update an installed copy separately and check its version. The [live verification record](docs/host-verification-2026-10-18.md) separates 2.3.0 role-registration trials from installed 2.3.1 CLI/app trials. After the user reported restarting the app on 2026-10-19, the existing verification conversation reread the guidance, Explorer and Runner exited 0, and native records reconfirmed actual parent/child model and effort inheritance. The app's current model label was also observed; menu contents, selection-change detection, and automatic state resets were not tested. Version 2.3.2 documents this evidence; the live target was 2.3.1. The observations do not establish success outside the recorded environment or cover every behavior.
 
 ## Choose an installation method
 
