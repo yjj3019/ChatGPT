@@ -6,13 +6,13 @@ New conversations applying the native Codex TaskForge skill preserve the current
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (2.3.2)
+## Recent improvements (2.3.3)
 
 | Improvement | Current behavior |
 |---|---|
 | Model defaults | Preserve the current model/effort and prefer registered model-inheriting roles. Fixed models require explicit PRESET selection |
 | Operational loading | Read only the required operational sections linked by the skill; do not preload the full setup guide |
-| Installer options | Reject simultaneous `--auto` and `--dest` before installation or checking |
+| Installer options | `--auto` and `--dest` are mutually exclusive. Select only one of `--check`, `--list-targets`, or `--print-chatgpt`; reject conflicts before any action |
 | Regression checks | Detect missing or duplicate operational sections, missing core rules, and missing skill-loading links |
 | Release version | Require a higher version for payload changes, compared with the PR or push base commit |
 | Host role registration | Add DEFAULT personal-role registration, conflict preservation, fresh-process checks, and observed model-inheritance evidence |

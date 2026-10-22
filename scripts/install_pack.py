@@ -438,17 +438,18 @@ def main(argv: list[str] | None = None) -> int:
         help="Detect AI hosts and install into each skills directory "
         f"(fallback: ~/{FALLBACK_SKILLS_DIR})",
     )
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--list-targets",
         action="store_true",
         help="Print detected install targets without installing",
     )
-    parser.add_argument(
+    mode.add_argument(
         "--print-chatgpt",
         action="store_true",
         help="Print exact steps to paste CHATGPT.md into ChatGPT Project Instructions",
     )
-    parser.add_argument(
+    mode.add_argument(
         "--check",
         action="store_true",
         help="Verify installed pack files and run validate_framework.py",

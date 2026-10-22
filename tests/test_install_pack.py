@@ -71,6 +71,26 @@ class SkillMetadataTests(unittest.TestCase):
 
 
 class DestinationArgumentTests(unittest.TestCase):
+    def test_conflicting_modes_fail_before_any_action(self):
+        modes = ("--check", "--list-targets", "--print-chatgpt")
+        for first in modes:
+            for second in modes:
+                if first == second:
+                    continue
+                with self.subTest(first=first, second=second), \
+                        patch.object(install_pack, "detect_targets") as detect, \
+                        patch.object(install_pack, "print_chatgpt_steps") as print_steps, \
+                        patch.object(install_pack, "verify_install") as verify, \
+                        patch.object(install_pack, "run_validate") as validate, \
+                        patch.object(install_pack, "install_pack") as install, \
+                        redirect_stderr(io.StringIO()) as error:
+                    with self.assertRaises(SystemExit) as raised:
+                        install_pack.main([first, second, "--dest", "unused"])
+                    self.assertEqual(raised.exception.code, 2)
+                    self.assertIn("not allowed with argument", error.getvalue())
+                    for action in (detect, print_steps, verify, validate, install):
+                        action.assert_not_called()
+
     def test_auto_and_dest_conflict_before_any_target_access(self):
         for mode in ([], ["--check"], ["--dry-run"], ["--force"]):
             for targets in (["--auto", "--dest", "unused"], ["--dest", "unused", "--auto"]):
