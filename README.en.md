@@ -1,15 +1,18 @@
 # TaskForge
 
+**Task guidance for ChatGPT and Codex**
+
 An **instruction pack** for engineering, writing, and evidence-backed completion. Install it as a GitHub marketplace plugin in the Codex app, or use Project Instructions in ChatGPT. It does not train or copy model weights or hidden reasoning, or create automatic cross-session memory.
 
 New conversations applying the native Codex TaskForge skill preserve the current model/effort and use registered model-inheriting roles for exploration, verification, and conditional review. Fixed Sol/Luna/Astra models require an explicitly selected PRESET. An explicit user model choice suspends automatic delegation for that conversation and preserves the chosen model/effort. A new conversation applying TaskForge returns to DEFAULT unless a separately approved host-wide PRESET policy applies; resuming a conversation or restarting the app alone does not reset it. Installation does not modify user settings, roles, or memories. See the [distribution standard](docs/distribution-standard.md).
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (2.3.3)
+## Recent improvements (2.3.4)
 
 | Improvement | Current behavior |
 |---|---|
+| Product presentation | Keep the TaskForge name and clarify ChatGPT and Codex support in the subtitle and plugin description. Keep the installation ID `taskforge@yjj3019` |
 | Model defaults | Preserve the current model/effort and prefer registered model-inheriting roles. Fixed models require explicit PRESET selection |
 | Operational loading | Read only the required operational sections linked by the skill; do not preload the full setup guide |
 | Installer options | `--auto` and `--dest` are mutually exclusive. Select only one of `--check`, `--list-targets`, or `--print-chatgpt`; reject conflicts before any action |

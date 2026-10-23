@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "taskforge",
-  "version": "2.3.3",
-  "description": "Task-scoped guidance with model-inheriting delegation, optional Sol/Luna/Astra presets, and verified release versioning.",
+  "version": "2.3.4",
+  "description": "Task-scoped guidance for ChatGPT and Codex with model-inheriting delegation, optional Sol/Luna/Astra presets, and verified release versioning.",
   "author": {
     "name": "yjj3019",
     "url": "https://github.com/yjj3019"
@@ -14,7 +14,7 @@
     "com.openai": {
       "interface": {
         "displayName": "TaskForge",
-        "shortDescription": "Task-scoped engineering and writing guidance",
+        "shortDescription": "Engineering and writing guidance for ChatGPT and Codex",
         "developerName": "yjj3019",
         "category": "Productivity",
         "capabilities": ["Instructions"],
