@@ -23,7 +23,7 @@ Use Core + 1–2 mapped guides or one task + one domain section. Do not preload 
 | Trigger | Supporting file |
 |---|---|
 | Coding/debugging/review | `docs/chatgpt-coding-rules.md` |
-| Architecture, RCA, research, SOP, prompt/security review | Matching section of `docs/chatgpt-engineering-task-rules.md` |
+| Architecture, RCA, research, SOP, prompt/security review, long tasks | Section of `docs/chatgpt-engineering-task-rules.md` |
 | Meeting, presentation, executive summary | `docs/chatgpt-knowledge-work-rules.md` |
 | Named technology domain | Matching section of `docs/chatgpt-domain-packs.md` |
 | Model selection advice | `docs/chatgpt-codex-model-routing.md` |

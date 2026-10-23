@@ -140,6 +140,18 @@ class FrameworkCommandsTest(unittest.TestCase):
         (self.root / "tests/GoldenTest-016.md").unlink()
         self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 016")
 
+    def test_harness_golden_tests_are_required(self):
+        for test_id in ("041", "042", "043"):
+            with self.subTest(test_id=test_id):
+                path = self.root / f"tests/GoldenTest-{test_id}.md"
+                original = path.read_bytes()
+                path.unlink()
+                try:
+                    self.assert_failure(self.run_script("validate_framework.py"),
+                                        f"missing required Golden Test {test_id}")
+                finally:
+                    path.write_bytes(original)
+
     def test_empty_golden_rubric_is_rejected(self):
         path = self.root / "tests/GoldenTest-015.md"
         prefix = path.read_text(encoding="utf-8-sig").split("## Gold Rubric", 1)[0]

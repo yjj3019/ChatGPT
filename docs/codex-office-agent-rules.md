@@ -32,6 +32,10 @@ Never overwrite an existing artifact. Add `_v2`, `_v3`, etc. when needed.
 
 For small, obvious edits, skip the blueprint and apply the edit directly.
 
+For substantial work with repeated layouts, validate a representative sample before expanding the artifact. Choose the sample to expose the real risks, such as dense text, tables, charts, or a supplied template; no fixed sample count or extra approval is required. Reopen/render it and check editable objects when the user requires them. If a required check is unavailable, report that gap and avoid multiplying an unverified pattern; continue unaffected authorized work.
+
+A sample pass does not verify the final artifact. After expansion, check the full output for missing content, overflow, and consistency, and report any unrendered or unchecked coverage.
+
 ## Branding
 
 - Use generic styling by default.
@@ -48,6 +52,7 @@ For small, obvious edits, skip the blueprint and apply the edit directly.
 - Include title/section/closing slides when building a deck from scratch.
 - Verify slide count and basic placeholder/text presence.
 - Visual rendering remains the final check when layout matters.
+- If editable tables/charts are required, inspect native objects and their data in the saved file. A rendered image alone does not prove editability.
 
 ### DOCX
 

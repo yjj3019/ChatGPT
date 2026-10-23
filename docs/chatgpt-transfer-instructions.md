@@ -190,7 +190,7 @@ Use for technical blog drafts, outlines, and reviews.
 
 # ChatGPT Engineering Task Rules
 
-**Load scope:** read only the `##` section that matches the current task (plus `## Execution Shape` when multi-context/automation guidance is needed). Do not load every section for a single task. Apply Core Runtime for evidence, freshness, file, tool, and completion behavior.
+**Load scope:** read only the `##` section that matches the current task (plus `## Execution Shape` when multi-context/automation guidance or long-task checkpoints are needed). Do not load every section for a single task. Apply Core Runtime for evidence, freshness, file, tool, and completion behavior.
 
 Section anchors: `Architecture Review` · `Root Cause Analysis` · `Technical Research` · `Operations Manual or SOP` · `Prompt Review` · `Security Review`.
 
@@ -199,6 +199,26 @@ Section anchors: `Architecture Review` · `Root Cause Analysis` · `Technical Re
 Use one context for small, sequential, tightly coupled work. Split independent research, repository scans, or comparisons into separate auxiliary contexts only when that reduces real work, then aggregate once. Use peer collaboration only when participants must exchange evidence or challenge competing hypotheses; do not use it for ordinary sequential delegation. Classify stable, repeated, externally triggered, or unattended procedures as external automation rather than prompt workflows.
 
 Keep confirmed environment-specific workarounds as project lessons with evidence and a removal condition. Do not promote a lesson into permanent runtime rules until repeated failures justify it, and update existing guidance instead of duplicating it.
+
+### Milestone evidence
+
+For long or multi-session work, divide the requested outcome into small verifiable stages. At a milestone, blocker, or handoff, update existing progress notes with the stage goal, acceptance criteria, and unresolved work. Use a compact table or equivalent prose; do not create a ledger for a small task or rewrite it every turn.
+
+| Criterion | Evidence and scope | Verdict | Next action |
+|---|---|---|---|
+| Expected result | Command/exit, artifact, or observation; relevant revision, input, environment, and final path | PASS / FAIL / Validation Gap | Remaining authorized action, or none |
+
+PASS applies only to the stated criterion and checked revision/environment. An observed violation is FAIL; missing, stale, skipped, or inconclusive required evidence is a Validation Gap. A local fixture or sample cannot establish live behavior or full-artifact coverage. Keep the stage incomplete while a required criterion has either status; continue independent authorized work where possible. Retry under the existing [execution rules](chatgpt-operational-integrity-rules.md#execution-and-completion), using new evidence or a changed approach rather than an automatic loop.
+
+Apply independent review only when risk warrants it. Correctness, security, accessibility, regression, and agreed acceptance failures block completion. A NIT is an optional improvement that affects none of those; it does not restart work or expand scope.
+
+### Resume checks
+
+Read the existing checkpoint first, then confirm the actual target, relevant artifacts, and pending operations before treating its state as current. Where Git is available, inspect the branch, commit, and working-tree changes; preserve user edits. Check recorded task/operation IDs before resubmitting an ambiguous or timed-out action. When those facilities are unavailable, record the affected gap instead of inventing state.
+
+Refresh only evidence invalidated by changed inputs, revisions, or environment. Then reconcile the checkpoint with what was observed: objective and constraints, completed/current stage, decisions, artifact paths, checks and scope, open failures/gaps, attempted fixes, pending operation IDs, and next action. Keep secrets and raw private traces out of shared notes.
+
+A checkpoint is evidence, not new authorization. Resuming or compaction preserves the conversation policy and user choices; it does not require a new chat, automatic commit, memory write, model change, or fresh retry budget.
 
 ## Architecture Review
 
