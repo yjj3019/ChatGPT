@@ -8,11 +8,12 @@ New conversations applying the native Codex TaskForge for ChatGPT skill preserve
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (3.0.0)
+## Recent improvements (3.0.1)
 
 | Improvement | Current behavior |
 |---|---|
 | Name and ID migration | Use TaskForge for ChatGPT and the shared plugin, skill, and Python installation ID `taskforge-for-chatgpt`. Existing 2.x installations require the migration below |
+| Skill display name | Add UI metadata that preserves `TaskForge for ChatGPT` capitalization in the skill row |
 | Model defaults | Preserve the current model/effort and prefer registered model-inheriting roles. Fixed models require explicit PRESET selection |
 | Operational loading | Read only the required operational sections linked by the skill; do not preload the full setup guide |
 | Installer options | `--auto` and `--dest` are mutually exclusive. Select only one of `--check`, `--list-targets`, or `--print-chatgpt`; reject conflicts before any action |
@@ -89,11 +90,15 @@ codex plugin marketplace remove yjj3019
 
 Codex CLI `0.162.0-alpha.17.2` on Windows was tested with separate temporary configuration/cache. Actual GitHub URL registration, installation, update by reinstalling, and removal were verified, alongside local fixture version/document updates. Refreshing while installed failed with access denied during cache replacement; the reinstall sequence above succeeded. Actual app presentation and model behavior require separate validation.
 
-Those remote checks used the previous identity. For 3.0.0, a separate Codex home and local marketplace verified the 2.3.4 → new-ID 3.0.0 → 2.3.4 transition while preserving configuration and user files. Remote publication/update of the new identity and actual post-restart app behavior remain unverified.
+Those remote checks used the previous identity. For 3.0.0, a separate Codex home and local marketplace verified the 2.3.4 → new-ID 3.0.0 → 2.3.4 transition while preserving configuration and user files. On 2026-10-23, this Windows host verified new-ID 3.0.0 installation and, after an app restart, automatic catalog discovery and guidance loading in a fresh verification conversation, plus actual parent/Explorer/Runner model and effort inheritance. A user-supplied plugin detail screenshot also confirmed the name, version 3.0.0, and enabled state. These are host-specific observations, not 3.0.1 installation or UI verification.
 
 [Official packaging guide](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [official management commands](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (checked 2026-10-15).
 
 ## Migrate from the previous plugin
+
+### When an existing conversation does not discover the new skill
+
+An existing conversation can retain its previous skill catalog after an ID migration. Check installation/enabled state separately from automatic discovery in a fresh conversation. On this host a fresh conversation recognized 3.0.0, while the existing verification conversation did not receive the new ID. `skills/list` with `forceReload` rescans disk metadata; it does not guarantee replacement of an existing conversation’s context. Continuing in a fresh conversation was verified. Preserve the existing conversation; do not delete it or reset configuration as a remedy.
 
 ### Version 3 migration
 
