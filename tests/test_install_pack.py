@@ -44,10 +44,10 @@ class SkillMetadataTests(unittest.TestCase):
         self.assertIn("explicit skill invocation", content)
         self.assertLess(len(content.encode("utf-8")), 1300)
 
-    def test_native_name_validation_preserves_legacy_defaults(self):
-        self.assertEqual(install_pack.PACK_NAME, "chatgpt-transfer")
-        renamed = install_pack.skill_hint().replace('name: "chatgpt-transfer"', 'name: "taskforge"')
-        install_pack.validate_skill_metadata(renamed, expected_name="taskforge")
+    def test_new_identity_is_default_and_legacy_validation_is_explicit(self):
+        self.assertEqual(install_pack.PACK_NAME, "taskforge-for-chatgpt")
+        renamed = install_pack.skill_hint().replace('name: "taskforge-for-chatgpt"', 'name: "chatgpt-transfer"')
+        install_pack.validate_skill_metadata(renamed, expected_name="chatgpt-transfer")
         with self.assertRaises(ValueError):
             install_pack.validate_skill_metadata(renamed)
 
@@ -55,10 +55,10 @@ class SkillMetadataTests(unittest.TestCase):
         valid = install_pack.skill_hint()
         cases = (
             valid.split("---", 2)[-1],
-            valid.replace('name: "chatgpt-transfer"', 'name: "wrong-pack"'),
-            valid.replace('name: "chatgpt-transfer"', 'name: null'),
-            valid.replace('name: "chatgpt-transfer"', 'description: "duplicate"'),
-            valid.replace('name: "chatgpt-transfer"', 'name: [broken'),
+            valid.replace('name: "taskforge-for-chatgpt"', 'name: "wrong-pack"'),
+            valid.replace('name: "taskforge-for-chatgpt"', 'name: null'),
+            valid.replace('name: "taskforge-for-chatgpt"', 'description: "duplicate"'),
+            valid.replace('name: "taskforge-for-chatgpt"', 'name: [broken'),
         )
         for content in cases:
             with self.subTest(content=content[:70]), self.assertRaises(ValueError):
@@ -212,7 +212,7 @@ class InstallPackTests(unittest.TestCase):
         proc = self._run("--auto", "--dry-run")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("Would install", proc.stdout)
-        self.assertFalse((self.home / ".claude/skills/chatgpt-transfer").exists())
+        self.assertFalse((self.home / ".claude/skills/taskforge-for-chatgpt").exists())
 
     def test_auto_installs_into_temp_home_hosts(self):
         (self.home / ".claude").mkdir()
@@ -220,7 +220,7 @@ class InstallPackTests(unittest.TestCase):
         proc = self._run("--auto")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         for host in (".claude/skills", ".grok/skills"):
-            pack = self.home / host / "chatgpt-transfer"
+            pack = self.home / host / "taskforge-for-chatgpt"
             self.assertTrue((pack / "CHATGPT.md").is_file(), pack)
             self.assertTrue((pack / "AGENTS.md").is_file())
             self.assertTrue((pack / "docs").is_dir())
@@ -235,7 +235,7 @@ class InstallPackTests(unittest.TestCase):
         proc = self._run("--auto")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("No AI host detected", proc.stdout)
-        pack = self.home / ".agents/skills/chatgpt-transfer"
+        pack = self.home / ".agents/skills/taskforge-for-chatgpt"
         self.assertTrue((pack / "CHATGPT.md").is_file())
 
     def test_auto_install_preserves_codex_settings_and_memory_state(self):
@@ -256,7 +256,7 @@ class InstallPackTests(unittest.TestCase):
         proc = self._run("--auto")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertEqual({path: path.read_bytes() for path in before}, before)
-        pack = self.home / ".agents/skills/chatgpt-transfer"
+        pack = self.home / ".agents/skills/taskforge-for-chatgpt"
         self.assertEqual((pack / "docs/codex-memories-maintenance.md").read_bytes(),
                          (ROOT / "docs/codex-memories-maintenance.md").read_bytes())
         self.assertFalse((pack / "config.toml").exists())
@@ -280,8 +280,8 @@ class InstallPackTests(unittest.TestCase):
         dest = self.home / "skills"
         proc = self._run("--dest", str(dest), "--with-tests")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        self.assertTrue((dest / "chatgpt-transfer" / "tests" / "Scorecard.md").is_file())
-        pack = dest / "chatgpt-transfer"
+        self.assertTrue((dest / "taskforge-for-chatgpt" / "tests" / "Scorecard.md").is_file())
+        pack = dest / "taskforge-for-chatgpt"
         manifest = json.loads((pack / install_pack.MANIFEST_FILE).read_text(encoding="utf-8"))
         for name in ("README.md", "skill-invocation-cases.json"):
             relative = Path("tests/evals") / name
@@ -292,19 +292,19 @@ class InstallPackTests(unittest.TestCase):
         dest = self.home / "skills"
         first = self._run("--dest", str(dest))
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
-        marker = dest / "chatgpt-transfer" / "USER_NOTES.txt"
+        marker = dest / "taskforge-for-chatgpt" / "USER_NOTES.txt"
         marker.write_text("stale", encoding="utf-8")
         second = self._run("--dest", str(dest))
         self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
         self.assertEqual(marker.read_text(encoding="utf-8"), "stale")
         self.assertIn("Unchanged", second.stdout)
-        self.assertTrue((dest / "chatgpt-transfer" / "CHATGPT.md").is_file())
+        self.assertTrue((dest / "taskforge-for-chatgpt" / "CHATGPT.md").is_file())
 
     def test_installed_pack_contains_both_languages_and_compatibility_entry(self):
         dest = self.home / "skills"
         proc = self._run("--dest", str(dest))
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        pack = dest / "chatgpt-transfer"
+        pack = dest / "taskforge-for-chatgpt"
         manifest = json.loads((pack / install_pack.MANIFEST_FILE).read_text(encoding="utf-8"))
         for name in ("README.md", "README.en.md", "README.ko.md"):
             self.assertEqual((pack / name).read_bytes(), (ROOT / name).read_bytes())
@@ -324,7 +324,7 @@ class InstallPackTests(unittest.TestCase):
         dest = self.home / "skills"
         proc = self._run("--dest", str(dest))
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-        pack = dest / "chatgpt-transfer"
+        pack = dest / "taskforge-for-chatgpt"
         license_file = pack / "LICENSE"
         self.assertEqual(license_file.read_bytes(), (ROOT / "LICENSE").read_bytes())
         self.assertIn("MIT License", license_file.read_text(encoding="utf-8"))
@@ -749,7 +749,7 @@ class SafeInstallTests(unittest.TestCase):
             with self.assertRaisesRegex(SystemExit, "rename blocked"):
                 self.install(force=True)
         self.assertFalse(self.pack.exists())
-        recoveries = list(self.root.glob(".chatgpt-transfer-*/old"))
+        recoveries = list(self.root.glob(".taskforge-for-chatgpt-*/old"))
         self.assertEqual(len(recoveries), 1)
         backup = recoveries[0]
         recovered = {p.relative_to(backup).as_posix(): p.read_bytes()

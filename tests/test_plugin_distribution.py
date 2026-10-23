@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@unittest.skipIf((ROOT / ".chatgpt-transfer-manifest.json").is_file(),
+@unittest.skipIf((ROOT / ".taskforge-for-chatgpt-manifest.json").is_file(),
                  "Native marketplace checks apply to the repository, not legacy skill copies")
 class PluginDistributionTests(unittest.TestCase):
     def test_marketplace_resolves_complete_plugin_inside_repository(self):
@@ -22,7 +22,9 @@ class PluginDistributionTests(unittest.TestCase):
         plugin_root = (ROOT / entry["source"]["path"]).resolve()
         self.assertTrue(plugin_root.is_relative_to(ROOT.resolve()))
         manifest = json.loads((plugin_root / "plugin.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["name"], "taskforge")
+        self.assertEqual(manifest["name"], "taskforge-for-chatgpt")
+        self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["displayName"],
+                         "TaskForge for ChatGPT")
         self.assertEqual(manifest["name"], entry["name"])
         self.assertRegex(manifest["version"], r"^\d+\.\d+\.\d+$")
         self.assertEqual(manifest["license"], "MIT")
@@ -31,12 +33,14 @@ class PluginDistributionTests(unittest.TestCase):
         self.assertEqual(entry["category"], manifest["extensions"]["com.openai"]["interface"]["category"])
 
     def test_skill_metadata_and_references_resolve_from_installed_layout(self):
-        skill = ROOT / "skills/taskforge/SKILL.md"
+        skill = ROOT / "skills/taskforge-for-chatgpt/SKILL.md"
         text = skill.read_text(encoding="utf-8")
         spec = importlib.util.spec_from_file_location("plugin_installer", ROOT / "scripts/install_pack.py")
         installer = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(installer)
-        installer.validate_skill_metadata(text, expected_name="taskforge")
+        self.assertEqual(installer.PACK_NAME, "taskforge-for-chatgpt")
+        self.assertFalse((ROOT / "skills/taskforge/SKILL.md").exists())
+        installer.validate_skill_metadata(text, expected_name="taskforge-for-chatgpt")
         for target in re.findall(r"\]\(([^)]+)\)", text):
             path = (skill.parent / target.split("#", 1)[0]).resolve()
             self.assertTrue(path.is_relative_to(ROOT.resolve()), target)

@@ -1,5 +1,7 @@
 # Host Verification — 2026-10-18
 
+Historical record: names and IDs below identify the versions tested at the time. The current product is TaskForge for ChatGPT; see the [version 3 migration](../README.en.md#version-3-migration). These observations do not establish live 3.0.0 behavior.
+
 Sanitized observations from one authorized Windows Codex home. The tested skill and unchanged role examples came from TaskForge 2.3.0, source commit `c6e7b79aba7df0ff67e16bc7a9b3732938d4ba06` (merged as `b7d61d4e8d340bcb94af32f2b4bfdcff4a0dffe3`). Version 2.3.1 originally published those instructions and observations. Subsequent installed 2.3.1 trials are recorded separately below; 2.3.2 adds that evidence without claiming a live 2.3.2 trial. Private paths, account/session IDs, user configuration, credentials, and raw traces are omitted.
 
 ## Environment and evidence

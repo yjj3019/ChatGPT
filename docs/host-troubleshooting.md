@@ -1,6 +1,6 @@
 # Windows 및 Orca 환경 확인 사항
 
-이 문서는 TaskForge 적용 시 Windows와 Orca 계정에서 관찰된 항목을 정리한다. 한 환경의 기록이며 모든 수신자에게 동일하게 적용되지 않는다. 최신 상태는 해당 호스트에서 다시 확인한다.
+이 문서는 TaskForge for ChatGPT 적용 시 Windows와 Orca 계정에서 관찰된 항목을 정리한다. 한 환경의 기록이며 모든 수신자에게 동일하게 적용되지 않는다. 최신 상태는 해당 호스트에서 다시 확인한다.
 
 ## CreateProcessWithLogonW 1326
 

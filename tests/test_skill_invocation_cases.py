@@ -13,7 +13,7 @@ class SkillInvocationCasesTests(unittest.TestCase):
         data = json.loads(CASES.read_text(encoding="utf-8"))
         self.assertEqual(set(data), {"version", "skill", "cases"})
         self.assertEqual(data["version"], 1)
-        self.assertEqual(data["skill"], "taskforge")
+        self.assertEqual(data["skill"], "taskforge-for-chatgpt")
         categories = {name: 0 for name in ("explicit", "implicit", "contextual", "negative")}
         identifiers = set()
         for case in data["cases"]:
@@ -31,9 +31,9 @@ class SkillInvocationCasesTests(unittest.TestCase):
                 self.assertEqual(case["expected_invocation"], case["category"] != "negative")
                 self.assertIsInstance(case["expected_guides"], list)
                 if case["category"] == "explicit":
-                    self.assertIn("$taskforge", case["prompt"])
+                    self.assertIn("$taskforge-for-chatgpt", case["prompt"])
                 elif case["category"] in {"implicit", "contextual"}:
-                    self.assertNotIn("$taskforge", case["prompt"])
+                    self.assertNotIn("$taskforge-for-chatgpt", case["prompt"])
                 if not case["expected_invocation"]:
                     self.assertEqual(case["expected_guides"], [])
                 for guide in case["expected_guides"]:

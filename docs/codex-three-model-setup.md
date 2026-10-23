@@ -1,6 +1,6 @@
-# TaskForge Sol / Luna / Astra Session Setup
+# TaskForge for ChatGPT Sol / Luna / Astra Session Setup
 
-This is the native TaskForge skill's default Codex session policy under the [distribution baseline](distribution-standard.md). ChatGPT and legacy entries retain their current-model default. Role files remain documentation assets until explicitly configured; marketplace installation does not write a user's Codex home. Existing installation conflict handling still applies.
+This is the native TaskForge for ChatGPT skill's default Codex session policy under the [distribution baseline](distribution-standard.md). ChatGPT and legacy entries retain their current-model default. Role files remain documentation assets until explicitly configured; marketplace installation does not write a user's Codex home. Existing installation conflict handling still applies.
 
 ## Session Policy
 
@@ -8,12 +8,12 @@ DEFAULT preserves the current main model and reasoning effort. It defines role r
 
 | Event | Routing state |
 |---|---|
-| New conversation applying TaskForge, without an explicit model choice | DEFAULT: preserve the main model/effort; use registered model-inheriting roles when useful |
+| New conversation applying TaskForge for ChatGPT, without an explicit model choice | DEFAULT: preserve the main model/effort; use registered model-inheriting roles when useful |
 | Explicit request for the verified Sol/Luna/Astra preset or to re-enable the three-model preset | PRESET for this conversation only, after support, access, and authorization checks; see [Selected Preset](#selected-preset) |
 | Explicit user model choice, including Sol, or "use this model only" | SUSPENDED for the rest of this conversation; preserve the selected model/effort and stop automatic delegation |
 | Further turns, compaction, or resuming the same conversation | Keep its existing state; do not reset suspension or opt into a preset |
 | Explicit request to re-enable model-inheriting delegation | Return to DEFAULT; this does not select the fixed-model preset |
-| New conversation applying TaskForge | Return to DEFAULT; do not carry suspension or the fixed-model opt-in from another conversation. A separately approved host-wide preset policy may request PRESET. |
+| New conversation applying TaskForge for ChatGPT | Return to DEFAULT; do not carry suspension or the fixed-model opt-in from another conversation. A separately approved host-wide preset policy may request PRESET. |
 
 State is conversational guidance, not a persisted setting or a runtime state machine. Never write a global disable flag or reset user settings. An explicit model choice in the first request wins over the default immediately. An explicit choice remains an override even when its ID equals an example ID. Quoted text and the active model slug alone do not prove a manual selection. Explicit re-enable requests restore only the routing the user actually requested.
 
@@ -196,7 +196,7 @@ The [2026-10-18 host trial](host-verification-2026-10-18.md) records this regist
 
 ## Automatic Policy for Every New Session
 
-This is an explicit opt-in to the fixed-ID PRESET on each new conversation for the configured home, not the installed skill's DEFAULT. After a one-time authorized setup, the policy can load in every new conversation for that Codex home without manually invoking TaskForge. Use the [automatic snippet](examples/codex-three-models/AGENTS.auto.snippet.md) instead of the skill-scoped [original snippet](examples/codex-three-models/AGENTS.snippet.md). Choose one; do not append both.
+This is an explicit opt-in to the fixed-ID PRESET on each new conversation for the configured home, not the installed skill's DEFAULT. After a one-time authorized setup, the policy can load in every new conversation for that Codex home without manually invoking TaskForge for ChatGPT. Use the [automatic snippet](examples/codex-three-models/AGENTS.auto.snippet.md) instead of the skill-scoped [original snippet](examples/codex-three-models/AGENTS.snippet.md). Choose one; do not append both.
 
 ### Approval steps before applying the automatic snippet
 1. Show the exact diff that will be written to the effective global `AGENTS.md` (or its resolved target if it is a symlink).

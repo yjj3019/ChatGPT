@@ -280,9 +280,9 @@ def validate_delegation_policy(documents: dict[Path, str], errors: list[str]) ->
         return
     relative = "docs/codex-three-model-setup.md"
     guide = documents.get(ROOT / relative, "")
-    skill = documents.get(ROOT / "skills/taskforge/SKILL.md", "")
+    skill = documents.get(ROOT / "skills/taskforge-for-chatgpt/SKILL.md", "")
     if "unless a separately approved host-wide PRESET policy applies" not in section(skill, "Session model policy"):
-        errors.append("skills/taskforge/SKILL.md: missing approved host-wide PRESET exception")
+        errors.append("skills/taskforge-for-chatgpt/SKILL.md: missing approved host-wide PRESET exception")
     headings = [title for title, _, _ in iter_h2_spans(guide)]
     for heading, required in DELEGATION_SECTIONS.items():
         if headings.count(heading) != 1:
@@ -293,7 +293,7 @@ def validate_delegation_policy(documents: dict[Path, str], errors: list[str]) ->
                 errors.append(f"{relative}: delegation contract missing in {heading}: {phrase}")
         target = f"../../{relative}#{heading.lower().replace(' ', '-')}"
         if target not in LINK_RE.findall(skill):
-            errors.append(f"skills/taskforge/SKILL.md: missing operational link: {heading}")
+            errors.append(f"skills/taskforge-for-chatgpt/SKILL.md: missing operational link: {heading}")
 
 
 def main() -> int:

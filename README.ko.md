@@ -1,4 +1,4 @@
-# TaskForge
+# TaskForge for ChatGPT
 
 **ChatGPT·Codex용 작업 지침**
 

@@ -1,18 +1,18 @@
-# TaskForge
+# TaskForge for ChatGPT
 
 **Task guidance for ChatGPT and Codex**
 
 An **instruction pack** for engineering, writing, and evidence-backed completion. Install it as a GitHub marketplace plugin in the Codex app, or use Project Instructions in ChatGPT. It does not train or copy model weights or hidden reasoning, or create automatic cross-session memory.
 
-New conversations applying the native Codex TaskForge skill preserve the current model/effort and use registered model-inheriting roles for exploration, verification, and conditional review. Fixed Sol/Luna/Astra models require an explicitly selected PRESET. An explicit user model choice suspends automatic delegation for that conversation and preserves the chosen model/effort. A new conversation applying TaskForge returns to DEFAULT unless a separately approved host-wide PRESET policy applies; resuming a conversation or restarting the app alone does not reset it. Installation does not modify user settings, roles, or memories. See the [distribution standard](docs/distribution-standard.md).
+New conversations applying the native Codex TaskForge for ChatGPT skill preserve the current model/effort and use registered model-inheriting roles for exploration, verification, and conditional review. Fixed Sol/Luna/Astra models require an explicitly selected PRESET. An explicit user model choice suspends automatic delegation for that conversation and preserves the chosen model/effort. A new conversation applying TaskForge for ChatGPT returns to DEFAULT unless a separately approved host-wide PRESET policy applies; resuming a conversation or restarting the app alone does not reset it. Installation does not modify user settings, roles, or memories. See the [distribution standard](docs/distribution-standard.md).
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (2.3.4)
+## Recent improvements (3.0.0)
 
 | Improvement | Current behavior |
 |---|---|
-| Product presentation | Keep the TaskForge name and clarify ChatGPT and Codex support in the subtitle and plugin description. Keep the installation ID `taskforge@yjj3019` |
+| Name and ID migration | Use TaskForge for ChatGPT and the shared plugin, skill, and Python installation ID `taskforge-for-chatgpt`. Existing 2.x installations require the migration below |
 | Model defaults | Preserve the current model/effort and prefer registered model-inheriting roles. Fixed models require explicit PRESET selection |
 | Operational loading | Read only the required operational sections linked by the skill; do not preload the full setup guide |
 | Installer options | `--auto` and `--dest` are mutually exclusive. Select only one of `--check`, `--list-targets`, or `--print-chatgpt`; reject conflicts before any action |
@@ -26,9 +26,9 @@ This summary describes the source version. Update an installed copy separately a
 
 | Environment or purpose | Method |
 |---|---|
-| **Codex app — default installation** | Install `taskforge` through the marketplace steps below |
+| **Codex app — default installation** | Install `taskforge-for-chatgpt` through the marketplace steps below |
 | ChatGPT Project | Put `CHATGPT.md` in Project Instructions and provide relevant `docs/` files |
-| Other skill-style hosts or existing installation method | Copy `chatgpt-transfer/` with the Python installer below |
+| Other skill-style hosts or existing installation method | Copy `taskforge-for-chatgpt/` with the Python installer below |
 | Repository development or workspace rules | Open the repository and verify that root `AGENTS.md` is active |
 | One-shot copy/paste | Use `docs/chatgpt-5.5-all-in-one-instructions.md` |
 
@@ -36,7 +36,7 @@ Choose one entry point. Using both the marketplace plugin and a Python copy can 
 
 ## Codex app marketplace install, remove, and update
 
-Codex CLI is required. Check `codex plugin --help` and `codex plugin marketplace --help` for support before running these commands. The marketplace is `yjj3019`; the plugin is `taskforge`. In `taskforge@yjj3019`, the part before `@` is the plugin and the part after it is the marketplace identifier. This GitHub marketplace is separate from review and listing in the universal public plugin directory.
+Codex CLI is required. Check `codex plugin --help` and `codex plugin marketplace --help` for support before running these commands. The marketplace is `yjj3019`; the plugin is `taskforge-for-chatgpt`. In `taskforge-for-chatgpt@yjj3019`, the part before `@` is the plugin and the part after it is the marketplace identifier. This GitHub marketplace is separate from review and listing in the universal public plugin directory.
 
 ### Install
 
@@ -44,10 +44,10 @@ Register the repository marketplace and install the plugin from a terminal. No m
 
 ```text
 codex plugin marketplace add yjj3019/ChatGPT --ref main
-codex plugin add taskforge@yjj3019
+codex plugin add taskforge-for-chatgpt@yjj3019
 ```
 
-Restart the Codex app and use a new chat. Example: “Apply TaskForge to review this code.” The plugin reads its installed `AGENTS.md` and relevant guides; it does not change the user's working folder to the pack repository.
+Restart the Codex app and use a new chat. Example: “Apply TaskForge for ChatGPT to review this code.” The plugin reads its installed `AGENTS.md` and relevant guides; it does not change the user's working folder to the pack repository.
 
 ### Check installation
 
@@ -62,9 +62,9 @@ Check the installed entry/version and installation status in the app's Plugins v
 Use **remove → refresh marketplace → reinstall** to avoid the cache replacement error observed on the tested Windows CLI. Check each command succeeds before running the next.
 
 ```text
-codex plugin remove taskforge@yjj3019
+codex plugin remove taskforge-for-chatgpt@yjj3019
 codex plugin marketplace upgrade yjj3019
-codex plugin add taskforge@yjj3019
+codex plugin add taskforge-for-chatgpt@yjj3019
 ```
 
 The pack is temporarily uninstalled during this update. If network refresh fails, restore connectivity and rerun refresh/install. Then check installation, restart the app, and open a new chat.
@@ -72,7 +72,7 @@ The pack is temporarily uninstalled during this update. If network refresh fails
 ### Remove the plugin
 
 ```text
-codex plugin remove taskforge@yjj3019
+codex plugin remove taskforge-for-chatgpt@yjj3019
 ```
 
 This removes the plugin's installation settings/cache, not previous Python copies or Git clones.
@@ -89,9 +89,42 @@ codex plugin marketplace remove yjj3019
 
 Codex CLI `0.162.0-alpha.17.2` on Windows was tested with separate temporary configuration/cache. Actual GitHub URL registration, installation, update by reinstalling, and removal were verified, alongside local fixture version/document updates. Refreshing while installed failed with access denied during cache replacement; the reinstall sequence above succeeded. Actual app presentation and model behavior require separate validation.
 
+Those remote checks used the previous identity. For 3.0.0, a separate Codex home and local marketplace verified the 2.3.4 → new-ID 3.0.0 → 2.3.4 transition while preserving configuration and user files. Remote publication/update of the new identity and actual post-restart app behavior remain unverified.
+
 [Official packaging guide](https://developers.openai.com/plugins/build/plugins?install-scope=workspace), [official management commands](https://learn.chatgpt.com/docs/developer-commands#codex-plugin) (checked 2026-10-15).
 
 ## Migrate from the previous plugin
+
+### Version 3 migration
+
+The old `taskforge@yjj3019` installation does not automatically become the new ID. First use `codex plugin list --available --json` to confirm that the target marketplace publishes `taskforge-for-chatgpt` version 3.0.0. Keep the old installation until that version is available.
+
+Privately back up the installed-plugin list, existing plugin settings, and user modifications. Removal deletes that plugin's settings and cache, including edits made inside the cache. Preserve model, permission, role, and memory settings; do not reset the entire Codex home.
+
+Check each command before continuing. Keep the existing marketplace registration. The pack is unavailable between removal and installation.
+
+```text
+codex plugin marketplace upgrade yjj3019
+codex plugin list --marketplace yjj3019 --available --json
+codex plugin remove taskforge@yjj3019
+codex plugin add taskforge-for-chatgpt@yjj3019
+codex plugin list --marketplace yjj3019 --json
+```
+
+Confirm only the new ID is installed and enabled, restart the app, and test it in a new chat. Do not enable both IDs or a Python copy together. Review backed-up user changes before applying them selectively to the new installation.
+
+If installation fails, resolve the connection or permission error and retry the new ID. To roll back to 2.3.4, first confirm this marketplace registration belongs to this repository alone, then pin its previous commit. Omit the first removal if the new ID was never installed. Returning to the latest release later requires registering the marketplace with `--ref main` again.
+
+```text
+codex plugin remove taskforge-for-chatgpt@yjj3019
+codex plugin marketplace remove yjj3019
+codex plugin marketplace add yjj3019/ChatGPT --ref bd3d3843694caef0ff3682baf88a48f1d4ddd410
+codex plugin add taskforge@yjj3019
+```
+
+The Python installer stops before writing, even with `--force`, when a sibling `chatgpt-transfer/` or `taskforge/` has the old integrity manifest or matching skill ID. An unrelated directory with that name is not treated as an old installation. Back up the whole old pack and manually retire it outside every active skills root, then install and run `--check`. To recover, retire the new pack and return the saved old pack to its original location. Do not combine old and new manifests or overwrite a new home with old configuration. No automatic move or deletion is performed.
+
+### Older marketplace migration
 
 Run this only if `chatgpt-transfer@yjj3019-chatgpt` is installed. Renaming does not automatically update existing installs: remove the old plugin and marketplace registration, then install the new identity. Check each command succeeds before proceeding. The repository URL is unchanged.
 
@@ -99,10 +132,10 @@ Run this only if `chatgpt-transfer@yjj3019-chatgpt` is installed. Renaming does 
 codex plugin remove chatgpt-transfer@yjj3019-chatgpt
 codex plugin marketplace remove yjj3019-chatgpt
 codex plugin marketplace add yjj3019/ChatGPT --ref main
-codex plugin add taskforge@yjj3019
+codex plugin add taskforge-for-chatgpt@yjj3019
 ```
 
-The plugin is temporarily uninstalled during migration. Recover any failure before continuing the remaining steps, then restart the app and use TaskForge in a new chat. The Python installer keeps its `chatgpt-transfer/` name for compatibility.
+The plugin is temporarily uninstalled during migration. Recover any failure before continuing the remaining steps, then restart the app and use TaskForge for ChatGPT in a new chat. Python copies also require the version 3 migration above.
 
 ## Use in a ChatGPT Project
 
@@ -130,7 +163,7 @@ python3 scripts/install_pack.py --auto
 
 Identical installations are skipped and user files preserved. Changed, incomplete, or legacy installations are refused by default. Do not install concurrently to the same destination. This installer's `--check` does not verify marketplace installation status or publisher authenticity.
 
-When moving from Python installation to the marketplace, inspect the old destination and back up user-added files, then separately retire only the previous `chatgpt-transfer/` pack. Marketplace commands do not remove previous Python installations automatically.
+When moving from Python installation to the marketplace, inspect and back up the old destination, then retire that pack outside every active skills root. This applies to old `chatgpt-transfer/` and current `taskforge-for-chatgpt/` copies. Marketplace commands do not remove Python installations automatically.
 
 For a source ZIP, run `python scripts/validate_framework.py`. Source-mode `install_pack.py --check` requires a Git checkout. ZIP sources can still be installed using Python.
 
@@ -152,7 +185,7 @@ DEFAULT uses `pack_explorer`, `pack_runner`, and `pack_reviewer`, inheriting mod
 
 | State | When it applies | Model and delegation behavior |
 |---|---|---|
-| `DEFAULT` | A new conversation applying TaskForge | Preserve the current main model/effort and delegate only useful work to registered model-inheriting roles |
+| `DEFAULT` | A new conversation applying TaskForge for ChatGPT | Preserve the current main model/effort and delegate only useful work to registered model-inheriting roles |
 | `PRESET` | Explicit selection or re-enabling of fixed models after support/access checks | Use the optional fixed-model examples below. Instructions alone do not switch the running main model |
 | `SUSPENDED` | An explicit model choice or a request to use only one model | Stop all automatic delegation for that conversation. Inherited subagents require a separate user request |
 
@@ -171,7 +204,7 @@ Read only the operational sections linked by the skill; do not preload the full 
 
 ### Optional fixed models and automatic setup
 
-The table below and host-wide automatic setup are explicitly selected PRESET examples. After a one-time authorized setup, new conversations can request the fixed configuration without manually invoking TaskForge. Follow the [automatic setup procedure](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session): check the actual homes/roles and differences from existing settings, then merge only approved changes. Plugin installation/update alone does not modify personal settings.
+The table below and host-wide automatic setup are explicitly selected PRESET examples. After a one-time authorized setup, new conversations can request the fixed configuration without manually invoking TaskForge for ChatGPT. Follow the [automatic setup procedure](docs/codex-three-model-setup.md#automatic-policy-for-every-new-session): check the actual homes/roles and differences from existing settings, then merge only approved changes. Plugin installation/update alone does not modify personal settings.
 
 | Role | Settings | Scope |
 |---|---|---|
@@ -227,7 +260,7 @@ python scripts/check_release.py --base BASE_COMMIT
 
 A new branch's first push compares with the fetched default-branch tip. For a newly created default branch itself, only a parentless root commit is an initial distribution; existing history without an explicit comparison base fails the check. This checks version traceability; it neither publishes a release nor substitutes for live host validation.
 
-Use the [session-based three-model guide](docs/codex-three-model-setup.md) for the native Codex default. Actual execution requires model access and host role registration. Instructions cannot switch the running main model or reliably detect every UI model choice. If the host does not expose your selection, say **"use this model only"**; to restore inherited delegation, request **"re-enable TaskForge model-inheriting delegation"**. To opt into fixed models for this conversation, explicitly request **"re-enable the TaskForge three-model preset"**, subject to support/access checks. Settings changes require separate authorization and verification. ChatGPT and legacy Python entry points retain the current-model default.
+Use the [session-based three-model guide](docs/codex-three-model-setup.md) for the native Codex default. Actual execution requires model access and host role registration. Instructions cannot switch the running main model or reliably detect every UI model choice. If the host does not expose your selection, say **"use this model only"**; to restore inherited delegation, request **"re-enable TaskForge for ChatGPT model-inheriting delegation"**. To opt into fixed models for this conversation, explicitly request **"re-enable the TaskForge for ChatGPT three-model preset"**, subject to support/access checks. Settings changes require separate authorization and verification. ChatGPT and legacy Python entry points retain the current-model default.
 
 For Codex Memories setup or model updates, optionally read the [Memories maintenance guide](docs/codex-memories-maintenance.md). Its default example omits model IDs; apply only justified overrides after checking the installed version, supported keys, and access for each memory role. It covers unsupported-pin removal and default revalidation, error-specific stop conditions, and the difference between config and memory-state rollback. Installing the pack does not change user settings or memories. Report static checks separately from live host trials.
 

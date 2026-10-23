@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Install the ChatGPT/Codex transfer pack for local AI hosts.
+"""Install TaskForge for ChatGPT for local AI hosts.
 
 Python 3.11+, standard library only. Intended entry after:
   git clone https://github.com/yjj3019/ChatGPT.git && cd ChatGPT
 
 Preferred Codex usage is still opening this clone as a workspace so AGENTS.md
-loads. Skill-style hosts get a copy under <skills-root>/chatgpt-transfer/.
+loads. Skill-style hosts get a copy under <skills-root>/taskforge-for-chatgpt/.
 ChatGPT Project Instructions (web) cannot be fully automated; use --print-chatgpt.
 """
 from __future__ import annotations
@@ -23,11 +23,13 @@ import tempfile
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PACK_NAME = "chatgpt-transfer"
+PACK_NAME = "taskforge-for-chatgpt"
 REQUIRED_FILES = ("CHATGPT.md", "AGENTS.md", "README.md", "README.en.md", "LICENSE")
 REQUIRED_DIRS = ("docs", "prompts", "scripts")
 OPTIONAL_DIRS = ("tests",)
-MANIFEST_FILE = ".chatgpt-transfer-manifest.json"
+MANIFEST_FILE = ".taskforge-for-chatgpt-manifest.json"
+LEGACY_MANIFEST_FILE = ".chatgpt-transfer-manifest.json"
+LEGACY_PACK_NAMES = ("chatgpt-transfer", "taskforge")
 GENERATED_FILES = ("SKILL.md", "INSTALL_NOTE.md")
 # Use Windows rules on every host; Python 3.11/3.12 need the pathlib fallback.
 WINDOWS_IS_RESERVED = getattr(ntpath, "isreserved", lambda name: PureWindowsPath(name).is_reserved())
@@ -119,13 +121,13 @@ def pack_source_paths(with_tests: bool) -> list[tuple[str, Path]]:
 def skill_hint() -> str:
     """Render a narrow skill entry, not a second always-loaded runtime."""
     description = (
-        "Apply the chatgpt-transfer guidance when the user requests this pack "
+        "Apply TaskForge for ChatGPT guidance when the user requests this pack "
         "for a task or a setup review. Not for unrelated coding or writing."
     )
     return (
         "---\nname: " + json.dumps(PACK_NAME) + "\ndescription: "
         + json.dumps(description) + "\n---\n"
-        + """# ChatGPT / Codex Transfer Pack
+        + """# TaskForge for ChatGPT
 
 Use when this pack is requested, including explicit skill invocation. Do not
 replace the user's chosen workflow or apply the pack to unrelated tasks.
@@ -144,7 +146,7 @@ or access in a live client. Keep the current model and granted permissions.
 
 
 def validate_skill_metadata(content: str, *, expected_name: str = PACK_NAME) -> None:
-    """Check two JSON-quoted YAML scalars, preserving the legacy name by default."""
+    """Check two JSON-quoted YAML scalars against the requested installation ID."""
     lines = content.splitlines()
     if len(lines) < 5 or lines[0] != "---" or lines[3] != "---":
         raise ValueError("invalid SKILL.md frontmatter")
@@ -168,7 +170,7 @@ def bootstrap_note() -> str:
     """Short note at pack root pointing Codex users at AGENTS.md / clone workflow."""
     note = """# Installed pack bootstrap
 
-This directory is a copy of the ChatGPT/Codex transfer pack for skill-style hosts.
+This directory is a copy of TaskForge for ChatGPT for skill-style hosts.
 
 Distribution baseline: preserve recipient models, permissions, and settings.
 See docs/distribution-standard.md for model-inheriting role examples; installation
@@ -229,9 +231,11 @@ def _source_files(with_tests: bool) -> dict[str, str]:
     return files
 
 
-def _read_manifest(pack: Path) -> dict:
-    _safe_path(pack / MANIFEST_FILE)
-    manifest = json.loads((pack / MANIFEST_FILE).read_text(encoding="utf-8"))
+def _read_manifest(pack: Path, *, manifest_file: str = MANIFEST_FILE) -> dict:
+    _safe_path(pack / manifest_file)
+    if manifest_file != LEGACY_MANIFEST_FILE and (pack / LEGACY_MANIFEST_FILE).exists():
+        raise ValueError("Conflicting old and new integrity manifests; no files changed")
+    manifest = json.loads((pack / manifest_file).read_text(encoding="utf-8"))
     if (not isinstance(manifest, dict) or type(manifest.get("version")) is not int or manifest["version"] != 1
             or type(manifest.get("with_tests")) is not bool
             or not isinstance(manifest.get("files"), dict) or not manifest["files"]):
@@ -242,7 +246,7 @@ def _read_manifest(pack: Path) -> dict:
                 or any(part in {"", ".", ".."} or part.endswith((".", " "))
                        or WINDOWS_IS_RESERVED(part) for part in name.split("/"))
                 or any(ord(c) < 32 for c in name)
-                or name == MANIFEST_FILE or not isinstance(checksum, str)
+                or name in {MANIFEST_FILE, LEGACY_MANIFEST_FILE} or not isinstance(checksum, str)
                 or len(checksum) != 64 or any(c not in "0123456789abcdef" for c in checksum)):
             raise ValueError("invalid manifest path or checksum")
     required = (*REQUIRED_FILES, *GENERATED_FILES, "scripts/install_pack.py",
@@ -254,10 +258,40 @@ def _read_manifest(pack: Path) -> dict:
     return manifest
 
 
+def _reject_legacy_install(skills_root: Path) -> None:
+    """Identify old packs by their manifest or skill identity, without moving user files."""
+    for name in LEGACY_PACK_NAMES:
+        if name == PACK_NAME:
+            continue
+        legacy = skills_root / name
+        marker, entry = legacy / LEGACY_MANIFEST_FILE, legacy / "SKILL.md"
+        if not marker.exists() and not entry.exists():
+            continue
+        _safe_path(legacy)
+        if marker.exists():
+            _read_manifest(legacy, manifest_file=LEGACY_MANIFEST_FILE)
+        else:
+            _safe_path(entry)
+            lines = entry.read_text(encoding="utf-8").splitlines()
+            if not lines or lines[0] != "---" or "---" not in lines[1:]:
+                continue
+            metadata = lines[1:lines.index("---", 1)]
+            # User-edited descriptions must not hide a legacy skill identity.
+            if not any(line.partition(":")[0] == "name"
+                       and line.partition(":")[2].split(" #", 1)[0].strip().strip("\"'") == name
+                       for line in metadata):
+                continue
+        raise ValueError(f"Legacy pack detected at {legacy}. No files changed. "
+                         "Back up the complete directory and retire it outside all skill roots "
+                         "before installing the new ID; see the README migration procedure.")
+
+
 def verify_install(dest_pack: Path) -> list[str]:
     """Verify shipped content; unrelated user files are preserved and ignored."""
     try:
         _safe_path(dest_pack)
+        if dest_pack.name == PACK_NAME:
+            _reject_legacy_install(dest_pack.parent)
         manifest = _read_manifest(dest_pack)
     except (OSError, ValueError) as exc:
         return [f"invalid or missing integrity manifest: {exc}"]
@@ -302,6 +336,7 @@ def install_pack(skills_root: Path, *, with_tests: bool = False,
             raise ValueError(f"Destination is not a directory: {skills_root}")
         if dest.exists() and not dest.is_dir():
             raise ValueError(f"Pack destination is not a directory: {dest}")
+        _reject_legacy_install(skills_root)
         files = _source_files(with_tests)
         generated = {"SKILL.md": skill_hint(), "INSTALL_NOTE.md": bootstrap_note()}
         validate_skill_metadata(generated["SKILL.md"])
@@ -320,7 +355,7 @@ def install_pack(skills_root: Path, *, with_tests: bool = False,
         if dry_run:
             return dest
         skills_root.mkdir(parents=True, exist_ok=True)
-        work = Path(tempfile.mkdtemp(prefix=".chatgpt-transfer-", dir=skills_root))
+        work = Path(tempfile.mkdtemp(prefix=".taskforge-for-chatgpt-", dir=skills_root))
         stage, backup = work / "new", work / "old"
         published = False
         try:
@@ -431,7 +466,7 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     destination = parser.add_mutually_exclusive_group()
-    destination.add_argument("--dest", help="Parent skills/packs directory (pack lands in <dest>/chatgpt-transfer/)")
+    destination.add_argument("--dest", help="Parent skills/packs directory (pack lands in <dest>/taskforge-for-chatgpt/)")
     destination.add_argument(
         "--auto",
         action="store_true",
@@ -535,6 +570,12 @@ def main(argv: list[str] | None = None) -> int:
             fallback = Path.home() / FALLBACK_SKILLS_DIR
             print(f"No AI host detected — installing to shared location: {fallback}")
             targets = [("AGENTS.md compatible (fallback)", fallback)]
+        # Check every legacy location before any target can be changed.
+        try:
+            for _, root in targets:
+                _reject_legacy_install(root)
+        except (OSError, ValueError) as exc:
+            raise SystemExit(str(exc)) from exc
         summaries: list[str] = []
         for label, root in targets:
             dest = install_pack(root, with_tests=args.with_tests, dry_run=args.dry_run, force=args.force)

@@ -1,15 +1,15 @@
 ---
-name: "taskforge"
-description: "Apply TaskForge guidance when the user requests this pack for a task or a setup review. Not for unrelated coding or writing."
+name: "taskforge-for-chatgpt"
+description: "Apply TaskForge for ChatGPT guidance when the user requests this pack for a task or a setup review. Not for unrelated coding or writing."
 ---
-# TaskForge
+# TaskForge for ChatGPT
 
 Use when this pack is requested, including explicit skill invocation. Preserve
 the user's task, permissions, and existing workspace instructions.
 
 ## Session model policy
 
-For a new conversation applying TaskForge, preserve the current main model and
+For a new conversation applying TaskForge for ChatGPT, preserve the current main model and
 effort. DEFAULT uses registered model-inheriting roles; fixed Sol/Luna/Astra IDs
 are an explicit opt-in PRESET, not distribution defaults. Before choosing or
 running delegation, read only these operational sections:
@@ -32,7 +32,7 @@ Sol again. Keep the selected model and effort; do not invoke pinned Luna/Astra
 roles while suspended. Use inherited subagents only if separately requested.
 An explicit re-enable request restores the requested routing: DEFAULT for
 inherited delegation, PRESET only for an explicit fixed-model request. A new
-conversation applying TaskForge starts in DEFAULT
+conversation applying TaskForge for ChatGPT starts in DEFAULT
 unless a separately approved host-wide PRESET policy applies. A resumed
 conversation or compaction is not a new conversation. This host-wide exception
 is a separate opt-in; installation alone is not. Never persist this suspension

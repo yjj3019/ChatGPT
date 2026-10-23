@@ -32,12 +32,12 @@ class ThreeModelExamplesTest(unittest.TestCase):
                 self.assertTrue(config["developer_instructions"].strip())
 
     def test_native_entry_links_complete_session_policy(self):
-        skill = (ROOT / "skills/taskforge/SKILL.md").read_text(encoding="utf-8-sig")
+        skill = (ROOT / "skills/taskforge-for-chatgpt/SKILL.md").read_text(encoding="utf-8-sig")
         guide = (ROOT / "docs/codex-three-model-setup.md").read_text(encoding="utf-8-sig")
         self.assertIn("../../docs/codex-three-model-setup.md#session-policy", skill)
         section = guide.split("## Session Policy\n", 1)[1].split("\n## ", 1)[0]
         for event in (
-            "New conversation applying TaskForge", "including Sol",
+            "New conversation applying TaskForge for ChatGPT", "including Sol",
             "compaction", "resuming the same conversation",
             "Explicit request to re-enable", "first request",
         ):

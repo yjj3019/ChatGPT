@@ -5,7 +5,7 @@
   },
   "plugins": [
     {
-      "name": "taskforge",
+      "name": "taskforge-for-chatgpt",
       "source": {
         "source": "local",
         "path": "./"

@@ -1,5 +1,7 @@
 # Host Verification — 2026-10-16
 
+Historical record: names and IDs below identify the versions tested at the time. The current product is TaskForge for ChatGPT; see the [version 3 migration](../README.en.md#version-3-migration). These observations do not establish live 3.0.0 behavior.
+
 Sanitized observations from one authorized Windows environment using Codex CLI 0.163.0. These are evidence for that environment, not a minimum supported version or a guarantee for other recipients. Private account paths, page IDs, authentication data, raw conversations and logs are deliberately omitted.
 
 ## Automatic delegation

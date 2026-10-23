@@ -17,7 +17,7 @@ Do not use subagents for simple answers, tiny edits, or one-file mechanical chan
 
 ## Standard Codex Subagent Roles
 
-The read-only roles below describe behavior, not independent child sandbox enforcement. Start from `docs/distribution-standard.md` for model-inheriting, recipient-preserving examples. The operational sections of `docs/codex-three-model-setup.md` linked by the native skill apply to ordinary TaskForge delegation too. Its fixed-ID configuration examples are only for an explicitly selected Sol/Luna/Astra preset; do not preload setup details or activate fixed models for unrelated work.
+The read-only roles below describe behavior, not independent child sandbox enforcement. Start from `docs/distribution-standard.md` for model-inheriting, recipient-preserving examples. The operational sections of `docs/codex-three-model-setup.md` linked by the native skill apply to ordinary TaskForge for ChatGPT delegation too. Its fixed-ID configuration examples are only for an explicitly selected Sol/Luna/Astra preset; do not preload setup details or activate fixed models for unrelated work.
 
 - `orchestrator`: breaks complex work into independent tasks, assigns roles, merges results.
 - `planner`: read-only; turns requirements into vertical slices, acceptance criteria, test plan, and open questions.

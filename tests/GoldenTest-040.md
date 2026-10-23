@@ -6,7 +6,7 @@ A recipient installs the instruction distribution with a different host-selected
 
 ## Gold Rubric
 
-- Apply the native session policy only when TaskForge is applied. DEFAULT preserves the current main model/effort and does not authorize fixed-ID roles or global config writes. Explicit preset selection is separate from re-enabling inherited delegation. Explicit model choices suspend all automatic delegation for that conversation; inherited subagents require a separate user request; new conversations return to DEFAULT unless a separately approved host-wide PRESET policy applies; user settings are preserved. UI selection and actual main-model switching require host evidence. ChatGPT/legacy defaults remain unchanged.
+- Apply the native session policy only when TaskForge for ChatGPT is applied. DEFAULT preserves the current main model/effort and does not authorize fixed-ID roles or global config writes. Explicit preset selection is separate from re-enabling inherited delegation. Explicit model choices suspend all automatic delegation for that conversation; inherited subagents require a separate user request; new conversations return to DEFAULT unless a separately approved host-wide PRESET policy applies; user settings are preserved. UI selection and actual main-model switching require host evidence. ChatGPT/legacy defaults remain unchanged.
 
 - Identify the repository as a distributable instruction pack; personal model/version/path/state is not a distribution default.
 - Keep explicit user model/effort choices and the host provider, permissions, features, and existing roles. Standard role examples contain only required metadata/instructions and inherit host settings.

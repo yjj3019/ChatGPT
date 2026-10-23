@@ -551,14 +551,14 @@ class FrameworkCommandsTest(unittest.TestCase):
                                     "delegation contract missing")
 
     def test_skill_must_preserve_approved_host_wide_preset(self):
-        self.rewrite("skills/taskforge/SKILL.md",
+        self.rewrite("skills/taskforge-for-chatgpt/SKILL.md",
                      "unless a separately approved host-wide PRESET policy applies",
                      "without any host-wide exception")
         self.assert_failure(self.run_script("validate_framework.py"),
                             "missing approved host-wide PRESET exception")
 
     def test_skill_must_link_every_required_operational_section(self):
-        skill = self.root / "skills/taskforge/SKILL.md"
+        skill = self.root / "skills/taskforge-for-chatgpt/SKILL.md"
         original = skill.read_text(encoding="utf-8")
         for anchor in ("session-policy", "model-id-inheritance-priority", "when-not-to-delegate",
                        "astra-review-triggers", "context-packet-standard",

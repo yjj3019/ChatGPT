@@ -119,7 +119,7 @@ class ReleaseCheckTests(unittest.TestCase):
         self.assertIn("base=2.4.0", self.check(1, "refs/heads/baseline"))
 
 
-@unittest.skipIf((ROOT / ".chatgpt-transfer-manifest.json").is_file(),
+@unittest.skipIf((ROOT / ".taskforge-for-chatgpt-manifest.json").is_file(),
                  "CI workflow applies to the repository, not legacy skill copies")
 class WorkflowBaseTests(unittest.TestCase):
     def test_workflow_selects_explicit_base_without_shell_interpolation(self):
