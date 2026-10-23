@@ -8,11 +8,12 @@ New conversations applying the native Codex TaskForge for ChatGPT skill preserve
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (3.0.1)
+## Recent improvements (3.0.2)
 
 | Improvement | Current behavior |
 |---|---|
 | Name and ID migration | Use TaskForge for ChatGPT and the shared plugin, skill, and Python installation ID `taskforge-for-chatgpt`. Existing 2.x installations require the migration below |
+| Long-task harness | Criterion-level evidence/verdicts, observed-state resume, and separate sample/final artifact validation |
 | Skill display name | Add UI metadata that preserves `TaskForge for ChatGPT` capitalization in the skill row |
 | Model defaults | Preserve the current model/effort and prefer registered model-inheriting roles. Fixed models require explicit PRESET selection |
 | Operational loading | Read only the required operational sections linked by the skill; do not preload the full setup guide |
@@ -22,6 +23,8 @@ New conversations applying the native Codex TaskForge for ChatGPT skill preserve
 | Host role registration | Add DEFAULT personal-role registration, conflict preservation, fresh-process checks, and observed model-inheritance evidence |
 
 This summary describes the source version. Update an installed copy separately and check its version. The [live verification record](docs/host-verification-2026-10-18.md) separates 2.3.0 role-registration trials from installed 2.3.1 CLI/app trials. After the user reported restarting the app on 2026-10-19, the existing verification conversation reread the guidance, Explorer and Runner exited 0, and native records reconfirmed actual parent/child model and effort inheritance. The app's current model label was also observed; menu contents, selection-change detection, and automatic state resets were not tested. Version 2.3.2 documents this evidence; the live target was 2.3.1. The observations do not establish success outside the recorded environment or cover every behavior.
+
+See the [harness pattern adoption record](docs/ai-harness-adoption.md) for the comparison and excluded patterns. Small tasks do not require stage tables or new state files; model, delegation, memory, and installation policies remain unchanged. Structural checks of scenarios 041–043 do not establish live model behavior or visual QA success.
 
 ## Choose an installation method
 
