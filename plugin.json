@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "taskforge-for-chatgpt",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Task-scoped guidance for ChatGPT and Codex with model-inheriting delegation, optional Sol/Luna/Astra presets, and verified release versioning.",
   "author": {
     "name": "yjj3019",

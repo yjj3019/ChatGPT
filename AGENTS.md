@@ -1,6 +1,6 @@
 # Codex Working Rules
 
-Model-independent ChatGPT/Codex instruction distribution. Codex entry; `CHATGPT.md` is the ChatGPT alternative. Do not preload both. Guidance changes behavior, not weights or hidden reasoning.
+Model-independent guidance pack. Codex entry; ChatGPT: `CHATGPT.md`. Load one. Guidance changes behavior, not weights or hidden reasoning.
 
 ## Working Contract
 
@@ -38,6 +38,8 @@ Disclose missing optional guides; continue safely. Missing essential evidence, a
 
 ## Repository Checks
 
+For TaskForge source updates only, run [upstream review](docs/upstream-review.md) once per task.
+
 Python 3.11+, standard library only. From the repository root:
 
 ```text
@@ -47,4 +49,4 @@ python -m unittest discover -s tests -p "test_*.py"
 python scripts/measure_load.py
 ```
 
-Edit canonical docs, then run `python scripts/sync_runtime.py`. Preserve historical filenames. Save work here; Office outputs in `outputs/` and reusable scripts in `scripts/office/`. Version existing artifacts and reopen/render before delivery.
+Edit canonical docs; run `python scripts/sync_runtime.py`. Keep historical names. Work here; Office: `outputs/`; reusable scripts: `scripts/office/`. Version artifacts; reopen/render before delivery.

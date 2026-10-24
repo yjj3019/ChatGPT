@@ -8,10 +8,11 @@ Codex용 TaskForge for ChatGPT를 적용한 새 대화는 현재 모델·추론 
 
 **언어:** 한국어 | [English](README.en.md)
 
-## 최근 개선 사항 (3.0.3)
+## 최근 개선 사항 (3.0.4)
 
 | 개선 항목 | 현재 동작 |
 |---|---|
+| 참조 개선·자동 검토 | 적합한 기존 구현 우선, 근거 있는 코드 리뷰, Golden 046. 소스 변경 시 Ponytail·Karpathy 신규 커밋을 검토·반영·추적 |
 | 코딩 변경 계약 | 요구와 변경의 연결, 이번 변경이 만든 미사용 코드만 정리, 재현 가능한 버그의 실패 전·수정 후 검증. Golden 044·045 추가 |
 | 이름·ID 전환 | 제품명 `TaskForge for ChatGPT`, 플러그인·스킬·Python 설치 ID `taskforge-for-chatgpt`로 통일. 2.x 설치는 아래 전환 절차 필요 |
 | 장기 작업 하네스 | 인수 기준별 증거·판정, 현재 상태 기반 재개, 대표 샘플과 최종 전체 검증 분리 |
@@ -28,6 +29,12 @@ Codex용 TaskForge for ChatGPT를 적용한 새 대화는 현재 모델·추론 
 AI-Harness와 비교한 도입·제외 근거는 [하네스 패턴 도입 기록](docs/ai-harness-adoption.md)에 정리했습니다. 작은 작업에는 단계 표·새 상태 파일을 강제하지 않으며, 모델·위임·메모리·설치 정책은 유지합니다. 평가 사례 041–043의 구조 검사는 실제 모델 행동이나 시각 QA 통과를 의미하지 않습니다.
 
 [Karpathy-inspired 지침](https://github.com/multica-ai/andrej-karpathy-skills/tree/2c606141936f1eeef17fa3043a72095b4765b9c2)을 비교 검토해 코딩 규칙의 변경 추적성·정리 범위·결함을 잡는 회귀 검증을 보강했습니다. [044](tests/GoldenTest-044.md)·[045](tests/GoldenTest-045.md)는 무관한 기존 코드 삭제, 불필요한 질문, 결함을 놓치는 테스트를 평가합니다. 구조 검사 통과는 실제 모델의 행동 개선을 입증하지 않습니다.
+
+3.0.4 소스 개선: [Ponytail 5.3.2](https://github.com/DietrichGebert/ponytail/tree/09c434ab73ca43761c5d8b0c5d341926c2fba710)를 참고해 적합한 기존 구현 → 표준 라이브러리·플랫폼 → 설치된 의존성 순서와, 실제 흐름·예상 부하·도달 가능한 사례에 근거한 리뷰를 보강했습니다. [046](tests/GoldenTest-046.md)은 재사용·동시성 결함·근거 없는 지적을 평가합니다. 자동 활성화 훅·계측 UI는 도입하지 않았으며, upstream 벤치마크 수치를 TaskForge의 개선 효과로 주장하지 않습니다. 설치본도 3.0.4로 업데이트해야 이 변경이 적용됩니다.
+
+검토 범위·도입 판단·벤치마크 한계는 [Ponytail 비교 기록](docs/ponytail-adoption.md)에 정리했습니다.
+
+향후 TaskForge 소스 추가·변경·릴리스 작업에서는 [upstream 검토 절차](docs/upstream-review.md)에 따라 Ponytail과 Karpathy 저장소의 새 커밋을 확인하고, 적합한 개선을 검증 후 반영합니다. 검토 기준점·적용/제외 근거를 기록하며, 조회 실패를 변경 없음으로 처리하지 않습니다. 이 규칙은 업데이트를 수행하는 에이전트에 적용하며 별도 상시 감시 서비스는 생성하지 않습니다.
 
 ## 설치 방식 선택
 

@@ -2,28 +2,23 @@
 
 Use for debugging, implementation, and review.
 
-## Default Flow
+## Flow
 
-1. Find the shared cause; scan sibling callers.
+1. Find shared causes; scan sibling callers.
 2. State assumptions; clarify material scope/contract/safety/authority ambiguity; decide reversible details.
-3. Reproduce bugs when feasible; make the smallest root-cause fix.
-4. Run minimal relevant checks; report unrun checks and gaps.
-5. Check target path/workspace and diff: map hunks to the request/needed fixes; reject weakened tests, secrets, and generated noise.
+3. Reproduce bugs if feasible; fix the root cause.
+4. Run relevant checks; report unrun checks/gaps.
+5. Check workspace/target/diff: map hunks to requested/needed fixes; reject weakened tests, secrets, generated noise.
 
-## Required Report
+## Report
 
-```text
-Root cause: ...
-Change: ...
-Verification: command, result, gaps
-Caller scan: ...
-Risks: ...
-```
+Report root cause, change, verification (command/result/gaps), caller scan and risks.
 
 ## Rules
 
-- No one-off abstractions, speculative settings, or trivial-fix dependencies.
-- For cleanup, check callers; remove newly unused imports/variables/functions; report unrelated existing dead code without deleting it.
-- Test changed behavior; verify bugs fail-before/pass-after when feasible. Never weaken defect-sensitive assertions.
-- Do not call failed commands or edits in temporary/redirected copies successful.
+- Prefer suitable project code, then stdlib/platform, then installed dependencies. No one-off abstractions, speculative settings or trivial-fix dependencies.
+- Check callers; remove newly unused code only; report unrelated dead code.
+- Test behavior; feasible bugs fail-before/pass-after. Never weaken defect-sensitive assertions.
+- Failed commands or temporary/redirected-copy edits are not success.
 - Keep input/security checks; fix shared helpers when callers break.
+- Review flows and expected load; findings need a reachable case, impact and minimal fix.
