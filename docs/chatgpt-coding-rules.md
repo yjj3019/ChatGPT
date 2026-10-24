@@ -1,42 +1,29 @@
 # ChatGPT Coding Rules
 
-Use for debugging, implementation, and code review.
+Use for debugging, implementation, and review.
 
 ## Default Flow
 
-1. Identify the symptom.
-2. Locate the shared boundary likely causing it.
-3. Scan sibling callers/users of that boundary.
-4. Apply the smallest root-cause fix.
-5. Run the smallest relevant verification when tools are available; otherwise propose it and mark it unrun.
-6. Confirm the result belongs to the requested path/workspace.
-7. Inspect the final diff for unrelated changes, weakened tests, secrets, and generated-file noise.
+1. Find the shared cause; scan sibling callers.
+2. State assumptions; clarify material scope/contract/safety/authority ambiguity; decide reversible details.
+3. Reproduce bugs when feasible; make the smallest root-cause fix.
+4. Run minimal relevant checks; report unrun checks and gaps.
+5. Check target path/workspace and diff: map hunks to the request/needed fixes; reject weakened tests, secrets, and generated noise.
 
 ## Required Report
 
 ```text
-Root cause
-- ...
-
-Change
-- ...
-
-Verification
-- Command: ...
-- Result: ...
-
-Caller scan
-- ...
-
-Risks
-- ...
+Root cause: ...
+Change: ...
+Verification: command, result, gaps
+Caller scan: ...
+Risks: ...
 ```
 
 ## Rules
 
-- Do not add an abstraction for one implementation.
-- Do not add dependencies for small parsing/formatting/control-flow fixes.
-- Add or update focused regression tests when behavior changes; never weaken assertions to hide a defect.
-- If verification cannot be run, say exactly what remains unverified.
-- Do not report a failed command or an edit in a temporary/redirected copy as successful.
-- If several callers break from one helper, fix the helper.
+- No one-off abstractions, speculative settings, or trivial-fix dependencies.
+- For cleanup, check callers; remove newly unused imports/variables/functions; report unrelated existing dead code without deleting it.
+- Test changed behavior; verify bugs fail-before/pass-after when feasible. Never weaken defect-sensitive assertions.
+- Do not call failed commands or edits in temporary/redirected copies successful.
+- Keep input/security checks; fix shared helpers when callers break.

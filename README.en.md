@@ -8,10 +8,11 @@ New conversations applying the native Codex TaskForge for ChatGPT skill preserve
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (3.0.2)
+## Recent improvements (3.0.3)
 
 | Improvement | Current behavior |
 |---|---|
+| Coding change contract | Trace changes to the request, clean up newly unused code only, and verify fail-before/pass-after for reproducible bugs. Add Golden 044 and 045 |
 | Name and ID migration | Use TaskForge for ChatGPT and the shared plugin, skill, and Python installation ID `taskforge-for-chatgpt`. Existing 2.x installations require the migration below |
 | Long-task harness | Criterion-level evidence/verdicts, observed-state resume, and separate sample/final artifact validation |
 | Skill display name | Add UI metadata that preserves `TaskForge for ChatGPT` capitalization in the skill row |
@@ -25,6 +26,8 @@ New conversations applying the native Codex TaskForge for ChatGPT skill preserve
 This summary describes the source version. Update an installed copy separately and check its version. The [live verification record](docs/host-verification-2026-10-18.md) separates 2.3.0 role-registration trials from installed 2.3.1 CLI/app trials. After the user reported restarting the app on 2026-10-19, the existing verification conversation reread the guidance, Explorer and Runner exited 0, and native records reconfirmed actual parent/child model and effort inheritance. The app's current model label was also observed; menu contents, selection-change detection, and automatic state resets were not tested. Version 2.3.2 documents this evidence; the live target was 2.3.1. The observations do not establish success outside the recorded environment or cover every behavior.
 
 See the [harness pattern adoption record](docs/ai-harness-adoption.md) for the comparison and excluded patterns. Small tasks do not require stage tables or new state files; model, delegation, memory, and installation policies remain unchanged. Structural checks of scenarios 041–043 do not establish live model behavior or visual QA success.
+
+A comparison with the [Karpathy-inspired guidelines](https://github.com/multica-ai/andrej-karpathy-skills/tree/2c606141936f1eeef17fa3043a72095b4765b9c2) informed clearer coding rules for change traceability, cleanup ownership, and defect-specific regression evidence. Cases [044](tests/GoldenTest-044.md) and [045](tests/GoldenTest-045.md) assess unrelated dead-code deletion, unnecessary questions, and tests that miss the defect. Structural checks do not establish improved live model behavior.
 
 ## Choose an installation method
 
