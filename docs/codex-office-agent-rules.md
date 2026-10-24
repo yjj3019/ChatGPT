@@ -49,6 +49,7 @@ A sample pass does not verify the final artifact. After expansion, check the ful
 
 - Use 16:9 unless the user asks otherwise.
 - Keep one main message per slide.
+- For analytical or decision decks, prefer evidence-backed conclusion titles over generic topic labels. Preserve user-required titles and template conventions; covers, agendas and section dividers need not state conclusions. Never invent a fact or strengthen a claim merely to make the title decisive.
 - Include title/section/closing slides when building a deck from scratch.
 - Verify slide count and basic placeholder/text presence.
 - Visual rendering remains the final check when layout matters.

@@ -8,10 +8,11 @@ New conversations applying the native Codex TaskForge for ChatGPT skill preserve
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (3.0.4)
+## Recent improvements (3.0.5)
 
 | Improvement | Current behavior |
 |---|---|
+| Verification evidence | Bind checks to command/completion/content state; reject empty coverage and in-run state drift; distinguish provenance and guard prerequisites. Add Golden 047/048 and extend 043 |
 | Reference adoption and review | Suitable-code reuse, evidence-based code review and Golden 046. Review, adopt and track new Ponytail/Karpathy commits during source updates |
 | Coding change contract | Trace changes to the request, clean up newly unused code only, and verify fail-before/pass-after for reproducible bugs. Add Golden 044 and 045 |
 | Name and ID migration | Use TaskForge for ChatGPT and the shared plugin, skill, and Python installation ID `taskforge-for-chatgpt`. Existing 2.x installations require the migration below |
@@ -30,11 +31,13 @@ See the [harness pattern adoption record](docs/ai-harness-adoption.md) for the c
 
 A comparison with the [Karpathy-inspired guidelines](https://github.com/multica-ai/andrej-karpathy-skills/tree/2c606141936f1eeef17fa3043a72095b4765b9c2) informed clearer coding rules for change traceability, cleanup ownership, and defect-specific regression evidence. Cases [044](tests/GoldenTest-044.md) and [045](tests/GoldenTest-045.md) assess unrelated dead-code deletion, unnecessary questions, and tests that miss the defect. Structural checks do not establish improved live model behavior.
 
-Source improvement in 3.0.4: [Ponytail 5.3.2](https://github.com/DietrichGebert/ponytail/tree/09c434ab73ca43761c5d8b0c5d341926c2fba710) informed a preference for suitable project code, then standard library/platform features, then installed dependencies, and reviews grounded in actual flows, expected load and reachable cases. Case [046](tests/GoldenTest-046.md) assesses reuse, concurrency defects and unsupported findings. Activation hooks and metrics UI are excluded; upstream benchmark numbers are not evidence of TaskForge gains. Update an installed copy to 3.0.4 to load these changes.
+Source improvement in 3.0.4: [Ponytail 5.3.2](https://github.com/DietrichGebert/ponytail/tree/09c434ab73ca43761c5d8b0c5d341926c2fba710) informed a preference for suitable project code, then standard library/platform features, then installed dependencies, and reviews grounded in actual flows, expected load and reachable cases. Case [046](tests/GoldenTest-046.md) assesses reuse, concurrency defects and unsupported findings. Activation hooks and metrics UI are excluded; upstream benchmark numbers are not evidence of TaskForge gains. These changes are included in installed versions 3.0.4 and later.
 
 See the [Ponytail comparison record](docs/ponytail-adoption.md) for scope, adoption decisions and benchmark limitations.
 
 Future TaskForge source additions, changes and releases follow the [upstream review procedure](docs/upstream-review.md): check Ponytail and Karpathy for new commits, then verify and adopt suitable improvements. Record reviewed checkpoints and adoption/exclusion reasons; failed lookups are not evidence of no changes. This rule applies to the updating agent and does not create a separate monitoring service.
+
+Source update in 3.0.5: the [latest AI-Harness review](docs/ai-harness-adoption.md#re-review-of-the-evidence-gated-runner) informed reproducible stage checks, evidence tied to actual commands/completion/content state, empty-check and in-run-change detection, verification provenance and guard prerequisites. Golden 047/048 and 043 are expanded, with evidence-backed conclusion titles for analytical slides. No hooks, execution engine or host settings are adopted. Update an installed copy to 3.0.5 to load these changes.
 
 ## Choose an installation method
 
