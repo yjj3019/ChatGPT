@@ -1,6 +1,6 @@
 # Codex Working Rules
 
-Model-independent guidance pack. Codex entry; ChatGPT: `CHATGPT.md`. Load one. Guidance changes behavior, not weights or hidden reasoning.
+Model-independent pack. Codex entry; ChatGPT: `CHATGPT.md`. Load one. Changes behavior, not weights or hidden reasoning.
 
 ## Working Contract
 
@@ -38,7 +38,7 @@ Disclose missing optional guides; continue safely. Missing essential evidence, a
 
 ## Repository Checks
 
-For TaskForge source updates only, run [upstream review](docs/upstream-review.md) once per task.
+TaskForge source: [language](docs/language-policy.md); [upstream review](docs/upstream-review.md) once/task.
 
 Python 3.11+, standard library only. From the repository root:
 

@@ -78,7 +78,8 @@ class ThreeModelExamplesTest(unittest.TestCase):
             role = tomllib.loads((EXAMPLES / filename).read_text(encoding="utf-8"))
             self.assertIn(role["name"], policy)
         self.assertIn("이 대화에서는 선택한 모델만 사용해", policy)
-        self.assertIn("스킬 재호출", policy)
+        self.assertIn("Korean user override example", policy)
+        self.assertIn("skill reinvocation do not reset suspension", policy)
         guide = (ROOT / "docs/codex-three-model-setup.md").read_text(encoding="utf-8")
         self.assertIn("Choose one; do not append both", guide)
 
@@ -87,8 +88,15 @@ class ThreeModelExamplesTest(unittest.TestCase):
         instructions = role["developer_instructions"]
         for field in ("page_url", "title", "type", "summary", "files", "result", "next"):
             self.assertIn(field, instructions)
-        for boundary in ("dry-run", "저장 승인", "재조회", "맹목적으로 재시도하지", "원자성", "blocked"):
+        for boundary in ("dry-run", "approval to save", "re-read", "do not assume success or blindly retry",
+                         "Duplicate prevention is not atomic", "blocked"):
             self.assertIn(boundary, instructions)
+        for value in ("기능구현", "디버깅", "리팩토링", "설계", "이슈"):
+            self.assertIn(value, instructions)
+        for label in ("Localized contract", "Localized output contract", "(유형: {type})",
+                      "- 내용: {summary}", "- 변경 파일: {files}", "- 결과: {result}",
+                      "- 다음 작업: {next}"):
+            self.assertIn(label, instructions)
         for path in (EXAMPLES / "notion-recorder.toml", EXAMPLES / "AGENTS.auto.snippet.md",
                      ROOT / "docs/codex-notion-recording.md", ROOT / "docs/host-verification-2026-10-16.md",
                      ROOT / "docs/host-verification-2026-10-18.md"):

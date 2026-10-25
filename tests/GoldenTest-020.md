@@ -1,6 +1,8 @@
 # Golden Test 020: Proportionality Negative Control
 
 ## Scenario
+
+User request (Korean):
 ```text
 “서버가 재시작되었습니다”를 더 자연스럽게 고쳐줘.
 ```

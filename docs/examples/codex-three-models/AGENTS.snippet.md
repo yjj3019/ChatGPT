@@ -1,18 +1,16 @@
-
-
 <!-- BEGIN CODEX THREE MODEL DELEGATION -->
-## 선택형 Sol · Luna · Astra 작업 위임
+## Optional Sol · Luna · Astra delegation
 
-이 블록은 고정 모델 구성을 명시적으로 선택한 경우에만 설정하는 예제다. TaskForge for ChatGPT 기본값은 현재 모델을 유지하는 상속형 역할 분담이다.
+This example block is configured only after an explicit choice of a fixed-model configuration. TaskForge for ChatGPT defaults to inherited roles that preserve the current model.
 
-- 이 블록을 명시적으로 승인해 설정한 홈에서 TaskForge for ChatGPT를 적용한 새 대화에 선택한 고정 PRESET을 사용한다. 플러그인 자체의 DEFAULT로 해석하지 않는다. 사용자가 모델을 명시적으로 선택하거나 구성을 끄면 해당 대화가 끝날 때까지 모든 자동 위임을 중단하고 선택한 모델·추론 수준을 유지한다. 별도 요청이 있을 때만 등록된 상속형 하위 에이전트를 사용한다. Sol을 다시 선택해도 해제 상태를 유지하며, 상속형 위임만 재개하라는 요청에는 등록된 pack_explorer·pack_runner·pack_reviewer만 사용하고 현재 모델·추론 수준을 유지한다. 고정 PRESET은 명시적 재활성화 요청과 지원·접근 확인 후에만 재개한다. 같은 대화 재개·컨텍스트 압축은 상태를 초기화하지 않는다. 새 대화에서 TaskForge for ChatGPT를 적용하면 기본 구성으로 돌아간다. 해제 상태를 전역 설정에 저장하지 않는다.
-- UI 모델 선택은 호스트가 근거를 제공할 때만 인식한다. 감지할 수 없으면 "이 대화에서는 선택한 모델만 사용해"라고 명시하도록 안내한다. 현재 모델 ID만으로 수동 선택을 추정하지 않는다. 지침만으로 메인 모델이 전환되거나 역할 파일이 등록된다고 주장하지 않는다.
+- In a home where this block has been explicitly approved and configured, use the selected fixed PRESET for new conversations applying TaskForge for ChatGPT. Do not interpret it as the plugin's DEFAULT. If the user explicitly selects a model or disables the configuration, suspend all automatic delegation until that conversation ends and preserve the selected model and reasoning effort. Use registered inherited subagents only when separately requested. Selecting Sol again does not clear suspension. A request to resume inherited delegation only uses the registered pack_explorer, pack_runner, and pack_reviewer while preserving the current model and reasoning effort. Resume the fixed PRESET only after an explicit reactivation request and verification of support and access. Resuming or compacting the same conversation does not reset this state. Applying TaskForge for ChatGPT in a new conversation returns to the default configuration. Do not save suspension in global settings.
+- Recognize a UI model selection only when the host provides evidence. If it cannot be detected, ask the user to state the override explicitly. Korean user override example: "이 대화에서는 선택한 모델만 사용해" (use only the selected model in this conversation). Do not infer manual selection from the current model ID alone. Do not claim that instructions alone switch the main model or register role files.
 
-- 기본 메인 모델은 gpt-6.1-sol이다. 설계·구현·복잡한 디버깅·통합·최종 검토와 결정 책임은 메인 Sol이 유지한다. 기존 상위 지침과 프로젝트별 제약을 준수한다.
-- 파일·함수·심볼·사용처·호출 경로·문서 탐색은 luna_explorer(gpt-6-luna)에 우선 위임한다. 테스트·빌드·린트·타입 검사와 지정 로그 분석은 luna_runner(gpt-6-luna)에 우선 위임한다. 위임 비용이 더 큰 작은 작업은 메인이 직접 처리한다.
-- 호출 시 질문·경로·명령·작업 디렉터리·수용 기준을 좁혀 전달한다. 가능하면 새 컨텍스트로 필요한 근거만 제공하며 전체 대화나 긴 로그를 복제하지 않는다. 결과는 결론·파일:줄·핵심 근거·미검증 항목만 받고 중요한 사실은 Sol이 원본에서 확인한다.
-- 독립적인 작업만 병렬 실행한다. 동일 파일 동시 수정은 피한다. 전체 사용처 조사 등 누락이 위험한 작업은 검색 루트·패턴·제외·완전성 한계를 확인한다. 자식의 재위임은 금지한다.
-- astra_reviewer(gpt-6-astra)는 중요한 아키텍처·구현 방향 확정 직전, 또는 같은 오류의 수정과 재검증이 두 차례 연속 실패한 경우에만 호출한다. 두 번째 실패 뒤 추가 수정을 잠시 멈추고 코드·오류·두 차례 수정·핵심 가정만 제공한다. Astra는 독립 검토 근거만 반환하며 최종 결정은 Sol이 내린다. 별도 Advisor 기능을 가정하지 않는다.
-- Explorer·Astra는 수정하지 않는다. Runner는 지정 검증의 임시 파일·캐시·빌드 산출물 외에 소스·설정을 수정하지 않는다. 이 규칙은 행동 지침이며 에이전트별 독립 읽기 전용 샌드박스를 만들지 않는다. 모든 에이전트는 부모 세션의 권한·승인 정책을 상속한다. 엄격한 읽기 전용 격리가 필요하면 해당 작업을 부모부터 읽기 전용으로 설정한 별도 세션에서 수행한다.
-- 역할 파일 또는 모델이 인식되지 않으면 임의 모델 대체나 권한 확대를 하지 않는다. 실패를 보고하고 메인이 허용된 범위에서 직접 처리한다. 계정 접근·추론 수준·역할 인식은 버전이나 환경 변경 후 재확인한다.
+- The default main model is gpt-6.1-sol. Main Sol remains responsible for design, implementation, complex debugging, integration, final review, and decisions. Follow higher-priority instructions and project constraints.
+- Prefer luna_explorer(gpt-6-luna) for exploring files, functions, symbols, usages, call paths, and documentation. Prefer luna_runner(gpt-6-luna) for tests, builds, linting, type checks, and specified log analysis. The main agent handles small tasks when delegation costs more than it saves.
+- Narrow each assignment to its question, paths, commands, working directory, and acceptance criteria. Where possible, provide only the necessary evidence in a fresh context rather than copying the entire conversation or long logs. Request only conclusions, file:line references, key evidence, and unverified items; Sol checks important facts against the originals.
+- Run only independent tasks in parallel. Avoid simultaneous edits to the same file. For searches where omissions matter, such as all-usage investigations, check search roots, patterns, exclusions, and completeness limits. Children must not delegate further.
+- Invoke astra_reviewer(gpt-6-astra) only immediately before finalizing an important architecture or implementation direction, or after two consecutive unsuccessful fix-and-retest attempts for the same error. After the second failure, pause further changes and provide the code, error, both attempted fixes, and key assumptions. Astra returns independent review evidence only; Sol makes the final decision. Do not assume a separate Advisor feature exists.
+- Explorer and Astra must not edit. Runner must not edit source or configuration, except for temporary files, caches, and build outputs required by the specified verification. These are behavioral instructions, not an independent read-only sandbox for each agent. All agents inherit the parent's permissions and approval policy. If strict read-only isolation is needed, run the task in a separate session configured as read-only from the parent onward.
+- If a role file or model is not recognized, do not substitute another model or expand permissions. Report the failure and let the main agent handle the permitted work directly. Recheck account access, reasoning effort, and role recognition after version or environment changes.
 <!-- END CODEX THREE MODEL DELEGATION -->

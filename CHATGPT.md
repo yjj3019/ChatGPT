@@ -98,7 +98,7 @@ Apply these checks in proportion to the task.
 ## Intent Classifier
 
 - Choose the primary task row and matching guide sections; long tasks also use engineering Execution Shape.
-- Route by task object and intent, not generic words such as fix, error, 오류, or 수정. Fixing an RCA report remains RCA.
+- Route by task object and intent, not generic words such as fix/error (Korean examples: `오류`, `수정`). Fixing an RCA report remains RCA.
 - User output constraints override templates within the host hierarchy.
 - The full guide and single-paste fallback are alternative setups, not extra runtime layers.
 - Use `docs/fable5-pattern-bank-for-chatgpt.md` only for requested historical calibration.

@@ -1,38 +1,38 @@
-# Windows 및 Orca 환경 확인 사항
+# Windows and Orca environment checks
 
-이 문서는 TaskForge for ChatGPT 적용 시 Windows와 Orca 계정에서 관찰된 항목을 정리한다. 한 환경의 기록이며 모든 수신자에게 동일하게 적용되지 않는다. 최신 상태는 해당 호스트에서 다시 확인한다.
+This document summarizes observations from Windows and Orca accounts using TaskForge for ChatGPT. It records one environment; the findings do not apply equally to every recipient. Recheck the current state on the relevant host.
 
 ## CreateProcessWithLogonW 1326
 
-- 증상: 명령 실행 시 로그온 실패.
-- 관찰: 일부 재시도에서 성공한 사례가 있다. 근본 원인은 계정 권한 또는 보안 정책으로 추정되나 미확인이다.
-- 조치: 해당 프로세스 권한을 확인하고 실패 시 일반 사용자 세션에서 재시험한다. 팩은 권한을 확장하지 않는다.
+- Symptom: logon fails when running a command.
+- Observation: some retries have succeeded. Account permissions or security policy are suspected as the root cause, but this is unconfirmed.
+- Action: check the process permissions and, if it fails, retry in a standard user session. The pack does not expand permissions.
 
-## Hook 타임아웃
+## Hook timeouts
 
-- 기본 설정에서 10초 타임아웃이 보고된 사례가 있다.
-- 별도 진단에서 30초 예산으로 20/20 완료, 최대 14.549초를 관찰했다.
-- PermissionRequest와 Interrupt는 해당 시험에서 실행되지 않았다.
-- 조치: 호스트의 Hook 예산과 실제 실행 시간을 구분하여 기록한다. 팩은 호스트 Hook 설정을 변경하지 않는다.
+- A 10-second timeout has been reported with the default settings.
+- A separate diagnostic completed 20/20 runs with a 30-second budget; the longest observed run took 14.549 seconds.
+- PermissionRequest and Interrupt were not exercised in that test.
+- Action: record the host's Hook budget separately from the actual execution time. The pack does not change host Hook settings.
 
-## Orca 계정과 CODEX_HOME
+## Orca accounts and CODEX_HOME
 
-- Orca 계정은 기본 Codex와 다른 홈을 사용할 수 있다.
-- 전역 AGENTS.md가 심볼릭 링크로 연결된 경우 대상 파일을 한 번만 수정하고 링크를 유지한다.
-- 계정별로 역할 발견과 모델 가용성을 따로 확인한다.
+- An Orca account may use a different home from standard Codex.
+- If the global AGENTS.md is a symbolic link, edit the target file only once and preserve the link.
+- Check role discovery and model availability separately for each account.
 
-## 역할 발견
+## Role discovery
 
-- 새 프로세스에서만 역할 목록이 갱신되는 경우가 있다.
-- 기존 대화는 이전 역할 목록을 유지할 수 있다.
-- 역할 이름 호출 후 런타임 메타데이터(모델·노력 수준)를 확인한다. 자기 보고만으로 성공으로 기록하지 않는다.
+- In some cases, the role list refreshes only in a new process.
+- Existing conversations may retain the previous role list.
+- After invoking a role by name, check its runtime metadata (model and reasoning effort). Do not record success based on self-report alone.
 
-## 확인 절차
+## Verification procedure
 
-1. `codex --version`과 실제 사용 클라이언트 버전을 기록한다.
-2. 새 프로세스에서 역할 목록을 확인한다.
-3. 무해한 픽스처 읽기(Explorer)와 지정 명령 실행(Runner)을 수행하고 exit 코드를 기록한다.
-4. 보호 파일 해시를 전후로 비교한다.
-5. 실패 항목은 Validation Gap으로 표시하고 성공 주장 범위를 해당 환경으로 한정한다.
+1. Record `codex --version` and the version of the client actually in use.
+2. Check the role list in a new process.
+3. Perform a harmless fixture read (Explorer) and run a specified command (Runner), recording the exit codes.
+4. Compare protected-file hashes before and after.
+5. Mark failed items as Validation Gaps and limit success claims to that environment.
 
-이 항목들은 [2026-10-16 검증 기록](host-verification-2026-10-16.md)과 별도로 정리한 것이다.
+These items are documented separately from the [2026-10-16 verification record](host-verification-2026-10-16.md).

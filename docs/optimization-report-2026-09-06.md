@@ -1,63 +1,63 @@
-# ChatGPT·Codex 지침 5차 개선 리포트
+# Fifth-round ChatGPT and Codex instruction improvement report
 
-> 과거 변경의 근거를 보존한 보고서입니다. 아래 수치·모델 권고·검증 결과는 기록된 시점과 커밋에만 해당합니다. 현재 배포 기준은 [배포 표준](distribution-standard.md), 현재 검사 방법은 [README](../README.md)를 따르세요.
+> This report preserves the evidence behind historical changes. The figures, model recommendations, and verification results below apply only to the recorded date and commits. For current distribution requirements, follow the [distribution standard](distribution-standard.md); for current checks, follow the [README](../README.md).
 
-- 작업일: 2026-09-06
-- 대상: yjj3019/ChatGPT
-- 기준 커밋: `122793160b7fc0b5ec609b0ec7eb537aa0997134`
-- 방식: 지침 수정 → 정적·회귀 검증 → 결과 확인의 5차 반복
-- 범위: 모델 가중치 학습이나 파인튜닝이 아닌, 지침·라우팅·검증 체계 개선
+- Work date: 2026-09-06
+- Target: yjj3019/ChatGPT
+- Baseline commit: `122793160b7fc0b5ec609b0ec7eb537aa0997134`
+- Method: 5 rounds of instruction changes → static and regression checks → result review
+- Scope: improvements to instructions, routing, and verification, rather than model-weight training or fine-tuning
 
-## 차수별 결과
+## Results by round
 
-| 차수 | 확인한 문제 | 수정과 검증 |
+| Round | Problems identified | Changes and verification |
 |---|---|---|
-| 1 | 필수 원본 누락·생성 마커 오류에서 진단 중단; 읽기 전용 동기화 검사 없음 | 명시적 실패 보고, `--check`, 변경 없는 파일 보존과 일관된 줄바꿈. 회귀 테스트 6개 통과. |
-| 2 | ChatGPT 기본 진입 문구의 중복·과잉 절차·불명확한 사용자 지시 우선순위 | Core 압축, 선택 로딩, 필요한 작업만 중단하는 누락 자료 처리, 8,000자 유지보수 예산. 회귀 테스트 7개 통과. |
-| 3 | Codex의 광범위한 문서 진입과 테스트 수정 금지의 충돌 | 간결한 작업별 라우팅, 실행 가능한 검증 명령, 필요한 회귀 테스트 허용, 4,000자 예산. 회귀 테스트 8개 통과. |
-| 4 | 기본 지침을 바꿔도 복사용·통합 지침에 옛 규칙이 남음 | 같은 canonical 원본에서 세 배포 문서 생성, 원본 오류 시 쓰기 전 중단, 문서 간 차이 검사. 회귀 테스트 12개 통과. |
-| 5 | 작업명만 검사해 오배정 경로·비어 있는 평가 기준·누락된 테스트를 놓침 | 실제 경로와 평가 계약 검사, 오류 입력 회귀 테스트, Windows/Linux CI, 점수 기준과 실측 보고 규칙. 회귀 테스트 30개 및 구조·동기화 검증 통과. |
+| 1 | Diagnostics stopped on missing required sources or invalid generation markers; no read-only synchronization check | Explicit failure reporting, `--check`, preservation of unchanged files, and consistent line endings. 6 regression tests passed. |
+| 2 | Repetition, excessive procedure, and unclear precedence for user instructions in ChatGPT's default entry text | A shorter Core, selective loading, missing-material handling that blocks only the affected work, and an 8,000-character maintenance budget. 7 regression tests passed. |
+| 3 | Broad document loading in Codex conflicted with the prohibition on modifying tests | Concise task-specific routing, executable verification commands, permission for necessary regression tests, and a 4,000-character budget. 8 regression tests passed. |
+| 4 | Old rules remained in the copy-ready and integrated instructions after the default instructions changed | Three distribution documents generated from the same canonical sources, stopping before writes on source errors, and document-difference checks. 12 regression tests passed. |
+| 5 | Checking task names alone missed misrouted paths, empty evaluation criteria, and missing tests | Checks of actual paths and evaluation contracts, invalid-input regression tests, Windows/Linux CI, scoring criteria, and rules for reporting measured results. 30 regression tests and structural and synchronization checks passed. |
 
-## 지침량 측정
+## Instruction size measurements
 
-측정은 Git 기준 파일과 최종 파일을 UTF-8로 읽고 BOM을 제외한 뒤 줄바꿈을 LF로 통일하여 Python `len(text)`와 UTF-8 바이트 길이를 비교했다. 모델 토큰 수나 지연시간 측정이 아니다.
+The Git baseline files and final files were read as UTF-8, excluding the BOM and normalizing line endings to LF. Python `len(text)` and UTF-8 byte lengths were then compared. These are not measurements of model tokens or latency.
 
-| 진입 파일 | 이전 문자 수 | 이후 문자 수 | 감소율 |
+| Entry file | Characters before | Characters after | Reduction |
 |---|---:|---:|---:|
 | ChatGPT: CHATGPT.md | 12,150 | 7,914 | 34.9% |
 | Codex: AGENTS.md | 5,099 | 3,846 | 24.6% |
-| 복사용 안내 | 5,840 | 7,964 | 36.4% 증가 |
+| Copy-ready guide | 5,840 | 7,964 | 36.4% increase |
 
-UTF-8 바이트 기준으로 ChatGPT 진입 파일은 12,162 → 7,928바이트, Codex 진입 파일은 5,099 → 3,848바이트다.
+In UTF-8 bytes, the ChatGPT entry file changed from 12,162 → 7,928 bytes, and the Codex entry file from 5,099 → 3,848 bytes.
 
-복사용 지침은 최신 Core·권한·검증 규칙을 빠짐없이 포함하도록 보강했다. 통합 안내도 원본에서 생성하므로 전체 길이는 늘었지만, 기본 실행 경로에서 자동으로 읽지 않도록 명시했다. 모든 파일이 줄었다는 주장이 아니다. 문자 예산은 저장소의 유지보수 기준이며 제품의 입력 한도를 뜻하지 않는다.
+The copy-ready instructions were expanded to include all current Core, permission, and verification rules. The integrated guide is also generated from the sources, so its overall length increased, but it explicitly states that it is not loaded automatically on the default execution path. This is not a claim that every file became smaller. Character budgets are repository maintenance criteria, not product input limits.
 
-## 작업 중 추가된 원격 변경 통합
+## Integrating remote changes added during the work
 
-5개 개선 커밋을 완료한 뒤 원격 main이 `13e1e12`로 진행된 것을 발견했다. PR #4의 문맥 예산·측정 도구와 PR #5의 모델 선택 안내를 보존하여 통합했다. 이는 위 5차 반복 이후의 호환성 작업이다.
+After the five improvement commits were complete, remote main was found to have advanced to `13e1e12`. The context budgets and measurement tools from PR #4 and the model-selection guidance from PR #5 were preserved during integration. This was compatibility work after the five rounds above.
 
-- 원격의 Golden Test 027–031은 유지하고 본 작업의 새 테스트는 032–035로 배치했다.
-- 최종 검증 범위는 14개 작업 경로, 21개 필수 행동 시나리오, 37개 자동 회귀 테스트다.
-- 측정 도구의 standalone Core 중복 계산, 누락 파일/섹션의 0바이트 처리, 플랫폼별 바이트 기준을 수정했다. bytes/4는 미보정 추정이며 실사용 토큰이 아니라고 명시했다.
-- 모델 기본값은 날짜가 있는 권고로 보존했다. 동일 지침이 모델 간 동일 품질을 보장한다는 표현을 제거하고 가용성·변경 권한 확인 및 필요한 증거 수집을 허용했다.
-- 통합 전 원격 main의 문자 수는 CHATGPT.md 14,406자, AGENTS.md 4,083자였다. 표의 감소율은 작업 시작 기준이며, 동시 작업의 효과까지 본 작업 단독 성과로 해석하지 않는다.
-- 통합본 회귀 테스트 37개가 로컬 Python 3.14에서 통과했다. 문서 정리 후 구조·동기화 재검사도 통과했다.
+- Remote Golden Tests 027–031 were retained, and the new tests from this work were numbered 032–035.
+- The final verification scope covered 14 task paths, 21 required behavioral scenarios, and 37 automated regression tests.
+- The measurement tool was fixed to avoid counting standalone Core twice, treating missing files or sections as zero bytes, and using inconsistent byte criteria across platforms. The documentation clarified that bytes/4 is an uncalibrated estimate, not actual token usage.
+- Model defaults were preserved as dated recommendations. The claim that identical instructions guarantee identical quality across models was removed, and checks of availability and permission to make changes, along with necessary evidence collection, were allowed.
+- Before integration, remote main contained 14,406 characters in CHATGPT.md and 4,083 in AGENTS.md. The table's reduction percentages use the starting baseline; effects from concurrent work must not be attributed solely to this work.
+- All 37 regression tests in the integrated version passed locally on Python 3.14. Structural and synchronization rechecks also passed after the documentation cleanup.
 
-## 검증과 한계
+## Verification and limitations
 
-- 기존 구조 검사: 기준 저장소에서 통과했으나, 결함 주입 시 누락 원본은 예외로 진단이 중단되고 잘못된 라우팅은 통과했다.
-- 5차 최종 로컬 검사: Python 3.14에서 회귀 테스트 30개 통과, 13개 경로·16개 필수 시나리오 구조 검사 통과, 세 생성 문서 동기화 및 Python 구문 검사 통과.
-- 최종 독립 검토: 검토자 1명이 코드와 시나리오 020·023 및 최종 번호 032·033·034·035의 규칙을 대조했다. Critical/P1 회귀를 발견하지 못했으며, 잘못된 URL의 예외 처리와 보고서 표현을 수정했다. 이는 정적 검토이며 모델 행동 점수가 아니다.
-- GitHub CI: 통합 커밋 `eececaad5999761870663871f8e7afdeb797021d`의 [실행 34023599162](https://github.com/yjj3019/ChatGPT/actions/runs/34023599162)에서 Windows/Linux × Python 3.11/3.12의 4개 작업이 모두 통과했다. 이후 문서 변경은 각 커밋의 GitHub 체크로 추적한다.
-- Windows 제한 환경에서는 임시 폴더 접근 오류로 테스트가 실행되지 않았다. 허용된 별도 실행에서 임시 저장소 복사본으로 검증했으며, 이 환경 오류를 지침 성능 저하로 집계하지 않았다.
-- 통합 후 Golden Test 21개는 행동 평가 시나리오다. 구조 검사가 이 시나리오의 실제 모델 응답 성공을 증명하지 않는다.
-- 실제 ChatGPT/Codex 호스트에서 동일 모델·동일 설정으로 반복하는 통제 실험은 수행하지 않았다. 정확도·토큰·비용·응답 지연의 개선율은 미측정이다.
-- API 비용을 발생시키는 학습·벤치마크나 사용자 전역 설정 변경은 이 작업에 포함하지 않았다.
+- Existing structural check: passed on the baseline repository, but fault injection caused a missing source to stop diagnostics with an exception, while invalid routing passed.
+- Final local checks for round five: 30 regression tests passed on Python 3.14; structural checks passed for 13 paths and 16 required scenarios; synchronization of the three generated documents and Python syntax checks passed.
+- Final independent review: one reviewer compared the code against the rules in scenarios 020 and 023 and final-numbered scenarios 032, 033, 034, and 035. No Critical/P1 regressions were found; exception handling for invalid URLs and report wording were corrected. This was a static review, not a model behavior score.
+- GitHub CI: all four Windows/Linux × Python 3.11/3.12 jobs passed in [run 34023599162](https://github.com/yjj3019/ChatGPT/actions/runs/34023599162) for integration commit `eececaad5999761870663871f8e7afdeb797021d`. Subsequent documentation changes are tracked through each commit's GitHub checks.
+- Tests did not run in the restricted Windows environment because of temporary-folder access errors. Verification used a temporary repository copy in a separately authorized execution; the environment error was not counted as degraded instruction performance.
+- The 21 Golden Tests after integration are behavioral evaluation scenarios. Structural checks do not prove successful actual model responses to those scenarios.
+- No controlled experiment was performed through repeated runs on actual ChatGPT/Codex hosts with the same model and settings. Improvements in accuracy, tokens, cost, and response latency remain unmeasured.
+- This work did not include training or benchmarks that incur API costs, or changes to user-global settings.
 
-## 이후 평가 방법
+## Subsequent evaluation method
 
-`tests/Scorecard.md`의 동일 입력·별도 세션·최소 3회 짝지은 실험을 사용한다. 품질과 중대 실패를 먼저 비교하고, 실제 측정한 도구 호출·질문·토큰·시간을 함께 기록한다. 외부 문서의 지시문, 누락 자료, 안전한 코드 수정, 출력 형식, 게시 증거를 포함한 `tests/GoldenTest-032.md`부터 `tests/GoldenTest-035.md`까지를 회귀 평가에 활용한다.
+Use the procedure in `tests/Scorecard.md`: identical inputs, separate sessions, and at least 3 paired runs. Compare quality and major failures first, and record measured tool calls, questions, tokens, and time alongside them. Use `tests/GoldenTest-032.md` through `tests/GoldenTest-035.md` for regression evaluation, covering instructions in external documents, missing materials, safe code changes, output formats, and publication evidence.
 
-## 참고한 공식 지침
+## Official guidance consulted
 
-2026-09-06 확인: [AGENTS.md 적용 범위와 로딩](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [스킬의 선택적 로딩](https://learn.chatgpt.com/docs/build-skills), [명확한 지시와 작업 규모에 맞는 검증](https://developers.openai.com/api/docs/guides/latest-model). 이 문서는 설계 근거이며, 본 저장소에 대한 성능 벤치마크 결과는 아니다.
+Checked on 2026-09-06: [AGENTS.md scope and loading](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [selective skill loading](https://learn.chatgpt.com/docs/build-skills), and [clear instructions and verification proportional to task size](https://developers.openai.com/api/docs/guides/latest-model). These documents provided design rationale, not performance benchmark results for this repository.

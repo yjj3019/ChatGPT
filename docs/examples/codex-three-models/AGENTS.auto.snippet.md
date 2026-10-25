@@ -1,15 +1,15 @@
 <!-- BEGIN TASKFORGE AUTOMATIC THREE MODEL -->
-## 명시적으로 선택한 새 세션 Sol · Luna · Astra 위임
+## Explicitly selected Sol · Luna · Astra delegation for new sessions
 
-이 블록은 고정 모델 자동 구성을 승인한 홈의 선택형 예제다. 플러그인 설치의 DEFAULT는 현재 모델을 유지하는 상속형 역할 분담이다.
+This optional example block is for a home with an approved automatic fixed-model configuration. The plugin installation DEFAULT uses inherited roles and preserves the current model.
 
-- 이 Codex 홈의 새 대화에서는 TaskForge for ChatGPT를 수동 호출하지 않아도 아래 위임 정책을 기본 적용한다. 기존 상위 지침·프로젝트 제약·권한을 준수한다.
-- 기본 메인은 config.toml에 별도로 설정한 gpt-6.1-sol / medium이다. 메인이 설계·구현·통합·최종 판단을 맡는다. 지침만으로 실행 중인 모델을 바꿨다고 주장하지 않는다.
-- 독립적인 파일·심볼·문서 탐색은 luna_explorer에, 명령·경로·작업 디렉터리가 정해진 검증은 luna_runner에 우선 위임한다. 위임 비용이 더 큰 사소한 작업은 메인이 처리한다.
-- 중요한 설계·구현 방향 확정 직전 또는 같은 오류의 수정·재검증이 두 차례 연속 실패하면 astra_reviewer에 독립 검토를 맡긴다. 조건 없이 매번 호출하지 않는다.
-- 등록된 agent_type으로 호출하고 model·reasoning_effort 인자로 역할 설정을 덮어쓰지 않는다. Luna Explorer/high, Luna Runner/low, Astra/low를 사용한다. 자식은 재위임하지 않는다.
-- Explorer·Astra는 수정하지 않는다. Runner는 지정 검증의 임시 산출물 외에 소스·설정을 수정하지 않는다. 자식은 부모의 권한·승인 정책을 상속하며 별도 권한을 얻지 않는다.
-- 사용자가 모델을 명시적으로 선택하거나 “이 대화에서는 선택한 모델만 사용해”라고 하면 해당 대화의 모든 자동 위임을 중단한다. 별도 요청이 있을 때만 등록된 상속형 하위 에이전트를 사용한다. 상속형 위임만 재개하라는 요청에는 등록된 pack_explorer·pack_runner·pack_reviewer만 사용하고 현재 모델·추론 수준을 유지한다. 고정 PRESET은 명시적 재활성화 요청과 지원·접근 확인 후에만 재개한다. 같은 대화 재개·압축·앱 재시작·스킬 재호출은 중단 상태를 초기화하지 않고 새 대화에서는 기본으로 돌아간다.
-- UI 모델 선택은 호스트가 근거를 제공할 때만 인식한다. 현재 모델 ID만으로 수동 선택을 추정하거나 UI 선택·앱 재시작 자동 감지를 보장하지 않는다.
-- 역할·모델이 없으면 검증 공백을 보고하고 메인이 허용된 작업을 처리한다. 임의 모델 대체·설치·권한 확대는 하지 않는다. 완료는 실제 실행·종료 코드·호스트 모델 기록으로 판단한다.
+- Apply the delegation policy below by default in new conversations in this Codex home, even without manually invoking TaskForge for ChatGPT. Follow higher-priority instructions, project constraints, and permissions.
+- The default main is gpt-6.1-sol / medium, configured separately in config.toml. The main agent handles design, implementation, integration, and final decisions. Do not claim that instructions alone change the running model.
+- Prefer luna_explorer for independent file, symbol, and documentation exploration, and luna_runner for verification with specified commands, paths, and working directories. The main agent handles trivial work when delegation costs more than it saves.
+- Request independent review from astra_reviewer immediately before finalizing an important design or implementation direction, or after two consecutive unsuccessful fix-and-retest attempts for the same error. Do not invoke it unconditionally for every task.
+- Invoke registered agent_type roles without overriding their configuration through model or reasoning_effort arguments. Use Luna Explorer/high, Luna Runner/low, and Astra/low. Children must not delegate further.
+- Explorer and Astra must not edit. Runner must not edit source or configuration, except for temporary outputs required by the specified verification. Children inherit the parent's permissions and approval policy and receive no additional permissions.
+- Suspend all automatic delegation in the conversation if the user explicitly selects a model or gives an explicit override. Korean user override example: “이 대화에서는 선택한 모델만 사용해” (use only the selected model in this conversation). Use registered inherited subagents only when separately requested. A request to resume inherited delegation only uses the registered pack_explorer, pack_runner, and pack_reviewer while preserving the current model and reasoning effort. Resume the fixed PRESET only after an explicit reactivation request and verification of support and access. Resuming or compacting the same conversation, app restart, and skill reinvocation do not reset suspension; a new conversation returns to the default.
+- Recognize a UI model selection only when the host provides evidence. Do not infer manual selection from the current model ID alone or guarantee automatic detection of UI selection or app restart.
+- If a role or model is unavailable, report the verification gap and let the main agent handle permitted work. Do not substitute models, install anything, or expand permissions. Judge completion using actual execution, exit codes, and host model records.
 <!-- END TASKFORGE AUTOMATIC THREE MODEL -->

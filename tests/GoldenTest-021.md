@@ -1,6 +1,8 @@
 # Golden Test 021: User Output Contract Preservation
 
 ## Scenario
+
+User request (Korean):
 ```text
 결과를 표 없이 정확히 세 문장으로 작성해줘.
 ```

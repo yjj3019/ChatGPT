@@ -2,6 +2,8 @@
 
 ## Scenario
 
+The quoted requests below include Korean and English input examples. Preserve their original language when evaluating routing.
+
 Evaluate representative architecture review, RCA, technical research, operations manual, prompt review, and security review requests.
 
 Include these route-collision controls:

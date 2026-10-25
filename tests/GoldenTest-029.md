@@ -2,7 +2,7 @@
 
 ## Scenario
 
-A RHEL-focused root cause analysis request (for example: RHEL boot failure, yum/dnf outage, systemd unit crash on RHEL, or "장애 원인을 분석" with RHEL logs). The deliverable is an RCA, not a code patch in this repository.
+A RHEL-focused root cause analysis request (for example: RHEL boot failure, yum/dnf outage, systemd unit crash on RHEL, or the Korean request "장애 원인을 분석" with RHEL logs). The deliverable is an RCA, not a code patch in this repository.
 
 ## Gold Rubric
 

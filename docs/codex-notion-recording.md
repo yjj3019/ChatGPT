@@ -1,42 +1,42 @@
-# Luna/low 노션 기록 역할
+# Luna/low Notion recording role
 
-노션 기록 전담 모델은 `gpt-6-luna` / `low`를 사용합니다. 메인이 사실과 결론을 확정하고, 기록 역할은 전달받은 내용을 저장·재조회합니다. 이는 이 팩의 역할 선택이며 모든 노션 작업에 대한 성능 보장은 아닙니다. 공식 모델 안내는 Luna를 범위가 명확한 반복 작업에 적합한 모델로 설명합니다. [OpenAI Docs](https://developers.openai.com/api/docs/models/gpt-6-luna) (확인일 2026-10-16).
+The dedicated Notion recording role uses `gpt-6-luna` / `low`. The main agent confirms the facts and conclusions; the recording role saves the supplied content and reads it back. This is the pack's role selection, not a performance guarantee for every Notion task. The official model guide describes Luna as suitable for repetitive tasks with a clear scope. [OpenAI Docs](https://developers.openai.com/api/docs/models/gpt-6-luna) (checked on 2026-10-16).
 
-## 한 번 설정하기
+## One-time setup
 
-1. [호스트 설정 절차](codex-three-model-setup.md#configure-host-roles-safely)에 따라 실제 Codex 홈과 계정별 모델·도구 접근을 확인합니다.
-2. 기존 역할과 충돌하지 않는지 확인하고 [notion-recorder.toml](examples/codex-three-models/notion-recorder.toml)을 검토한 뒤 해당 홈의 `agents/`에 복사합니다. 기존 파일을 교체할 때는 차이를 확인하고 승인·비공개 백업을 거칩니다.
-3. 기존 역할에 프로젝트별 페이지가 고정돼 있다면 그대로 보존합니다. 이 배포 예제는 저장할 `page_url`을 매 요청에 받는 범용 예제이므로 기존 고정 대상 역할과 입력 계약이 다릅니다. 개인 설정을 이 예제로 자동 교체하지 마세요.
-4. 연결된 Notion 도구의 접근 범위를 확인하고 새 세션을 시작합니다. 설치·역할 등록만으로 쓰기 권한이나 저장 승인이 생기지는 않습니다.
+1. Follow the [host setup procedure](codex-three-model-setup.md#configure-host-roles-safely) to verify the actual Codex home and each account's model and tool access.
+2. Check for conflicts with existing roles, review [notion-recorder.toml](examples/codex-three-models/notion-recorder.toml), and copy it into that home's `agents/` directory. Before replacing an existing file, review the differences, obtain approval, and make a private backup.
+3. Preserve any project-specific page already fixed in an existing role. This distribution example is generic: it receives the destination `page_url` with each request, so its input contract differs from an existing role with a fixed destination. Do not automatically replace personal settings with this example.
+4. Verify the connected Notion tools' access scope and start a new session. Installing the pack or registering a role does not grant write access or approval to save content.
 
-기본 Codex와 Orca가 다른 Codex 홈을 사용하면 각각 확인합니다. 같은 전역 지침을 심볼릭 링크로 공유한다면 연결 대상을 한 번만 수정하고 링크를 보존합니다. 팩 설치·갱신은 이 절차를 자동 실행하지 않습니다.
+If standard Codex and Orca use different Codex homes, check each separately. If they share global instructions through a symbolic link, edit the target only once and preserve the link. Installing or updating the pack does not run this procedure automatically.
 
-## 기록 위임
+## Delegate recording
 
-메인이 확정하는 입력은 **대상 1개와 기록 필드 6개**입니다.
+The main agent confirms **one destination and six record fields**.
 
-| 입력 | 의미 |
+| Input | Meaning |
 |---|---|
-| `page_url` | 사용자가 승인한 기존 Notion 페이지 |
-| `title` | 작업 제목 |
-| `type` | 기능구현·디버깅·리팩토링·설계·이슈 중 하나 |
-| `summary` | 확인된 변경 내용 |
-| `files` | 공개해도 되는 변경 파일·요점 |
-| `result` | 검증 근거에 맞는 완료·진행·차단 상태 |
-| `next` | 다음 작업 |
+| `page_url` | An existing Notion page approved by the user |
+| `title` | Task title |
+| `type` | One of the Korean input-contract values: `기능구현` (feature implementation), `디버깅` (debugging), `리팩토링` (refactoring), `설계` (design), or `이슈` (issue) |
+| `summary` | Confirmed changes |
+| `files` | Changed files and key points that may be disclosed |
+| `result` | Completion, in-progress, or blocked status supported by verification evidence |
+| `next` | Next task |
 
-역할 호출은 `agent_type="notion-recorder"`를 사용하고 model·reasoning_effort 인자를 생략합니다. URL이 있다는 사실만으로 저장 승인이 성립하지는 않습니다. 메인이 해당 페이지에 해당 내용을 기록하도록 승인받았는지 확인하고, 원문 대화·전체 diff·인증 파일은 넘기지 않습니다. 메인은 반환된 링크와 검증 결과를 확인합니다. `luna_runner`의 검증 전용 범위는 넓히지 않습니다.
+Invoke the role with `agent_type="notion-recorder"` and omit the model and reasoning_effort arguments. A URL alone does not establish approval to save content. The main agent must confirm approval to record that content on that page; do not pass the original conversation, the entire diff, or authentication files. The main agent checks the returned link and verification result. Do not expand `luna_runner` beyond its verification-only scope.
 
-자동 라우팅을 원하면 기존 전역 지침에 아래 한 줄을 검토·추가합니다. 중복 추가하지 말고 [세션별 수동 선택](codex-three-model-setup.md#session-policy) 규칙도 유지합니다.
+For automatic routing, review and add the following line to the existing global instructions. Do not add it twice, and retain the [manual per-session selection](codex-three-model-setup.md#session-policy) rule.
 
-> 승인된 노션 기록은 메인이 page_url과 확정한 6개 필드를 notion-recorder에 전달한다. 역할 설정을 모델 인자로 덮어쓰지 않는다. 대상이 없으면 저장하지 않으며, 반환 링크와 재조회 결과를 확인한다. 해당 대화에서 단일 모델을 명시적으로 선택했다면 고정 Luna 기록 위임도 중단한다.
+> For approved Notion recording, the main agent passes page_url and the six confirmed fields to notion-recorder. Do not override the role configuration with model arguments. Do not save without a destination; check the returned link and read-back result. If the user explicitly selects a single model for the conversation, also suspend delegation to the fixed Luna recording role.
 
-## 검증과 복원
+## Verification and rollback
 
-먼저 dry-run으로 6필드 보존, Luna/low 실제 모델 기록, 외부 도구·파일 쓰기 미호출을 확인합니다. 그다음 사용자가 승인한 페이지에 필요한 이력 한 건을 저장하고 재조회합니다. 같은 제목·내용의 중복, Notion 표시 서식과 실제 값, 잘린 조회·알 수 없는 블록 등 검증 공백을 구분합니다. 쓰기 응답이 모호하면 재조회 없이 다시 저장하지 않습니다.
+First run a dry run to check that all six fields are preserved, the actual Luna/low model is recorded, and no external tools or file writes are invoked. Then save one required history entry on a user-approved page and read it back. Distinguish duplicate titles and content, Notion display formatting versus actual values, and verification gaps such as truncated reads or unknown blocks. If a write response is ambiguous, do not save again without reading it back.
 
-중복 확인은 지침 수준이며 원자성을 보장하지 않습니다. 동시 호출·조회 지연·응답 유실이 있으면 결과가 불명확할 수 있습니다. 기존 중복을 자동 삭제·수정하지 말고 확인된 상태와 한계를 메인에 보고합니다.
+Duplicate checks are instruction-level checks and do not guarantee atomicity. Concurrent calls, read delays, or lost responses can leave the outcome unclear. Do not automatically delete or modify existing duplicates; report the confirmed state and limitations to the main agent.
 
-복원할 때는 추가한 라우팅 줄과 역할만 제거하거나 백업과 현재 변경을 대조해 복구합니다. 이후의 사용자 변경을 덮어쓰지 마세요. 저장된 이력 삭제나 페이지 전체 복원은 별도 승인이 필요한 작업입니다.
+To roll back, remove only the added routing line and role, or compare the backup with current changes before restoring. Do not overwrite later user changes. Deleting saved history or restoring an entire page requires separate approval.
 
-[2026-10-16 호스트 검증 기록](host-verification-2026-10-16.md)에서는 개인 OVE 고정 대상 역할로 실제 저장 한 건을 확인했습니다. 위 범용 page_url 예제의 정적 검사와 개인 역할의 live 검증은 서로 다른 근거입니다. 다른 프로젝트·Orca 전용 Notion 연결·비용·속도는 별도 검증 대상입니다.
+The [2026-10-16 host verification record](host-verification-2026-10-16.md) confirmed one actual save through a personal role with a fixed OVE destination. Static checks of the generic page_url example above and live verification of the personal role provide different evidence. Other projects, Orca-specific Notion connections, cost, and speed require separate verification.
