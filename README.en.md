@@ -8,7 +8,9 @@ New conversations applying the native Codex TaskForge for ChatGPT skill preserve
 
 **Language:** [한국어](README.md) | English
 
-## Recent improvements (3.0.5)
+## Recent improvements (3.0.6)
+
+The [re-review](docs/ai-harness-adoption.md#platform-and-test-hardening-re-review) of AI-Harness `6bc8e25` adds actual-shell prerequisite/path checks and paired rejection/acceptance plus integration checks for guards. Distinguish coverage from defect detection and scripted simulation from live agent execution. Golden 047/048 are extended; update an installed copy to 3.0.6 to load these changes.
 
 | Improvement | Current behavior |
 |---|---|

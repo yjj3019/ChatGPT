@@ -8,7 +8,9 @@ Codex용 TaskForge for ChatGPT를 적용한 새 대화는 현재 모델·추론 
 
 **언어:** 한국어 | [English](README.en.md)
 
-## 최근 개선 사항 (3.0.5)
+## 최근 개선 사항 (3.0.6)
+
+AI-Harness `6bc8e25`를 [재검토](docs/ai-harness-adoption.md#platform-and-test-hardening-re-review)하여 실제 셸의 도구·경로 검증, 가드의 차단·허용 사례 및 연동 검증 원칙을 보강했습니다. 커버리지와 결함 탐지, 스크립트 시뮬레이션과 실제 에이전트 실행을 구분합니다. Golden 047·048을 확장했으며 설치본도 3.0.6으로 업데이트해야 이 변경이 적용됩니다.
 
 | 개선 항목 | 현재 동작 |
 |---|---|
