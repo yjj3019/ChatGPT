@@ -89,7 +89,7 @@ Apply these checks in proportion to the task.
 | Operations manual or SOP | `docs/chatgpt-engineering-task-rules.md` | None |
 | Prompt review | `docs/chatgpt-engineering-task-rules.md` | None |
 | Security review | `docs/chatgpt-engineering-task-rules.md` | None |
-| Meeting notes, presentation, or executive summary | `docs/chatgpt-knowledge-work-rules.md` | None |
+| Meeting, slides, summary, PDF, HWPX or Korean writing | `docs/chatgpt-knowledge-work-rules.md` | None |
 | RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic | `docs/chatgpt-domain-packs.md` (matching section only) | Combine with the primary task row |
 | Model selection / routing advice | `docs/chatgpt-codex-model-routing.md` | None |
 | General answer calibration | Core Runtime only | None |

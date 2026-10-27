@@ -134,7 +134,7 @@ Static repository checks do not replace live smoke tests. [Surface/model checks]
 | Implementation, debugging and code review | [Coding](docs/chatgpt-coding-rules.md) |
 | Architecture, RCA, research, SOP and security | [Engineering](docs/chatgpt-engineering-task-rules.md) — matching section only |
 | Infrastructure and technical domains | [Domain packs](docs/chatgpt-domain-packs.md) — matching section only |
-| Meetings, presentations and executive summaries | [Knowledge work](docs/chatgpt-knowledge-work-rules.md) |
+| Meetings, presentations, executive summaries and PDF translation | [Knowledge work](docs/chatgpt-knowledge-work-rules.md) |
 | Proposals, blogs and Office | [Proposals](docs/chatgpt-proposal-review-rules.md) · [Blogs](docs/chatgpt-blog-rules.md) · [Office](docs/codex-office-agent-rules.md) |
 | Models, operations and delegation | [Model selection](docs/chatgpt-codex-model-routing.md) · [Operations](docs/codex-operations-rules.md) · [Subagents](docs/codex-subagent-rules.md) · [Team gates](docs/codex-team-agent-rules.md) |
 | Optional integrations | [Memories](docs/codex-memories-maintenance.md) · [Notion](docs/codex-notion-recording.md) |

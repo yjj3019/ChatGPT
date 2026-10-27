@@ -136,12 +136,31 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.rewrite("CHATGPT.md", row, "")
         self.assert_failure(self.run_script("validate_framework.py"), "missing task-map rows")
 
+    def test_pdf_translation_route_cannot_point_to_another_guide(self):
+        task = "Meeting, slides, summary, PDF, HWPX or Korean writing"
+        self.rewrite("CHATGPT.md", f"| {task} | `docs/chatgpt-knowledge-work-rules.md` |",
+                     f"| {task} | `docs/chatgpt-blog-rules.md` |")
+        self.assert_failure(self.run_script("validate_framework.py"), "incorrect required route")
+
+
+    def test_pdf_translation_section_is_required(self):
+        self.rewrite("docs/chatgpt-knowledge-work-rules.md", "## PDF Translation", "## Other")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing or empty PDF Translation")
+
+    def test_hwpx_document_section_is_required(self):
+        self.rewrite("docs/chatgpt-knowledge-work-rules.md", "## HWPX Documents", "## Other")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing or empty HWPX Documents")
+
+    def test_korean_writing_section_is_required(self):
+        self.rewrite("docs/chatgpt-knowledge-work-rules.md", "## Korean Writing Review", "## Other")
+        self.assert_failure(self.run_script("validate_framework.py"), "missing or empty Korean Writing Review")
+
     def test_missing_golden_test_is_rejected(self):
         (self.root / "tests/GoldenTest-016.md").unlink()
         self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 016")
 
     def test_harness_and_coding_golden_tests_are_required(self):
-        for test_id in ("041", "042", "043", "044", "045", "046", "047", "048"):
+        for test_id in ("041", "042", "043", "044", "045", "046", "047", "048", "049", "050"):
             with self.subTest(test_id=test_id):
                 path = self.root / f"tests/GoldenTest-{test_id}.md"
                 original = path.read_bytes()

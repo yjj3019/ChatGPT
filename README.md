@@ -134,7 +134,7 @@ Python의 `chatgpt-transfer/`·`taskforge/` 설치는 전체 백업 후 모든 �
 | 구현·디버깅·코드 리뷰 | [코딩 규칙](docs/chatgpt-coding-rules.md) |
 | 아키텍처·원인 분석·조사·절차서·보안 | [엔지니어링](docs/chatgpt-engineering-task-rules.md) — 해당 섹션만 |
 | 인프라·기술 도메인 | [도메인 팩](docs/chatgpt-domain-packs.md) — 해당 섹션만 |
-| 회의·발표·경영 요약 | [지식 작업](docs/chatgpt-knowledge-work-rules.md) |
+| 회의·발표·경영 요약·PDF 번역 | [지식 작업](docs/chatgpt-knowledge-work-rules.md) |
 | 제안서·블로그·오피스 문서 | [제안서](docs/chatgpt-proposal-review-rules.md) · [블로그](docs/chatgpt-blog-rules.md) · [오피스 문서](docs/codex-office-agent-rules.md) |
 | 모델·운영·위임 | [모델 선택](docs/chatgpt-codex-model-routing.md) · [운영](docs/codex-operations-rules.md) · [서브에이전트](docs/codex-subagent-rules.md) · [팀 게이트](docs/codex-team-agent-rules.md) |
 | 선택형 연동 | [메모리 관리](docs/codex-memories-maintenance.md) · [노션 기록](docs/codex-notion-recording.md) |

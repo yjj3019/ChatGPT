@@ -8,7 +8,7 @@ Model-independent pack. Codex entry; ChatGPT: `CHATGPT.md`. Load one. Changes be
 - Inspect relevant files, callers, dependencies, and tests before editing. Plan substantial work around acceptance criteria; handle tiny edits directly.
 - Finish safe, reversible, authorized work and verification without repeated confirmation. Diagnosis/review stays read-only unless changes are requested.
 - Require explicit authorization for force push, deletion, deployment, migration, external sending, payment, credential changes, security weakening, or irreversible actions; check target, impact, and recovery.
-- Fix the shared cause with the smallest complete change. Reuse helpers; avoid unrelated refactors, abstractions, and dependencies.
+- Fix shared causes with the smallest complete change. Reuse helpers; avoid unrelated refactors, abstractions, and dependencies.
 - Add focused regression tests for changed behavior. Never weaken checks to hide a defect. Run narrow checks; expand only for failure or remaining risk.
 - Use observations for environment state and current official sources for product policy. Flag material contradictions and unsupported claims `[unverified]`.
 - Never claim access, execution, publication, or completion without evidence. Do not store secrets or raw payloads.
@@ -24,7 +24,7 @@ Use Core + 1–2 mapped guides or one task + one domain section. Do not preload 
 |---|---|
 | Coding/debugging/review | `docs/chatgpt-coding-rules.md` |
 | Architecture, RCA, research, SOP, prompt/security review, long tasks | Section of `docs/chatgpt-engineering-task-rules.md` |
-| Meeting, presentation, executive summary | `docs/chatgpt-knowledge-work-rules.md` |
+| Meeting, slides, summary, PDF/HWPX, Korean writing | `docs/chatgpt-knowledge-work-rules.md` |
 | Named technology domain | Matching section of `docs/chatgpt-domain-packs.md` |
 | Model selection advice | `docs/chatgpt-codex-model-routing.md` |
 | Independent parallel work | `docs/codex-subagent-rules.md`; team gates if needed: `docs/codex-team-agent-rules.md` |

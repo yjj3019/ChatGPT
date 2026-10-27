@@ -381,6 +381,9 @@ def install_pack(skills_root: Path, *, with_tests: bool = False,
                 raise ValueError("Staged verification failed: " + "; ".join(problems))
             _safe_path(dest)
             if dest.exists():
+                if not force:
+                    raise ValueError("Destination appeared during installation; retry without "
+                                     "--force to preserve existing files")
                 dest.rename(backup)
             try:
                 stage.rename(dest)

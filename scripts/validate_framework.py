@@ -35,14 +35,14 @@ EXPECTED_TASKS = {
     "Operations manual or SOP": "docs/chatgpt-engineering-task-rules.md",
     "Prompt review": "docs/chatgpt-engineering-task-rules.md",
     "Security review": "docs/chatgpt-engineering-task-rules.md",
-    "Meeting notes, presentation, or executive summary": "docs/chatgpt-knowledge-work-rules.md",
+    "Meeting, slides, summary, PDF, HWPX or Korean writing": "docs/chatgpt-knowledge-work-rules.md",
     "RHEL/OpenShift/Kubernetes/Linux/Ansible/Satellite/Enterprise Architecture/AI infrastructure/EV topic": "docs/chatgpt-domain-packs.md",
     "Model selection / routing advice": "docs/chatgpt-codex-model-routing.md",
     "General answer calibration": None,
     "One-shot copy/paste setup": "docs/chatgpt-5.5-all-in-one-instructions.md",
 }
 EXPECTED_GOLDEN_MIN = 15
-EXPECTED_GOLDEN_MAX = 48
+EXPECTED_GOLDEN_MAX = 50
 EXPECTED_TEST_IDS = {f"{number:03d}" for number in range(EXPECTED_GOLDEN_MIN, EXPECTED_GOLDEN_MAX + 1)}
 HEAVY_FILES = (
     "docs/chatgpt-transfer-instructions.md",
@@ -213,6 +213,7 @@ def validate_loading_policy(documents: dict[Path, str], errors: list[str]) -> No
     for relative, headings in {
         "CHATGPT.md": ("Autoload Protocol", "Context Budget", "Intent Classifier"),
         "AGENTS.md": ("Context Budget",),
+        "docs/chatgpt-knowledge-work-rules.md": ("PDF Translation", "HWPX Documents", "Korean Writing Review"),
     }.items():
         text = documents.get(ROOT / relative, "")
         for heading in headings:

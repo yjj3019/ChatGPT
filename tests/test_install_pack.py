@@ -502,6 +502,46 @@ class SafeInstallTests(unittest.TestCase):
         self.assertEqual(before, self.snapshot())
         self.assertIn("Unchanged", self.out.getvalue())
 
+    def test_no_force_preserves_destination_created_during_staging(self):
+        verify = install_pack.verify_install
+        for valid_pack in (False, True):
+            with self.subTest(valid_pack=valid_pack):
+                self.root = self.base / f"late-{valid_pack}"
+                self.pack = self.root / install_pack.PACK_NAME
+                before = {}
+
+                def publish_competitor(stage):
+                    problems = verify(stage)
+                    if valid_pack:
+                        with patch.object(install_pack, "verify_install", verify):
+                            self.install()
+                    else:
+                        self.pack.mkdir()
+                    (self.pack / "user.txt").write_bytes(b"keep concurrent user data")
+                    before.update(self.snapshot())
+                    return problems
+
+                with patch.object(install_pack, "verify_install", publish_competitor):
+                    with self.assertRaisesRegex(SystemExit, "Destination appeared"):
+                        self.install()
+                self.assertEqual(before, self.snapshot())
+                self.assertEqual(list(self.root.iterdir()), [self.pack])
+
+    def test_no_force_preserves_destination_created_at_publish(self):
+        rename = Path.rename
+
+        def publish_competitor(stage, destination):
+            if stage.name == "new" and destination == self.pack:
+                self.pack.mkdir()
+                (self.pack / "user.txt").write_bytes(b"keep late user data")
+            return rename(stage, destination)
+
+        with patch.object(Path, "rename", publish_competitor):
+            with self.assertRaises(SystemExit):
+                self.install()
+        self.assertEqual(self.snapshot(), {"user.txt": b"keep late user data"})
+        self.assertEqual(list(self.root.iterdir()), [self.pack])
+
     def test_modified_or_missing_shipped_file_refuses_without_writes(self):
         for missing in (False, True):
             with self.subTest(missing=missing):
