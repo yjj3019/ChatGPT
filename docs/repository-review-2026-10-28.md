@@ -10,7 +10,7 @@ Reviewed `yjj3019/ChatGPT` main at `8bef29920a7ce5d2eaba2de2d9d30ae2ebd40358` (T
 - `scripts/sync_runtime.py` generates the entry's Core block, the standalone guide and full transfer reference from canonical documents. Unlike the older parent workspace, current source covers all three generated documents.
 - `scripts/validate_framework.py` checks structure, routes, links, required scenarios, invariants and generated consistency. Python tests cover framework rejection cases, installer safety/integrity, distribution examples and release rules. Golden markdown scenarios are rubrics; they are not evidence of executed model trials.
 - `scripts/install_pack.py` packages documentation with integrity manifests and conflict handling. New files under `docs/` use the existing packaging path; no new dependency or installer implementation is needed.
-- `.github/workflows/validate-framework.yml` runs on push/PR with Windows/Linux and Python 3.11/3.12. It runs tests, generated checks, framework validation and the version gate. Workflow definitions alone do not prove a successful run.
+- The [source CI workflow](https://github.com/yjj3019/ChatGPT/blob/8bef29920a7ce5d2eaba2de2d9d30ae2ebd40358/.github/workflows/validate-framework.yml) runs on push/PR with Windows/Linux and Python 3.11/3.12. It runs tests, generated checks, framework validation and the version gate. Workflow definitions alone do not prove a successful run.
 
 ## Findings and Decisions
 
@@ -35,3 +35,5 @@ The user explicitly requested direct GitHub storage. Publish one non-forced comm
 ## Verification Scope
 
 Initial Windows source checks: `python -X utf8 scripts/sync_runtime.py --check` passed; `python -X utf8 scripts/validate_framework.py` passed with 14 routes, 38 required scenarios and 14 invariants. The model snapshot's IDs/version/readback assertion and `git diff --check` passed. Full unit tests and remaining maintenance checks were still running when preparing this review branch. Review the commit's actual CI checks for the final result; no live API calls, host model trials, or future heartbeat runs are certified here. The model detail pages were also opened to cross-check the table and long-context billing condition. Subsequent source-link/billing-note and review-record edits are documentation-only and need remote CI/readback; they do not change runtime behavior.
+
+The first remote CI run (40680364413) exposed a new review-record reference to a source-only workflow path omitted from installed packs. The reference was changed to the pinned GitHub source URL; installer validation remains unchanged. Remote unit discovery ran 161 tests, with one skipped test and this single failure before that correction. Recheck the latest PR run for the repaired result.
