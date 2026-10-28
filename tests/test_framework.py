@@ -160,7 +160,7 @@ class FrameworkCommandsTest(unittest.TestCase):
         self.assert_failure(self.run_script("validate_framework.py"), "missing required Golden Test 016")
 
     def test_harness_and_coding_golden_tests_are_required(self):
-        for test_id in ("041", "042", "043", "044", "045", "046", "047", "048", "049", "050"):
+        for test_id in ("041", "042", "043", "044", "045", "046", "047", "048", "049", "050", "051", "052"):
             with self.subTest(test_id=test_id):
                 path = self.root / f"tests/GoldenTest-{test_id}.md"
                 original = path.read_bytes()
