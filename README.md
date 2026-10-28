@@ -1,11 +1,13 @@
 # TaskForge for ChatGPT
 
-ChatGPT·Codex에서 코드 검토, 운영 분석, 문서 작업을 돕는 **작업 지침 팩**입니다.
-작업에 필요한 가이드만 읽고, 확인한 근거에 맞춰 결과를 보고하도록 안내합니다.
+ChatGPT와 Codex에서 코드 검토, 운영 분석, 문서 작업을 돕는 **작업 지침 팩**입니다.
+필요한 가이드만 선택하고, 확인한 근거와 검증 범위에 맞춰 결과를 보고하도록 안내합니다.
 
 한국어 | [English](README.en.md) · [배포 원칙](docs/distribution-standard.md) · [라이선스](LICENSE)
 
-## 빠른 시작 — Codex 앱
+## 시작하기
+
+### Codex 앱
 
 `codex plugin --help`와 `codex plugin marketplace --help`에서 명령 지원을 확인한 뒤 실행합니다.
 
@@ -22,7 +24,7 @@ codex plugin add taskforge-for-chatgpt@yjj3019
 codex plugin list --marketplace yjj3019 --json
 ```
 
-설치 목록의 버전과 앱의 플러그인 화면(`Plugins`)의 활성 상태를 확인합니다. 이 저장소는 GitHub 기반 마켓플레이스이며 공개 플러그인 디렉터리의 심사·등록과는 별도입니다.
+설치 목록에서 버전을, 앱의 플러그인 화면(`Plugins`)에서 활성 상태를 확인합니다. 이 저장소는 GitHub 기반 마켓플레이스이며 공개 플러그인 디렉터리의 심사·등록과는 별도입니다.
 
 ## 업데이트·삭제
 
@@ -103,11 +105,13 @@ Python의 `chatgpt-transfer/`·`taskforge/` 설치는 전체 백업 후 모든 �
 
 </details>
 
-## 모델·역할과 적용 확인
+## 모델과 역할
 
-- **기본 모드(`DEFAULT`):** 현재 모델·추론 수준을 유지합니다. 등록된 `pack_explorer`·`pack_runner`·`pack_reviewer`로 필요한 작업만 분담하며, 작은 작업은 메인이 처리합니다.
-- **고정 구성(`PRESET`):** Sol·Luna·Astra 고정 구성은 명시적으로 선택하고 지원·접근을 확인한 경우에만 사용합니다.
-- **자동 위임 중지(`SUSPENDED`):** 사용자가 모델을 명시적으로 선택하면 그 대화의 자동 위임을 중단합니다. 별도 요청한 상속형 하위 에이전트만 허용합니다.
+| 모드 | 동작 |
+|---|---|
+| **기본 (`DEFAULT`)** | 현재 모델·추론 수준을 유지합니다. 등록된 `pack_explorer`·`pack_runner`·`pack_reviewer`로 필요한 작업만 분담하고 작은 작업은 메인이 처리합니다. |
+| **고정 구성 (`PRESET`)** | Sol·Luna·Astra 고정 구성은 명시적으로 선택하고 지원·접근을 확인한 경우에만 사용합니다. |
+| **자동 위임 중지 (`SUSPENDED`)** | 사용자가 모델을 명시적으로 선택하면 해당 대화의 자동 위임을 중단합니다. 상속형 하위 에이전트는 별도 요청한 경우에만 사용합니다. |
 
 대화 재개·압축·앱 재시작은 상태를 초기화하지 않습니다. 새 대화는 기본 모드로 시작하며, 별도 승인한 호스트 전역 고정 구성 정책은 예외입니다. 설치만으로 역할·개인 설정·메모리를 활성화하거나 메인 모델을 전환하지 않습니다. 자세한 기준은 [세션 정책](docs/codex-three-model-setup.md#session-policy)과 [역할 등록](docs/codex-three-model-setup.md#register-default-roles)을 참고하세요.
 
@@ -134,7 +138,7 @@ Python의 `chatgpt-transfer/`·`taskforge/` 설치는 전체 백업 후 모든 �
 | 구현·디버깅·코드 리뷰 | [코딩 규칙](docs/chatgpt-coding-rules.md) |
 | 아키텍처·원인 분석·조사·절차서·보안 | [엔지니어링](docs/chatgpt-engineering-task-rules.md) — 해당 섹션만 |
 | 인프라·기술 도메인 | [도메인 팩](docs/chatgpt-domain-packs.md) — 해당 섹션만 |
-| 회의·발표·경영 요약·PDF 번역 | [지식 작업](docs/chatgpt-knowledge-work-rules.md) |
+| 회의·발표·요약·PDF 번역·HWPX·한국어 교정 | [지식 작업](docs/chatgpt-knowledge-work-rules.md) |
 | 제안서·블로그·오피스 문서 | [제안서](docs/chatgpt-proposal-review-rules.md) · [블로그](docs/chatgpt-blog-rules.md) · [오피스 문서](docs/codex-office-agent-rules.md) |
 | 모델·운영·위임 | [모델 선택](docs/chatgpt-codex-model-routing.md) · [운영](docs/codex-operations-rules.md) · [서브에이전트](docs/codex-subagent-rules.md) · [팀 게이트](docs/codex-team-agent-rules.md) |
 | 선택형 연동 | [메모리 관리](docs/codex-memories-maintenance.md) · [노션 기록](docs/codex-notion-recording.md) |
