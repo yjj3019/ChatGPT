@@ -10,6 +10,8 @@ Exception: the native TaskForge for ChatGPT skill uses its [session policy](code
 
 ## Verify the Product Surface
 
+For dated API catalog facts and the maintenance procedure, consult the [OpenAI API model snapshot](openai-api-models.md). Its API prices, limits, and reasoning levels do not establish this host's model roster or controls.
+
 Before advising a change, record the actual surface (Chat, ChatGPT Work, Codex, or API), client/version, and authentication method (for example, ChatGPT sign-in versus API/provider credentials). Verify the models and effort levels actually exposed to that session, plus available tools and permissions. Product documentation and API catalogs are not a fixed host roster.
 
 Do not transplant API parameters or an API context-window figure such as 1.05M into an app's capabilities. The `model_context_window` configuration describes available context; setting it is not a capacity upgrade. Check the active product/model's documented limits and observed configuration. This guide does not authorize settings changes, new model calls, or global installation.

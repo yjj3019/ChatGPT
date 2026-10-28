@@ -105,6 +105,8 @@ Commands for restoring a specific 2.x version remain in the [migration and recov
 
 ## Models, roles and application checks
 
+See the [API model snapshot](docs/openai-api-models.md) for dated official prices, limits and reasoning levels. Daily 09:00 Asia/Seoul checks are registered in the maintainer's local Codex thread, not installed by this repository. Model information is updated directly in GitHub through the connector, without storing it on the PC. The API catalog does not establish model availability in the current app.
+
 - **DEFAULT:** Preserve the current model and reasoning effort. Use registered `pack_explorer`, `pack_runner` and `pack_reviewer` roles only when useful; keep small tasks with the main agent.
 - **PRESET:** Use fixed Sol/Luna/Astra settings only after an explicit opt-in and support/access checks.
 - **SUSPENDED:** An explicit model choice stops automatic delegation for that conversation. Inherited subagents require a separate request.
